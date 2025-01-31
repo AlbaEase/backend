@@ -25,6 +25,15 @@ logging:
     org.hibernate.SQL: debug
     com.example.albaease: debug
 
+# Swagger
+springdoc:
+  api-docs:
+    enabled: true       # API 문서 생성을 활성화
+    path: /v3/api-docs  # 기본 경로 설정
+  swagger-ui:
+    enabled: true        # Swagger UI 활성화
+    path: /swagger-ui.html  # UI 경로 설정
+
 # JWT
 #jwt:
 #  secret: ${JWT_SECRET}
