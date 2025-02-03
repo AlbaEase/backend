@@ -22,7 +22,7 @@ public class Shift {
     private Long fromUserId;  // 요청을 보낸 사용자 ID
     private Long toUserId;    // 요청을 받는 사용자 ID
     private Long scheduleId;  // 대타 요청할 스케줄 ID
-    private Long approvedById;  // 사장님 승인 여부 (승인한 사용자 ID)
+    private Long approvedBy;  // 사장님 승인 여부 (승인한 사용자 ID)
 
     @Enumerated(EnumType.STRING)
     private RequestType requestType;  // 요청 타입 (특정 알바생 or 전체)
@@ -47,7 +47,7 @@ public class Shift {
 
     public void updateStatus(RequestStatus status, Long approvedById) {
         this.status = status;
-        this.approvedById = approvedById;
+        this.approvedBy = approvedById;
         this.updated_at = LocalDateTime.now();
     }
 }
