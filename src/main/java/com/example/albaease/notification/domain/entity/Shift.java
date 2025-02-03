@@ -18,7 +18,7 @@ public class Shift {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long request_id;
 
-    // API 테스트용 - User, Schedule 엔티티 없이 ID만 저장 (병합 후 삭제해야함)
+    // api테스트용, userId, scheduleId병합 후 삭제 해야함
     private Long fromUserId;  // 요청을 보낸 사용자 ID
     private Long toUserId;    // 요청을 받는 사용자 ID
     private Long scheduleId;  // 대타 요청할 스케줄 ID

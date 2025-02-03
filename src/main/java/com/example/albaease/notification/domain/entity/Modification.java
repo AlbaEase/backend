@@ -29,7 +29,7 @@ public class Modification {
     private LocalDateTime created_at;  // 생성 시간
     private LocalDateTime updated_at;  // 수정 시간
 
-    // userId, scheduleId 병합 후 수정해야함
+    // userId, scheduleId필드 병합 후 수정해야함
     @Builder
     public Modification(Long userId, Long scheduleId, String details) {
         this.userId = userId;
