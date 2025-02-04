@@ -2,8 +2,8 @@ package com.example.albaease.notification.service;
 
 import com.example.albaease.notification.domain.entity.Notification;
 import com.example.albaease.notification.domain.enums.NotificationStatus;
-import com.example.albaease.notification.dto.request.NotificationRequest;
-import com.example.albaease.notification.dto.response.NotificationResponse;
+import com.example.albaease.notification.dto.NotificationRequest;
+import com.example.albaease.notification.dto.NotificationResponse;
 import com.example.albaease.notification.repository.NotificationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

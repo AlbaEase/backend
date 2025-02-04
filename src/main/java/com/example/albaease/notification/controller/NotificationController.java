@@ -1,6 +1,6 @@
 package com.example.albaease.notification.controller;
 
-import com.example.albaease.notification.dto.response.NotificationResponse;
+import com.example.albaease.notification.dto.NotificationResponse;
 import com.example.albaease.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

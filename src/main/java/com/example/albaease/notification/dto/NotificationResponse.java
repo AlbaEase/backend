@@ -1,4 +1,4 @@
-package com.example.albaease.notification.dto.response;
+package com.example.albaease.notification.dto;
 
 import com.example.albaease.notification.domain.entity.Notification;
 import com.example.albaease.notification.domain.enums.NotificationStatus;

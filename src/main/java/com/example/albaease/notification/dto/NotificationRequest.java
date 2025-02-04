@@ -1,4 +1,4 @@
-package com.example.albaease.notification.dto.request;
+package com.example.albaease.notification.dto;
 
 import com.example.albaease.notification.domain.enums.NotificationType;
 import lombok.AllArgsConstructor;
