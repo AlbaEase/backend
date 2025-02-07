@@ -74,18 +74,21 @@ public class ShiftService {
 
     @Transactional
     public NotificationResponse handleShiftRequest(ShiftRequest request) {
-        // 1. 기존의 createShiftRequest 호출하여 대타 요청 처리
+        // 1. 대타 요청 저장
         ShiftResponse shiftResponse = createShiftRequest(request);
 
-        // 2. 알림 생성 요청
+        // 2. 알림 생성 요청 (Shift에 필요한 필드만 포함)
         NotificationRequest notificationRequest = NotificationRequest.builder()
                 .userId(request.getToUserId())
                 .type(NotificationType.SPECIFIC_USER)
                 .message("대타 요청이 도착했습니다.")
                 .scheduleId(request.getScheduleId())
+                .fromUserId(request.getFromUserId())  // 대타 요청에만 필요한 필드
+                .toUserId(request.getToUserId())      // 대타 요청에만 필요한 필드
                 .build();
 
-        // 3. 알림 생성 및 반환
-        return notificationService.createNotification(notificationRequest);
+        // 3. Shift 전용 알림 생성 및 반환
+        return notificationService.createShiftNotification(notificationRequest, shiftResponse);
     }
+
 }

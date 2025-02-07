@@ -1,5 +1,6 @@
 package com.example.albaease.notification.service;
 
+import com.example.albaease.modification.dto.ModificationResponse;
 import com.example.albaease.notification.domain.entity.Notification;
 import com.example.albaease.notification.domain.enums.NotificationReadStatus;
 import com.example.albaease.notification.domain.enums.NotificationType;
@@ -7,6 +8,7 @@ import com.example.albaease.notification.dto.NotificationRequest;
 import com.example.albaease.notification.dto.NotificationResponse;
 import com.example.albaease.notification.handler.WebSocketHandler;
 import com.example.albaease.notification.repository.NotificationRepository;
+import com.example.albaease.shift.dto.ShiftResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,27 +33,6 @@ public class NotificationService {
     // 테스트 알림이 최초 1회만 전송되도록 하는 플래그
     // 병합 후 삭제필요
     private boolean testNotificationSent = false;
-
-    // 웹소켓 테스트용 메서드
-    @Scheduled(fixedRate = 5000)
-    public void sendTestNotification() {
-        // 아직 테스트 알림을 전송하지 않았고, 연결된 클라이언트가 있으면
-        if (!testNotificationSent && !webSocketHandler.getClients().isEmpty()) {
-            NotificationResponse notification = NotificationResponse.builder()
-                    .id(1L)
-                    .userId(1L)
-                    .type(NotificationType.SPECIFIC_USER)  // 알림 대상 타입으로 변경
-                    .readStatus(NotificationReadStatus.UNREAD)
-                    .scheduleId(1L)
-                    .message("테스트 알림입니다.")  // 메시지 추가
-                    .createdAt(LocalDateTime.now())
-                    .build();
-            // 웹소켓 핸들러를 통해 알림 전송
-            webSocketHandler.sendNotification(notification);
-            testNotificationSent = true;  // 한 번 전송했으므로 플래그 변경
-            log.info("📢 연결 성공: {}", notification);
-        }
-    }
     
     // 알림 생성
     @Transactional
@@ -74,6 +55,73 @@ public class NotificationService {
         );
 
         // 저장된 알림을 반환
+        return response;
+    }
+
+    // 대타 요청 생성
+    @Transactional
+    public NotificationResponse createShiftNotification(NotificationRequest request, ShiftResponse shiftResponse) {
+        // 1. Notification 엔티티 생성 및 저장
+        Notification notification = Notification.builder()
+                .userId(request.getUserId())
+                .scheduleId(request.getScheduleId())
+                .message(request.getMessage())
+                .requestType(request.getType())
+                .status(NotificationReadStatus.UNREAD)
+                .build();
+
+        Notification savedNotification = notificationRepository.save(notification);
+
+        // 2. Shift 전용 응답 생성 (detail 필드 제외)
+        NotificationResponse response = NotificationResponse.builder()
+                .id(savedNotification.getNotification_id())
+                .userId(request.getUserId())
+                .type(request.getType())
+                .readStatus(NotificationReadStatus.UNREAD)
+                .message(request.getMessage())
+                .scheduleId(request.getScheduleId())
+                .fromUserId(request.getFromUserId())
+                .toUserId(request.getToUserId())
+                .createdAt(savedNotification.getCreatedAt())
+                .shiftStatus(shiftResponse.getStatus())
+                .build();
+
+        // 3. 웹소켓으로 전송
+        webSocketHandler.sendNotification(response);
+
+        return response;
+    }
+
+    // 수정 요청 생성
+    @Transactional
+    public NotificationResponse createModificationNotification(NotificationRequest request, ModificationResponse modificationResponse) {
+        // 1. Notification 엔티티 생성 및 저장
+        Notification notification = Notification.builder()
+                .userId(request.getUserId())
+                .scheduleId(request.getScheduleId())
+                .message(request.getMessage())
+                .requestType(request.getType())
+                .status(NotificationReadStatus.UNREAD)
+                .build();
+
+        Notification savedNotification = notificationRepository.save(notification);
+
+        // 2. Modification 전용 응답 생성 (fromUserId, toUserId 제외)
+        NotificationResponse response = NotificationResponse.builder()
+                .id(savedNotification.getNotification_id())
+                .userId(request.getUserId())
+                .type(request.getType())
+                .readStatus(NotificationReadStatus.UNREAD)
+                .message(request.getMessage())
+                .scheduleId(request.getScheduleId())
+                .details(request.getDetails())
+                .createdAt(savedNotification.getCreatedAt())
+                .modificationStatus(modificationResponse.getStatus())
+                .build();
+
+        // 3. 웹소켓으로 전송
+        webSocketHandler.sendNotification(response);
+
         return response;
     }
 

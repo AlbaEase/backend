@@ -23,7 +23,7 @@ public class Modification {
     private String details;  // 수정 요청 상세 내용
 
     @Enumerated(EnumType.STRING)
-    private ModificationStatus status;  // 요청 상태
+    private ModificationStatus status = ModificationStatus.PENDING; // 요청 상태, 기본값 대기
 
     private LocalDateTime createdAt;  // 생성 시간
 

@@ -29,7 +29,7 @@ public class Shift {
     private ShiftRequestType requestType;  // 요청 타입 (특정 알바생 or 전체)
 
     @Enumerated(EnumType.STRING)
-    private ShiftStatus status;  // 요청 상태
+    private ShiftStatus status = ShiftStatus.PENDING;  // 요청 상태, 기본값 대기
     private LocalDateTime createdAt;  // 알림 생성 시간
     private LocalDateTime updatedAt;  // 알림 수정 시간
 

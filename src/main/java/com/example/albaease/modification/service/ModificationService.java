@@ -6,6 +6,7 @@ import com.example.albaease.modification.dto.ModificationRequest;
 import com.example.albaease.modification.dto.ModificationResponse;
 import com.example.albaease.modification.repository.ModificationRepository;
 import com.example.albaease.notification.domain.enums.NotificationType;
+import com.example.albaease.notification.dto.NotificationResponse;
 import com.example.albaease.notification.service.NotificationService;
 import com.example.albaease.notification.dto.NotificationRequest;
 import jakarta.persistence.EntityNotFoundException;
@@ -54,6 +55,24 @@ public class ModificationService {
 
         modification.updateStatus(status);
         return ModificationResponse.from(modification);
+    }
+
+    @Transactional
+    public NotificationResponse handleModificationRequest(ModificationRequest request) {
+        // 1. 수정 요청 저장
+        ModificationResponse modificationResponse = createModification(request);
+
+        // 2. 알림 생성 요청 (Modification에 필요한 필드만 포함)
+        NotificationRequest notificationRequest = NotificationRequest.builder()
+                .userId(request.getUserId())
+                .type(NotificationType.SPECIFIC_USER)
+                .message("근무 시간 수정 요청이 도착했습니다.")
+                .scheduleId(request.getScheduleId())
+                .details(request.getDetails())  // 수정 요청에만 필요한 필드
+                .build();
+
+        // 3. Modification 전용 알림 생성 및 반환
+        return notificationService.createModificationNotification(notificationRequest, modificationResponse);
     }
 
 

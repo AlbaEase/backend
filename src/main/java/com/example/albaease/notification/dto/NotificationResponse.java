@@ -1,5 +1,6 @@
 package com.example.albaease.notification.dto;
 
+import com.example.albaease.modification.domain.enums.ModificationStatus;
 import com.example.albaease.notification.domain.entity.Notification;
 import com.example.albaease.notification.domain.enums.NotificationReadStatus;
 import com.example.albaease.notification.domain.enums.NotificationType;
@@ -26,10 +27,11 @@ public class NotificationResponse {
     // 추가: 대타 요청 관련 필드
     private Long fromUserId;  // 요청을 보낸 사용자 ID
     private Long toUserId;    // 요청을 받는 사용자 ID
-    private ShiftStatus status;  // 요청의 승인 상태 (PENDING/APPROVED/REJECTED)
+    private ShiftStatus shiftStatus;           // 대타 요청 승인상태
 
     // 추가: 수정 요청 관련 필드
     private String details;  // 수정 요청 상세 내용
+    private ModificationStatus modificationStatus;  // 수정 요청 승인상태
 
     // 알림 목록관련 필드
     private List<NotificationResponse> notifications;
@@ -39,12 +41,14 @@ public class NotificationResponse {
     public static NotificationResponse from(Notification notification) {
         return NotificationResponse.builder()
                 .id(notification.getNotification_id())
-                .userId(notification.getUserId())  // 테스트용, 병합 후 수정 필요
-                .scheduleId(notification.getScheduleId())  // 테스트용, 병합 후 수정 필요
+                .userId(notification.getUserId())
+                .scheduleId(notification.getScheduleId())
                 .type(notification.getRequestType())
-                .readStatus(notification.getStatus())  // 읽음 상태 추가
+                .readStatus(notification.getStatus())
                 .message(notification.getMessage())
                 .createdAt(notification.getCreatedAt())
+                .shiftStatus(null)
+                .modificationStatus(null)
                 .build();
     }
 

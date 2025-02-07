@@ -179,30 +179,36 @@
     }
 
     function sendTestMessage() {
-        if (!stompClient || !stompClient.connected) {
-            alert('웹소켓이 연결되지 않았습니다.');
-            return;
-        }
-
         const type = document.getElementById('notificationType').value;
-        const testMessage = {
+        const baseMessage = {
             id: 1,
             userId: document.getElementById('fromUserId').value,
             type: NotificationType.SPECIFIC_USER,
-            status: NotificationStatus.UNREAD,  // readStatus -> status
+            status: NotificationStatus.UNREAD,
             scheduleId: document.getElementById('scheduleId').value,
             message: type === 'SHIFT_REQUEST'
                 ? "대타 요청이 도착했습니다."
                 : "근무 시간 수정 요청이 도착했습니다.",
-            fromUserId: document.getElementById('fromUserId').value,
-            toUserId: document.getElementById('toUserId').value,
-            details: document.getElementById('details')?.value
         };
 
+        // 대타 요청인 경우
         if (type === 'SHIFT_REQUEST') {
-            stompClient.send("/app/shift-requests", {}, JSON.stringify(testMessage));
+            Object.assign(baseMessage, {
+                fromUserId: document.getElementById('fromUserId').value,
+                toUserId: document.getElementById('toUserId').value
+            });
+        }
+        // 수정 요청인 경우
+        else {
+            Object.assign(baseMessage, {
+                details: document.getElementById('details').value
+            });
+        }
+
+        if (type === 'SHIFT_REQUEST') {
+            stompClient.send("/app/shift-requests", {}, JSON.stringify(baseMessage));
         } else {
-            stompClient.send("/app/modification", {}, JSON.stringify(testMessage));
+            stompClient.send("/app/modification", {}, JSON.stringify(baseMessage));
         }
     }
 
@@ -214,28 +220,36 @@
         // 시간 포맷팅
         const timestamp = new Date().toLocaleString();
 
+        let statusText = '';
+        if (message.type === 'SHIFT_REQUEST') {
+            statusText = message.shiftStatus || 'PENDING';
+        } else {
+            statusText = message.modificationStatus || 'PENDING';
+        }
+
         let details = '';
         if (message.type === 'SHIFT_REQUEST') {
             details = `
-               <p><strong>요청자 ID:</strong> ${message.fromUserId}</p>
-               <p><strong>수신자 ID:</strong> ${message.toUserId}</p>
-           `;
-        } else {
+           <p><strong>요청자 ID:</strong> ${message.fromUserId}</p>
+           <p><strong>수신자 ID:</strong> ${message.toUserId}</p>
+       `;
+        } else if (message.details) {
             details = `
-               <p><strong>상세 내용:</strong> ${message.details || '없음'}</p>
-           `;
+           <p><strong>상세 내용:</strong> ${message.details}</p>
+       `;
         }
 
         messageDiv.innerHTML = `
-           <p><strong>시간:</strong> ${timestamp}</p>
-           <p><strong>알림 ID:</strong> ${message.id}</p>
-           <p><strong>타입:</strong> ${message.type}</p>
-           <p><strong>읽음 상태:</strong> ${message.status}</p>
-           <p><strong>스케줄 ID:</strong> ${message.scheduleId}</p>
-           <p><strong>메시지:</strong> ${message.message}</p>
-           ${details}
-           <button onclick="this.parentElement.remove()">X</button>
-       `;
+       <p><strong>시간:</strong> ${timestamp}</p>
+       <p><strong>알림 ID:</strong> ${message.id}</p>
+       <p><strong>타입:</strong> ${message.type}</p>
+       <p><strong>읽음 상태:</strong> ${message.readStatus}</p>
+       <p><strong>처리 상태:</strong> ${statusText}</p>
+       <p><strong>스케줄 ID:</strong> ${message.scheduleId}</p>
+       <p><strong>메시지:</strong> ${message.message}</p>
+       ${details}
+       <button onclick="this.parentElement.remove()">X</button>
+   `;
 
         notifications.insertBefore(messageDiv, notifications.firstChild);
     }

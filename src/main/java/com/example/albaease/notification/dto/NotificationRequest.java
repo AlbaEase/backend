@@ -13,4 +13,10 @@ public class NotificationRequest {
     private Long scheduleId;
     private String message;
     private NotificationType type;
+
+    // Shift 전용 필드
+    private Long fromUserId;
+    private Long toUserId;
+
+    private String details;  // 수정 요청용 필드
 }

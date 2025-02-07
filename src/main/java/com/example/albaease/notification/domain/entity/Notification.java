@@ -25,7 +25,7 @@ public class Notification {
     private String message;  // 알림 메시지
 
     @Enumerated(EnumType.STRING)
-    private NotificationReadStatus status;  // 읽음 여부 상태
+    private NotificationReadStatus status = NotificationReadStatus.UNREAD;   // 읽음 여부 상태, 기본값은 안 읽음
 
     @Enumerated(EnumType.STRING)
     private NotificationType requestType;  // 알림 타입 (특정 알바생 or 전체 요청)
@@ -33,11 +33,12 @@ public class Notification {
     private LocalDateTime createdAt;  // 생성 시간
 
     @Builder
-    public Notification(Long userId, Long scheduleId, String message,
+    public Notification(Long userId, Long scheduleId, String message,NotificationReadStatus status,
                         NotificationType requestType) {
         this.userId = userId;
         this.scheduleId = scheduleId;
         this.message = message;
+        this.status = status;
         this.requestType = requestType;
         this.createdAt = LocalDateTime.now();
     }

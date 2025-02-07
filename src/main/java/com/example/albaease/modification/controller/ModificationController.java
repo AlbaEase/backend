@@ -42,20 +42,7 @@ public class ModificationController {
     @MessageMapping("/modification")
     @SendToUser("/queue/notifications")
     public NotificationResponse handleModificationRequest(ModificationRequest request) {
-
-        log.info("Received modification request: {}", request);  // 추가
-        // 수정 요청 저장 및 처리
-        ModificationResponse modificationResponse = modificationService.createModification(request);
-
-        // 알림 생성
-        return NotificationResponse.builder()
-                .id(modificationResponse.getId())
-                .userId(request.getUserId())
-                .type(NotificationType.SPECIFIC_USER)
-                .readStatus(NotificationReadStatus.UNREAD)  // 알림의 읽음 상태
-                .message("근무 시간 수정 요청이 도착했습니다.")
-                .scheduleId(request.getScheduleId())
-                .details(request.getDetails())
-                .build();
+        log.info("Received modification request: {}", request);
+        return modificationService.handleModificationRequest(request);
     }
 }
