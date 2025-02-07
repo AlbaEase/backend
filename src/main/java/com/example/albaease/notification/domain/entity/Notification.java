@@ -1,6 +1,6 @@
 package com.example.albaease.notification.domain.entity;
 
-import com.example.albaease.notification.domain.enums.NotificationStatus;
+import com.example.albaease.notification.domain.enums.NotificationReadStatus;
 import com.example.albaease.notification.domain.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -21,25 +21,28 @@ public class Notification {
     private Long userId;  // 알림을 받을 사용자 ID
     private Long scheduleId;  // 관련 스케줄 ID
 
+    @Column(columnDefinition = "TEXT")
+    private String message;  // 알림 메시지
+
     @Enumerated(EnumType.STRING)
-    private NotificationStatus status;  // 읽음 여부 상태
+    private NotificationReadStatus status;  // 읽음 여부 상태
 
     @Enumerated(EnumType.STRING)
     private NotificationType requestType;  // 알림 타입 (특정 알바생 or 전체 요청)
 
-    private LocalDateTime created_at;  // 생성 시간
+    private LocalDateTime createdAt;  // 생성 시간
 
     @Builder
-    public Notification(Long userId, Long scheduleId,
+    public Notification(Long userId, Long scheduleId, String message,
                         NotificationType requestType) {
         this.userId = userId;
         this.scheduleId = scheduleId;
-        this.status = NotificationStatus.UNREAD;
+        this.message = message;
         this.requestType = requestType;
-        this.created_at = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     public void markAsRead() {
-        this.status = NotificationStatus.READ;
+        this.status = NotificationReadStatus.READ;
     }
 }

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>WebSocket Test</title>
+    <!-- 필요한 라이브러리 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        .connection-status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .message {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            position: relative;
+        }
+        .control-panel {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        .connect-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .disconnect-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        .message button {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+        #shiftRequestFields {
+            margin: 10px 0;
+        }
+        #shiftRequestFields input {
+            margin-right: 10px;
+            padding: 5px;
+        }
+        select {
+            padding: 5px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+<h1>WebSocket 알림 테스트</h1>
+
+<div class="control-panel">
+    <button class="connect-btn" onclick="connect()">연결</button>
+    <button class="disconnect-btn" onclick="disconnect()">연결 해제</button>
+
+    <!-- 연결 상태 표시 -->
+    <div id="status" class="connection-status disconnected">연결 상태: 미연결</div>
+
+    <!-- 테스트 메시지 전송 폼 -->
+    <div>
+        <h3>테스트 알림 전송</h3>
+        <select id="notificationType" onchange="toggleRequestFields()">
+            <option value="SHIFT_REQUEST">대타 요청</option>
+            <option value="MODIFICATION_REQUEST">수정 요청</option>
+        </select>
+
+        <!-- 대타 요청 전용 필드 -->
+        <div id="shiftRequestFields">
+            <input type="number" id="fromUserId" placeholder="요청자 ID" value="1">
+            <input type="number" id="toUserId" placeholder="수신자 ID" value="2">
+            <input type="number" id="scheduleId" placeholder="스케줄 ID" value="1">
+        </div>
+
+        <!-- 수정 요청 전용 필드 -->
+        <div id="modificationRequestFields" style="display: none;">
+            <input type="text" id="details" placeholder="수정 요청 상세 내용">
+        </div>
+
+
+        <button onclick="sendTestMessage()">전송</button>
+    </div>
+</div>
+
+<!-- 알림 메시지 표시 영역 -->
+<div>
+    <h3>수신된 알림</h3>
+    <div id="notifications"></div>
+</div>
+
+<script>
+    let stompClient = null;
+
+    const NotificationType = {
+        SPECIFIC_USER: 'SPECIFIC_USER',
+        ALL_USERS: 'ALL_USERS'
+    };
+
+    // NotificationStatus로 이름 유지
+    const NotificationStatus = {
+        READ: 'READ',
+        UNREAD: 'UNREAD'
+    };
+
+    function toggleRequestFields() {
+        const type = document.getElementById('notificationType').value;
+        const shiftFields = document.getElementById('shiftRequestFields');
+        const modificationFields = document.getElementById('modificationRequestFields');
+
+        if (type === 'SHIFT_REQUEST') {
+            shiftFields.style.display = 'block';
+            modificationFields.style.display = 'none';
+        } else {
+            shiftFields.style.display = 'none';
+            modificationFields.style.display = 'block';
+        }
+    }
+
+    function updateConnectionStatus(isConnected) {
+        const statusDiv = document.getElementById('status');
+        if (isConnected) {
+            statusDiv.className = 'connection-status connected';
+            statusDiv.textContent = '연결 상태: 연결됨';
+        } else {
+            statusDiv.className = 'connection-status disconnected';
+            statusDiv.textContent = '연결 상태: 미연결';
+        }
+    }
+
+    function connect() {
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
+            updateConnectionStatus(true);
+
+            stompClient.subscribe('/user/queue/notifications', function(message) {
+                console.log('Received message:', message);
+                showNotification(JSON.parse(message.body));
+            });
+            // 연결 후 subscribe 엔드포인트 호출
+            stompClient.send("/app/subscribe");
+        }, function(error) {
+            console.log('연결 에러:', error);
+            updateConnectionStatus(false);
+        });
+    }
+
+    function disconnect() {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+            updateConnectionStatus(false);
+        }
+        console.log("Disconnected");
+    }
+
+    function sendTestMessage() {
+        if (!stompClient || !stompClient.connected) {
+            alert('웹소켓이 연결되지 않았습니다.');
+            return;
+        }
+
+        const type = document.getElementById('notificationType').value;
+        const testMessage = {
+            id: 1,
+            userId: document.getElementById('fromUserId').value,
+            type: NotificationType.SPECIFIC_USER,
+            status: NotificationStatus.UNREAD,  // readStatus -> status
+            scheduleId: document.getElementById('scheduleId').value,
+            message: type === 'SHIFT_REQUEST'
+                ? "대타 요청이 도착했습니다."
+                : "근무 시간 수정 요청이 도착했습니다.",
+            fromUserId: document.getElementById('fromUserId').value,
+            toUserId: document.getElementById('toUserId').value,
+            details: document.getElementById('details')?.value
+        };
+
+        if (type === 'SHIFT_REQUEST') {
+            stompClient.send("/app/shift-requests", {}, JSON.stringify(testMessage));
+        } else {
+            stompClient.send("/app/modification", {}, JSON.stringify(testMessage));
+        }
+    }
+
+    function showNotification(message) {
+        const notifications = document.getElementById('notifications');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message';
+
+        // 시간 포맷팅
+        const timestamp = new Date().toLocaleString();
+
+        let details = '';
+        if (message.type === 'SHIFT_REQUEST') {
+            details = `
+               <p><strong>요청자 ID:</strong> ${message.fromUserId}</p>
+               <p><strong>수신자 ID:</strong> ${message.toUserId}</p>
+           `;
+        } else {
+            details = `
+               <p><strong>상세 내용:</strong> ${message.details || '없음'}</p>
+           `;
+        }
+
+        messageDiv.innerHTML = `
+           <p><strong>시간:</strong> ${timestamp}</p>
+           <p><strong>알림 ID:</strong> ${message.id}</p>
+           <p><strong>타입:</strong> ${message.type}</p>
+           <p><strong>읽음 상태:</strong> ${message.status}</p>
+           <p><strong>스케줄 ID:</strong> ${message.scheduleId}</p>
+           <p><strong>메시지:</strong> ${message.message}</p>
+           ${details}
+           <button onclick="this.parentElement.remove()">X</button>
+       `;
+
+        notifications.insertBefore(messageDiv, notifications.firstChild);
+    }
+
+    // 페이지 로드 시 연결 상태 초기화
+    window.onload = function() {
+        updateConnectionStatus(false);
+        toggleRequestFields();
+    };
+</script>
+</body>
+</html>
