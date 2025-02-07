@@ -2,6 +2,7 @@ package com.example.albaease.shift.service;
 
 import com.example.albaease.notification.domain.enums.NotificationType;
 import com.example.albaease.notification.dto.NotificationRequest;
+import com.example.albaease.notification.dto.NotificationResponse;
 import com.example.albaease.notification.service.NotificationService;
 import com.example.albaease.shift.domain.entity.Shift;
 import com.example.albaease.shift.domain.enums.ShiftStatus;
@@ -69,5 +70,22 @@ public class ShiftService {
                 .build());
 
         return ShiftResponse.from(shift);
+    }
+
+    @Transactional
+    public NotificationResponse handleShiftRequest(ShiftRequest request) {
+        // 1. 기존의 createShiftRequest 호출하여 대타 요청 처리
+        ShiftResponse shiftResponse = createShiftRequest(request);
+
+        // 2. 알림 생성 요청
+        NotificationRequest notificationRequest = NotificationRequest.builder()
+                .userId(request.getToUserId())
+                .type(NotificationType.SPECIFIC_USER)
+                .message("대타 요청이 도착했습니다.")
+                .scheduleId(request.getScheduleId())
+                .build();
+
+        // 3. 알림 생성 및 반환
+        return notificationService.createNotification(notificationRequest);
     }
 }

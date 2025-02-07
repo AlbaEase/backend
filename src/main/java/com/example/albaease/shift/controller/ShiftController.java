@@ -40,21 +40,6 @@ public class ShiftController {
     @MessageMapping("/shift-requests")
     @SendToUser("/queue/notifications")
     public NotificationResponse handleShiftRequest(ShiftRequest request) {
-
-        log.info("Received shift request: {}", request);  // 추가
-        // 대타 요청 저장 및 처리
-        ShiftResponse shiftResponse = shiftService.createShiftRequest(request);
-
-        // 알림 생성
-        return NotificationResponse.builder()
-                .id(shiftResponse.getId())
-                .userId(request.getToUserId())
-                .type(NotificationType.SPECIFIC_USER)
-                .readStatus(NotificationReadStatus.UNREAD)
-                .message("대타 요청이 도착했습니다.")
-                .scheduleId(request.getScheduleId())
-                .fromUserId(request.getFromUserId())
-                .toUserId(request.getToUserId())
-                .build();
+        return shiftService.handleShiftRequest(request);
     }
 }
