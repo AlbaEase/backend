@@ -14,11 +14,14 @@ public class User {
     @Column(name = "user_id")
     private Long userId;  // 고유 식별자 (PK)
 
-    @Column(name = "name", nullable = false)
-    private String name;  // 이름
+    @Column(name = "last_name", nullable = false)
+    private String lastName;  // 성
 
-    @Column(name = "id", nullable = false, unique = true)
-    private String id;  // 로그인시 사용하는 id
+    @Column(name = "first_name", nullable = false)
+    private String firstName;  // 이름
+
+    @Column(name = "login_id", nullable = false, unique = true)
+    private String loginId;  // 로그인시 사용하는 id
 
     @Column(name = "password", nullable = false)
     private String password;  // 비밀번호 (암호화)
@@ -44,8 +47,8 @@ public class User {
     @Column(name = "social_type", nullable = false)
     private SocialType socialType;  // 소셜회원 타입 (kakao, none)
 
-    @Column(name = "kakao_id")
-    private String kakaoId;  // 소셜회원 식별자 (카카오톡 사용자만 필요)
+//    @Column(name = "kakao_id")
+//    private String kakaoId;  // 소셜회원 식별자 (카카오톡 사용자만 필요)
 
     // 생성 시 자동으로 현재 시간 설정
     @PrePersist
@@ -53,11 +56,13 @@ public class User {
         this.createdAt = LocalDateTime.now();  // 현재 시간을 생성 시간으로 설정
     }
 
-    public User(String name, String id, String password, String phoneNumber, Role role, Store store, String businessNumber) {
-        this.name = name;
-        this.id = id;
+    public User(String lastName, String firstName,String loginId, String password, String phoneNumber, SocialType socialType,Role role, Store store, String businessNumber) {
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.loginId = loginId;
         this.password = password;
         this.phoneNumber = phoneNumber;
+        this.socialType = socialType;
         this.role = role;
         this.store = store;
         this.businessNumber = businessNumber;
