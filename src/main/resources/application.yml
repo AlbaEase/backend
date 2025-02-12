@@ -39,11 +39,7 @@ jwt:
   secret: mysecretkey
   expiration-time: 3600000 # 1시간 (milliseconds)
 #coolsms
-coolsms:
-  api:
-    key: NCSTILKUUTIQTI5X
-    secret: XODSCOAURZL8YRBFPIBB5PEIBHT1ZK26
-    number: 01028585971
+
 
 #Redis
   redis:
