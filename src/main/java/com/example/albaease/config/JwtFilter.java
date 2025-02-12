@@ -1,13 +1,11 @@
 package com.example.albaease.config;
 
-import com.example.albaease.user.CustomUserDetails;
-import com.example.albaease.user.CustomUserDetailsService;
+import com.example.albaease.auth.CustomUserDetails;
+import com.example.albaease.auth.CustomUserDetailsService;
 import com.example.albaease.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 import jakarta.servlet.FilterChain;
@@ -15,7 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
+
 
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {

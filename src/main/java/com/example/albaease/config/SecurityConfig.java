@@ -1,6 +1,6 @@
 package com.example.albaease.config;
 
-import com.example.albaease.user.CustomUserDetailsService;
+import com.example.albaease.auth.CustomUserDetailsService;
 import com.example.albaease.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +37,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())  // CSRF 보호 비활성화
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(HttpMethod.GET, "/").permitAll()  // 루트 경로 허용
                         .requestMatchers(HttpMethod.POST, "/user/**").permitAll()  // 로그인과 회원가입은 인증 없이 허용
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()  // Swagger 관련 경로 허용
                         .anyRequest().authenticated())  // 그 외 요청은 인증 필요

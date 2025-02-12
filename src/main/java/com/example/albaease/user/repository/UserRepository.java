@@ -1,4 +1,5 @@
-package com.example.albaease.user;
+package com.example.albaease.user.repository;
+import com.example.albaease.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

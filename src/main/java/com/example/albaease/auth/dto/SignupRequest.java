@@ -1,7 +1,7 @@
 package com.example.albaease.auth.dto;
 
-import com.example.albaease.user.Role;
-import com.example.albaease.user.SocialType;
+import com.example.albaease.user.entity.Role;
+import com.example.albaease.user.entity.SocialType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

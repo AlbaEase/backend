@@ -1,5 +1,7 @@
-package com.example.albaease.user;
+package com.example.albaease.auth;
 
+import com.example.albaease.user.entity.User;
+import com.example.albaease.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

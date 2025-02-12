@@ -1,4 +1,4 @@
-package com.example.albaease.user;
+package com.example.albaease.user.entity;
 
 public enum SocialType {
     KAKAO,   // 카카오 로그인

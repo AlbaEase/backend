@@ -1,12 +1,10 @@
 package com.example.albaease.auth.service;
 import com.example.albaease.auth.dto.LoginRequest;
 import com.example.albaease.auth.dto.SignupRequest;
-import com.example.albaease.auth.exception.IDAlreadyExistsException;
-import com.example.albaease.auth.exception.InvalidCredentialsException;
-import com.example.albaease.auth.exception.PasswordMismatchException;
-import com.example.albaease.user.SocialType;
-import com.example.albaease.user.User;
-import com.example.albaease.user.UserRepository;
+import com.example.albaease.auth.exception.*;
+import com.example.albaease.user.entity.SocialType;
+import com.example.albaease.user.entity.User;
+import com.example.albaease.user.repository.UserRepository;
 import com.example.albaease.util.JwtUtil;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +26,12 @@ public class AuthService {
 
         //세션에서 전화번호 인증했는지 확인
         if (isPhoneVerified == null || !(Boolean) session.getAttribute("isPhoneVerified")) {
-            throw new IllegalStateException("전화번호 인증을 먼저 진행해주세요.");
+            throw new PhoneVerificationRequiredException("전화번호 인증을 먼저 진행해주세요.");
         }
 
         // 세션에서 아이디 중복검사 했는지 확인
         if (isIdChecked == null || !isIdChecked) {
-            throw new IllegalStateException("아이디 중복 검사를 먼저 진행해주세요.");
+            throw new IdDuplicationCheckRequiredException("아이디 중복 검사를 먼저 진행해주세요.");
         }
 
         // 비밀번호 확인 추가 (비밀번호와 비밀번호 확인 필드가 있다고 가정)

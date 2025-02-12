@@ -4,8 +4,8 @@ import com.example.albaease.auth.dto.LoginRequest;
 import com.example.albaease.auth.dto.SignupRequest;
 import com.example.albaease.auth.exception.IDAlreadyExistsException;
 import com.example.albaease.auth.service.AuthService;
-import com.example.albaease.user.Role;
-import com.example.albaease.user.SocialType;
+import com.example.albaease.user.entity.Role;
+import com.example.albaease.user.entity.SocialType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpSession;
@@ -24,7 +24,6 @@ public class AuthController {
     //스웨거 어노테이션
     @Operation(summary = "회원가입", description = "사용자가 회원가입을 요청합니다.")
     @ApiResponse(responseCode = "200", description = "회원가입 성공")
-    @ApiResponse(responseCode = "400", description = "이미 존재하는 ID")
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestParam SocialType socialType,
@@ -47,7 +46,7 @@ public class AuthController {
     //스웨거 어노테이션
     @Operation(summary = "로그인", description = "사용자가 로그인 후 JWT 토큰을 요청합니다.")
     @ApiResponse(responseCode = "200", description = "로그인 성공, JWT 토큰 반환")
-    @ApiResponse(responseCode = "401", description = "잘못된 ID 또는 비밀번호")
+//    @ApiResponse(responseCode = "401", description = "잘못된 ID 또는 비밀번호")
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestParam String id, @RequestParam String password) {
@@ -58,6 +57,7 @@ public class AuthController {
     }
 
     //아이디 중복체크
+    @Operation(summary = "아이디 중복체크")
     @PostMapping("/check-id")
     public ResponseEntity<String> checkId(@RequestParam String id, HttpSession session) {
         try {

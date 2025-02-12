@@ -1,4 +1,4 @@
-package com.example.albaease.user;
+package com.example.albaease.user.entity;
 
 public enum Role {
     OWNER,   // 사장님
