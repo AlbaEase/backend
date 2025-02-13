@@ -1,7 +1,8 @@
-package com.example.albaease.config;
+package com.example.albaease.common.config;
 
 import com.example.albaease.auth.CustomUserDetailsService;
-import com.example.albaease.util.JwtUtil;
+import com.example.albaease.auth.jwt.JwtFilter;
+import com.example.albaease.auth.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

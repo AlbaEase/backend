@@ -1,4 +1,4 @@
-package com.example.albaease.config;
+package com.example.albaease.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

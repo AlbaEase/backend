@@ -1,8 +1,7 @@
-package com.example.albaease.config;
+package com.example.albaease.auth.jwt;
 
 import com.example.albaease.auth.CustomUserDetails;
 import com.example.albaease.auth.CustomUserDetailsService;
-import com.example.albaease.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
