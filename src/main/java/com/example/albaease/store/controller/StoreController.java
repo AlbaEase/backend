@@ -32,4 +32,15 @@ public class StoreController {
     public StoreResponseDto getStoreById(@PathVariable int id) {
         return new StoreResponseDto(storeService.getStoreById(id));
     }
+    // 매장 정보 수정 (PUT 요청 추가)
+    @PutMapping("/{id}")
+    public StoreResponseDto updateStore(@PathVariable int id, @RequestBody StoreRequestDto requestDto) {
+        return new StoreResponseDto(storeService.updateStore(id, requestDto));
+    }
+
+    // 매장 삭제 (DELETE 요청 추가)
+    @DeleteMapping("/{id}")
+    public void deleteStore(@PathVariable int id) {
+        storeService.deleteStore(id);
+    }
 }

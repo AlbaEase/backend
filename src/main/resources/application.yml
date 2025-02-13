@@ -1,37 +1,38 @@
 spring:
-datasource:
-  url: jdbc:h2:mem:testdb
-  driver-class-name: org.h2.Driver
-  username: gayoon
-  password: 1234
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-  h2:
-    console:
-      enabled: true
-
-#  application:
-#    name: albaease
-#  datasource:
-#    url: ${jdbc:mysql://localhost:3306/albaeaseTest}
-#    username: ${root}
-#    password: ${}
-#
+#datasource:
+#  url: jdbc:h2:mem:testdb
+#  driver-class-name: org.h2.Driver
+#  username: gayoon
+#  password: 1234
 #  jpa:
-#    database: mysql
-#    database-platform: org.hibernate.dialect.MySQLDialect
-#    hibernate:
-#      ddl-auto: create # api테스트용, 배포시 validate 수정예정
-#    show-sql: true
-#    properties:
-#      hibernate:
-#        format_sql: true
-#
-#server:
-#  port: 8080
+#    database-platform: org.hibernate.dialect.H2Dialect
+#  h2:
+#    console:
+#      enabled: true
 
-  # Swagger
-  springdoc:
+  application:
+    name: albaeaseTest
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/store
+    username: root
+    password: Dnjschs2151!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: create # api테스트용, 배포시 validate 수정예정
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080
+
+  #Swagger
+springdoc:
     api-docs:
       enabled: true       # API 문서 생성을 활성화
       path: /v3/api-docs  # 기본 경로 설정
