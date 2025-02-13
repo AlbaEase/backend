@@ -1,13 +1,17 @@
 package com.example.albaease.schedule.service;
 
 import com.example.albaease.schedule.domain.Schedule;
+import com.example.albaease.schedule.domain.Template;
 import com.example.albaease.schedule.dto.ScheduleRequest;
 import com.example.albaease.schedule.dto.ScheduleResponse;
+import com.example.albaease.schedule.dto.TemplateScheduleRequest;
 import com.example.albaease.schedule.repository.ScheduleRepository;
+import com.example.albaease.schedule.repository.TemplateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,6 +25,9 @@ public class ScheduleService {
     public ScheduleService(ScheduleRepository scheduleRepository) {
         this.scheduleRepository = scheduleRepository;
     }
+
+    @Autowired
+    private TemplateRepository templateRepository;
 
     // 스토어 ID로 스케줄 조회
     public List<ScheduleResponse> getSchedulesByStoreId(Long storeId) {
@@ -95,5 +102,32 @@ public class ScheduleService {
         scheduleRepository.delete(schedule);
     }
 
+    // 템플릿으로 스케줄 추가
+    public void createScheduleFromTemplate(Long templateId, TemplateScheduleRequest scheduleRequest) {
+        // 템플릿 가져오기
+        Template template = templateRepository.findById(templateId)
+                .orElseThrow(() -> new RuntimeException("Template not found"));
 
+        // ScheduleRequest를 바탕으로 Schedule 엔티티 생성
+        List<Schedule> schedules = scheduleRequestToEntities(scheduleRequest);
+
+        scheduleRepository.saveAll(schedules);
+    }
+
+    private List<Schedule> scheduleRequestToEntities(TemplateScheduleRequest scheduleRequest) {
+        List<Schedule> schedules = new ArrayList<>();
+        for (Long userId : scheduleRequest.getUserIds()) {
+            Schedule schedule = new Schedule();
+            schedule.setUserId(userId);
+            schedule.setStoreId(scheduleRequest.getStoreId());
+            schedule.setWorkDate(scheduleRequest.getWorkDate());
+            schedule.setStartTime(scheduleRequest.getStartTime());
+            schedule.setEndTime(scheduleRequest.getEndTime());
+            schedule.setBreakTime(scheduleRequest.getBreakTime());
+            schedule.setRepeatDaysFromList(scheduleRequest.getRepeatDays());
+            schedule.setRepeatEndDate(scheduleRequest.getRepeatEndDate());
+            schedules.add(schedule);
+        }
+        return schedules;
+    }
 }

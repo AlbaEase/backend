@@ -26,9 +26,6 @@ public class Template {
     private String templateName; // 템플릿 이름
 
     @Column(nullable = false)
-    private LocalDate workDate; // 근무 날짜 (반복 시작 날짜)
-
-    @Column(nullable = false)
     private LocalTime startTime; // 근무 시작 시간
 
     @Column(nullable = false)
@@ -36,9 +33,4 @@ public class Template {
 
     @Column(nullable = false)
     private LocalTime breakTime; // 휴게 시간
-
-    @Column(name = "repeat_days", nullable = true)
-    private String repeatDays;
-
-    private LocalDate repeatEndDate; // 반복 종료 날짜 (NULL 가능)
 }

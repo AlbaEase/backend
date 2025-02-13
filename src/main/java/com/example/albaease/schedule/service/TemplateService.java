@@ -34,12 +34,9 @@ public class TemplateService {
         Template template = new Template();
         template.setStoreId(storeId);
         template.setTemplateName(templateRequest.getTemplateName());
-        template.setWorkDate(templateRequest.getWorkDate());
         template.setStartTime(templateRequest.getStartTime());
         template.setEndTime(templateRequest.getEndTime());
         template.setBreakTime(templateRequest.getBreakTime());
-        template.setRepeatDays(templateRequest.convertRepeatDaysToString());
-        template.setRepeatEndDate(templateRequest.getRepeatEndDate());
 
         Template savedTemplate = templateRepository.save(template);
 

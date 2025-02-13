@@ -2,6 +2,7 @@ package com.example.albaease.schedule.controller;
 
 import com.example.albaease.schedule.dto.ScheduleRequest;
 import com.example.albaease.schedule.dto.ScheduleResponse;
+import com.example.albaease.schedule.dto.TemplateScheduleRequest;
 import com.example.albaease.schedule.service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -89,12 +90,13 @@ public class ScheduleController {
     }
 
     // 템플릿으로 스케줄 추가
-    /*@PostMapping("/from-template/{templateId}")
-    public ResponseEntity<ScheduleResponse> createScheduleFromTemplate(
+    @PostMapping("/from-template/{templateId}")
+    public ResponseEntity<Void> createScheduleFromTemplate(
             @PathVariable Long templateId,
-            @RequestBody ScheduleFromTemplateRequest request) {
-        ScheduleResponse scheduleResponse = scheduleService.createScheduleFromTemplate(templateId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleResponse);
-    }*/
+            @RequestBody TemplateScheduleRequest scheduleRequest) {
+
+        scheduleService.createScheduleFromTemplate(templateId, scheduleRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 
 }
