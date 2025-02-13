@@ -1,12 +1,20 @@
 package com.example.albaease.schedule.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "Schedule")
 public class Schedule {
 
@@ -14,98 +22,38 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scheduleId;
 
-    @Column(nullable = false)
-    private Long userId;
+    // api테스트용, 병합 후 삭제 해야함
+    private Long userId;  // 임시 유저 아이디
+    private Long storeId; // 임시 스토어 아이디
 
-    //외래키. user 폴더 추가되면 수정
-    //@ManyToOne
-    //@JoinColumn(name = "user_id", nullable = false)
-    //private User user;
-    @Column(nullable = false)
-    private Long storeId;
+    // 나중에 바꿀용
+    /*@ManyToOne(fetch = FetchType.LAZY) // user_id 외래키
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    //외래키. store 폴더 추가되면 수정
-    //@ManyToOne
-    //@JoinColumn(name = "store_id", nullable = false)
-    //private Store store;
+    @ManyToOne(fetch = FetchType.LAZY) // store_id 외래키
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;*/
 
-    @Column(nullable = false)
-    private LocalDate shiftDate;
+    private LocalDate workDate;  // 근무 날짜
+    private LocalTime startTime; // 시작 시간
+    private LocalTime endTime;   // 종료 시간
+    private LocalTime breakTime; // 휴게 시간
 
-    @Column(nullable = false)
-    private LocalTime shiftStartTime;
+    // SET은 비트마스크 사용해서 복잡하다길래 일단 string으로 했는데 연동 중 수정해야할 수도,,
+    @Column(name = "repeat_days", nullable = true)
+    private String repeatDays;
 
-    @Column(nullable = false)
-    private LocalTime shiftEndTime;
+    @Column(name = "repeat_end_date", nullable = true)
+    private LocalDate repeatEndDate; // 반복 종료 날짜
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    public Long getScheduleId() {
-        return scheduleId;
+    // 임시
+    public List<String> getRepeatDaysList() {
+        return repeatDays != null ? Arrays.asList(repeatDays.split(",")) : Collections.emptyList();
     }
 
-    public void setScheduleId(Long scheduleId) {
-        this.scheduleId = scheduleId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getStoreId() {
-        return storeId;
-    }
-
-    public void setStoreId(Long storeId) {
-        this.storeId = storeId;
-    }
-
-    public LocalDate getShiftDate() {
-        return shiftDate;
-    }
-
-    public void setShiftDate(LocalDate shiftDate) {
-        this.shiftDate = shiftDate;
-    }
-
-    public LocalTime getShiftStartTime() {
-        return shiftStartTime;
-    }
-
-    public void setShiftStartTime(LocalTime shiftStartTime) {
-        this.shiftStartTime = shiftStartTime;
-    }
-
-    public LocalTime getShiftEndTime() {
-        return shiftEndTime;
-    }
-
-    public void setShiftEndTime(LocalTime shiftEndTime) {
-        this.shiftEndTime = shiftEndTime;
-    }
-
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setRepeatDaysFromList(List<String> days) {
+        this.repeatDays = days != null ? String.join(",", days) : null;
     }
 }
+

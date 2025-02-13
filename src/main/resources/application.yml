@@ -3,9 +3,9 @@ spring:
     name: albaease
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://localhost:3306/schedule_management
+    username: root
+    password: root
 
   jpa:
     database: mysql
@@ -18,7 +18,7 @@ spring:
         format_sql: true
 
 server:
-  port: 8080
+  port: 8081
 
 logging:
   level:
