@@ -1,29 +1,49 @@
 spring:
-  application:
-    name: albaease
-
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-
+datasource:
+  url: jdbc:h2:mem:testdb
+  driver-class-name: org.h2.Driver
+  username: gayoon
+  password: 1234
   jpa:
-    database: mysql
-    database-platform: org.hibernate.dialect.MySQLDialect
-    hibernate:
-      ddl-auto: create # api테스트용, 배포시 validate 수정예정
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
 
-server:
-  port: 8080
+#  application:
+#    name: albaease
+#  datasource:
+#    url: ${jdbc:mysql://localhost:3306/albaeaseTest}
+#    username: ${root}
+#    password: ${}
+#
+#  jpa:
+#    database: mysql
+#    database-platform: org.hibernate.dialect.MySQLDialect
+#    hibernate:
+#      ddl-auto: create # api테스트용, 배포시 validate 수정예정
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#
+#server:
+#  port: 8080
+
+  # Swagger
+  springdoc:
+    api-docs:
+      enabled: true       # API 문서 생성을 활성화
+      path: /v3/api-docs  # 기본 경로 설정
+    swagger-ui:
+      enabled: true        # Swagger UI 활성화
+      path: /swagger-ui.html  # UI 경로 설정
 
 logging:
   level:
     org.hibernate.SQL: debug
     com.example.albaease: debug
+
 
 # JWT
 #jwt:
