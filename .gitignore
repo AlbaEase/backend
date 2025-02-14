@@ -23,6 +23,8 @@ HELP.md
 .idea/**/markdown-navigator-enh.xml
 .idea/**/markdown-navigator/
 .idea/$CACHE_FILE$
+.idea/misc.xml
+.idea/modules/*.iml
 .idea/codestream.xml
 .idea/**/azureSettings.xml
 *.iws

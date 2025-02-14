@@ -28,7 +28,7 @@ spring:
 server:
   port: 8081
 
-# Swagger 설정
+# Swagger 설정 (사용하는 것으로 유지)
 springdoc:
   api-docs:
     enabled: true       # API 문서 활성화
@@ -58,3 +58,4 @@ websocket:
   allowed-origins: "*"
   endpoint: /ws
   destination-prefixes: /topic, /queue
+
