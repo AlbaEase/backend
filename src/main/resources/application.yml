@@ -19,14 +19,14 @@ spring:
       init:
         mode: always  # 항상 data.sql 실행, 테스트용
     hibernate:
-      ddl-auto: create # 배포 시 update 또는 validate로 변경 필요
+      ddl-auto: create  # 배포 시 update 또는 validate로 변경 필요
     show-sql: true
     properties:
       hibernate:
         format_sql: true
 
 server:
-  port: 8080
+  port: 8081
 
 # Swagger 설정
 springdoc:
@@ -42,17 +42,18 @@ logging:
     org.hibernate.SQL: debug
     com.example.albaease: debug
 
-# JWT 설정 (필요하면 주석 해제)
-#jwt:
-#  secret: ${JWT_SECRET}
-#  token-validity-in-seconds: 86400
+# JWT 설정 (남의 코드 반영)
+jwt:
+  secret: mysecretkey
+  expiration-time: 3600000 # 1시간 (milliseconds)
 
-# Redis 설정
+# Redis 설정 (남의 코드 반영)
 redis:
   host: localhost
   port: 6379
+  password:
 
-# WebSocket 설정
+# WebSocket 설정 (남의 코드 반영)
 websocket:
   allowed-origins: "*"
   endpoint: /ws
