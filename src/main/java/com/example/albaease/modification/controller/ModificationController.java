@@ -16,33 +16,39 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.security.Principal;
+
 @Slf4j
 @Controller
-@RequestMapping("/modification")  // 테스트용 임시 URL
+@RequestMapping("/modification")
 @RequiredArgsConstructor
 public class ModificationController {
     private final ModificationService modificationService;
 
-    // 수정 요청 생성 (테스트용)
     @PostMapping
     public ResponseEntity<ModificationResponse> createModification(
-            @RequestBody ModificationRequest request) {
+            @RequestBody ModificationRequest request,
+            Principal principal) {
+        String userId = principal.getName();
+        request.setUserId(Long.parseLong(userId));
         return ResponseEntity.ok(modificationService.createModification(request));
     }
 
-    // 수정 요청 상태 업데이트 (승인/거절)
     @PatchMapping("/{modificationId}/status")
     public ResponseEntity<ModificationResponse> updateStatus(
             @PathVariable Long modificationId,
-            @RequestParam ModificationStatus status) {
+            @RequestParam ModificationStatus status,
+            Principal principal) {
         return ResponseEntity.ok(modificationService.updateModificationStatus(modificationId, status));
     }
 
-
     @MessageMapping("/modification")
     @SendToUser("/queue/notifications")
-    public NotificationResponse handleModificationRequest(ModificationRequest request) {
-        log.info("Received modification request: {}", request);
+    public NotificationResponse handleModificationRequest(
+            ModificationRequest request,
+            Principal principal) {
+        String userId = principal.getName();
+        request.setUserId(Long.parseLong(userId));
         return modificationService.handleModificationRequest(request);
     }
 }

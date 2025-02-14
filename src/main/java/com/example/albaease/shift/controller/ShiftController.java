@@ -14,9 +14,11 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @Slf4j
 @RestController
-@RequestMapping("/shift-requests")  // 테스트용 임시 URL
+@RequestMapping("/shift-requests")
 @RequiredArgsConstructor
 public class ShiftController {
     private final ShiftService shiftService;
@@ -24,7 +26,12 @@ public class ShiftController {
     // 대타 요청 생성
     @PostMapping
     public ResponseEntity<ShiftResponse> createShiftRequest(
-            @RequestBody ShiftRequest request) {
+            @RequestBody ShiftRequest request,
+            Principal principal) {
+        // Principal에서 현재 로그인한 사용자 ID를 가져와서 요청자로 설정
+        String userId = principal.getName();
+        request.setFromUserId(Long.parseLong(userId));
+
         return ResponseEntity.ok(shiftService.createShiftRequest(request));
     }
 
@@ -33,13 +40,26 @@ public class ShiftController {
     public ResponseEntity<ShiftResponse> updateStatus(
             @PathVariable Long shiftId,
             @RequestParam ShiftStatus status,
-            @RequestParam Long approvedById) {
-        return ResponseEntity.ok(shiftService.updateShiftStatus(shiftId, status, approvedById));
+            Principal principal) {
+        // Principal에서 현재 로그인한 사용자 ID를 가져와서 승인자로 설정
+        String approverId = principal.getName();
+
+        return ResponseEntity.ok(shiftService.updateShiftStatus(
+                shiftId,
+                status,
+                Long.parseLong(approverId))
+        );
     }
 
     @MessageMapping("/shift-requests")
     @SendToUser("/queue/notifications")
-    public NotificationResponse handleShiftRequest(ShiftRequest request) {
+    public NotificationResponse handleShiftRequest(
+            ShiftRequest request,
+            Principal principal) {
+        // Principal에서 현재 로그인한 사용자 ID를 가져와서 요청자로 설정
+        String userId = principal.getName();
+        request.setFromUserId(Long.parseLong(userId));
+
         return shiftService.handleShiftRequest(request);
     }
 }

@@ -17,38 +17,36 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class NotificationResponse {
     private Long id;
-    private Long userId;  // 테스트용 임시 userId
-    private Long scheduleId;  // 테스트용 임시 scheduleId
-    private NotificationType type;  // 알림 타입 (SPECIFIC_USER/ALL_USERS)
-    private NotificationReadStatus readStatus;  // 읽음 상태 추가
-    private String message;  // 알림 메시지
+    private Long userId;
+    private Long scheduleId;
+    private NotificationType type;
+    private NotificationReadStatus readStatus;
+    private String message;
     private LocalDateTime createdAt;
 
-    // 추가: 대타 요청 관련 필드
-    private Long fromUserId;  // 요청을 보낸 사용자 ID
-    private Long toUserId;    // 요청을 받는 사용자 ID
-    private ShiftStatus shiftStatus;           // 대타 요청 승인상태
+    // 대타 요청 관련 필드
+    private Long fromUserId;
+    private Long toUserId;
+    private ShiftStatus shiftStatus;
 
-    // 추가: 수정 요청 관련 필드
-    private String details;  // 수정 요청 상세 내용
-    private ModificationStatus modificationStatus;  // 수정 요청 승인상태
+    // 수정 요청 관련 필드
+    private String details;
+    private ModificationStatus modificationStatus;
 
-    // 알림 목록관련 필드
+    // 알림 목록 관련 필드
     private List<NotificationResponse> notifications;
     private boolean hasUnread;
 
-    // 단일 알림 변환
     public static NotificationResponse from(Notification notification) {
         return NotificationResponse.builder()
                 .id(notification.getNotification_id())
-                .userId(notification.getUserId())
-                .scheduleId(notification.getScheduleId())
+                .userId(notification.getUser().getId())
+                .scheduleId(notification.getSchedule() != null ?
+                        notification.getSchedule().getId() : null)
                 .type(notification.getRequestType())
                 .readStatus(notification.getStatus())
                 .message(notification.getMessage())
                 .createdAt(notification.getCreatedAt())
-                .shiftStatus(null)
-                .modificationStatus(null)
                 .build();
     }
 

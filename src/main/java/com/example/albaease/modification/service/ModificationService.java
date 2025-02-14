@@ -19,29 +19,34 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
-@Slf4j
 public class ModificationService {
     private final ModificationRepository modificationRepository;
-    private final NotificationService notificationService;  // 알림 전송을 위한 생성자
+    private final NotificationService notificationService;
+    private final UserRepository userRepository;
+    private final ScheduleRepository scheduleRepository;
 
     @Transactional
     public ModificationResponse createModification(ModificationRequest request) {
-        // 수정 요청 생성
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        Schedule schedule = scheduleRepository.findById(request.getScheduleId())
+                .orElseThrow(() -> new EntityNotFoundException("스케줄을 찾을 수 없습니다."));
+
         Modification modification = Modification.builder()
-                .userId(request.getUserId())  // 병합 후 수정 필요
-                .scheduleId(request.getScheduleId())  // 병합 후 수정 필요
+                .user(user)
+                .schedule(schedule)
                 .details(request.getDetails())
                 .build();
 
         Modification savedModification = modificationRepository.save(modification);
 
-        // 알림 생성 및 전송
         notificationService.createNotification(NotificationRequest.builder()
-                .userId(request.getUserId())  // 병합 후 수정 필요
-                .type(NotificationType.SPECIFIC_USER)  // 특정 사용자 대상 알림으로 변경
-                .message("근무 시간 수정 요청이 도착했습니다.")  // 알림 메시지 추가
+                .userId(user.getId())
+                .type(NotificationType.SPECIFIC_USER)
+                .message("근무 시간 수정 요청이 도착했습니다.")
+                .scheduleId(schedule.getId())
                 .build());
 
         return ModificationResponse.from(savedModification);
@@ -75,25 +80,20 @@ public class ModificationService {
         return notificationService.createModificationNotification(notificationRequest, modificationResponse);
     }
 
-
     // 단일 수정 요청 조회
     public ModificationResponse getModification(Long modificationId) {
         return ModificationResponse.from(modificationRepository.findById(modificationId)
                 .orElseThrow(() -> new EntityNotFoundException("수정 요청을 찾을 수 없습니다.")));
     }
 
-
-     // 사용자별 수정 요청 목록 조회
-     // 병합 후 사용자 엔티티 연동 필요
+    // 사용자별 수정 요청 목록 조회
     public List<ModificationResponse> getUserModifications(Long userId) {
         return modificationRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(ModificationResponse::from)
                 .collect(Collectors.toList());
     }
 
-
-     // 스케줄별 수정 요청 목록 조회
-     // 병합 후 스케줄 엔티티 연동 필요
+    // 스케줄별 수정 요청 목록 조회
     public List<ModificationResponse> getScheduleModifications(Long scheduleId) {
         return modificationRepository.findByScheduleIdOrderByCreatedAtDesc(scheduleId).stream()
                 .map(ModificationResponse::from)

@@ -20,7 +20,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'	//Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2' // Swagger
 
     // JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -28,18 +28,15 @@ dependencies {
     // MySQL
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    // H2 (테스트 환경에서만 사용)
+    testImplementation 'com.h2database:h2'
+
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
     // Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    // Spring Security + JWT (인증/인가)
-    // implementation 'org.springframework.boot:spring-boot-starter-security'
-    // implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    // runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    // runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
     // Redis + WebSocket (알림 시스템)
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'

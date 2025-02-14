@@ -1,5 +1,3 @@
-package com.example.albaease.shift.domain.entity;
-
 import com.example.albaease.shift.domain.enums.ShiftRequestType;
 import com.example.albaease.shift.domain.enums.ShiftStatus;
 import jakarta.persistence.*;
@@ -7,46 +5,57 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Shift {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long request_id;
 
-    // api테스트용, userId, scheduleId병합 후 삭제 해야함
-    private Long fromUserId;  // 요청을 보낸 사용자 ID
-    private Long toUserId;    // 요청을 받는 사용자 ID
-    private Long scheduleId;  // 대타 요청할 스케줄 ID
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "from_user_id")
+    private User fromUser;
 
-    private Long approvedBy;  // 사장님 승인 여부 (승인한 사용자 ID)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "to_user_id")
+    private User toUser;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id")
+    private Schedule schedule;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "approved_by")
+    private User approvedBy;
 
     @Enumerated(EnumType.STRING)
-    private ShiftRequestType requestType;  // 요청 타입 (특정 알바생 or 전체)
+    private ShiftRequestType requestType;
 
     @Enumerated(EnumType.STRING)
-    private ShiftStatus status = ShiftStatus.PENDING;  // 요청 상태, 기본값 대기
-    private LocalDateTime createdAt;  // 알림 생성 시간
-    private LocalDateTime updatedAt;  // 알림 수정 시간
+    private ShiftStatus status = ShiftStatus.PENDING;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @Builder
-    public Shift(Long fromUserId, Long toUserId, Long scheduleId,
+    public Shift(User fromUser, User toUser, Schedule schedule,
                  ShiftRequestType requestType) {
-        this.fromUserId = fromUserId;
-        this.toUserId = toUserId;
-        this.scheduleId = scheduleId;
+        this.fromUser = fromUser;
+        this.toUser = toUser;
+        this.schedule = schedule;
         this.requestType = requestType;
         this.status = ShiftStatus.PENDING;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
-    public void updateStatus(ShiftStatus status, Long approvedById) {
+
+    public void updateStatus(ShiftStatus status, User approvedBy) {
         this.status = status;
-        this.approvedBy = approvedById;
+        this.approvedBy = approvedBy;
         this.updatedAt = LocalDateTime.now();
     }
 }

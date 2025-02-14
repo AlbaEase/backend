@@ -139,6 +139,7 @@
         }
     }
 
+    // 연결 상태 UI 업데이트 함수
     function updateConnectionStatus(isConnected) {
         const statusDiv = document.getElementById('status');
         if (isConnected) {
@@ -150,6 +151,7 @@
         }
     }
 
+    // WebSocket 연결 함수
     function connect() {
         const socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
@@ -178,6 +180,7 @@
         console.log("Disconnected");
     }
 
+    // 테스트 메시지 전송 함수
     function sendTestMessage() {
         const type = document.getElementById('notificationType').value;
         const baseMessage = {
@@ -212,6 +215,7 @@
         }
     }
 
+    // 수신된 알림을 화면에 표시하는 함수
     function showNotification(message) {
         const notifications = document.getElementById('notifications');
         const messageDiv = document.createElement('div');

@@ -17,26 +17,30 @@ public class Notification {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long notification_id;
 
-    // api테스트용, 병합 후 삭제 해야함
-    private Long userId;  // 알림을 받을 사용자 ID
-    private Long scheduleId;  // 관련 스케줄 ID
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id")
+    private Schedule schedule;
 
     @Column(columnDefinition = "TEXT")
-    private String message;  // 알림 메시지
+    private String message;
 
     @Enumerated(EnumType.STRING)
-    private NotificationReadStatus status = NotificationReadStatus.UNREAD;   // 읽음 여부 상태, 기본값은 안 읽음
+    private NotificationReadStatus status = NotificationReadStatus.UNREAD;
 
     @Enumerated(EnumType.STRING)
-    private NotificationType requestType;  // 알림 타입 (특정 알바생 or 전체 요청)
+    private NotificationType requestType;
 
-    private LocalDateTime createdAt;  // 생성 시간
+    private LocalDateTime createdAt;
 
     @Builder
-    public Notification(Long userId, Long scheduleId, String message,NotificationReadStatus status,
-                        NotificationType requestType) {
-        this.userId = userId;
-        this.scheduleId = scheduleId;
+    public Notification(User user, Schedule schedule, String message,
+                        NotificationReadStatus status, NotificationType requestType) {
+        this.user = user;
+        this.schedule = schedule;
         this.message = message;
         this.status = status;
         this.requestType = requestType;

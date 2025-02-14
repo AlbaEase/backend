@@ -1,94 +1,112 @@
 package com.example.albaease.shift.service;
 
+import com.example.albaease.user.domain.User;
+import com.example.albaease.user.repository.UserRepository;
+import com.example.albaease.schedule.domain.Schedule;
+import com.example.albaease.schedule.repository.ScheduleRepository;
 import com.example.albaease.notification.domain.enums.NotificationType;
 import com.example.albaease.notification.dto.NotificationRequest;
-import com.example.albaease.notification.dto.NotificationResponse;
 import com.example.albaease.notification.service.NotificationService;
 import com.example.albaease.shift.domain.entity.Shift;
 import com.example.albaease.shift.domain.enums.ShiftStatus;
 import com.example.albaease.shift.dto.ShiftRequest;
 import com.example.albaease.shift.dto.ShiftResponse;
 import com.example.albaease.shift.repository.ShiftRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.example.albaease.common.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
-@Slf4j
 public class ShiftService {
     private final ShiftRepository shiftRepository;
     private final NotificationService notificationService;
+    private final UserRepository userRepository;
+    private final ScheduleRepository scheduleRepository;
 
-    // 대타 요청 생성 및 알림 전송
     @Transactional
     public ShiftResponse createShiftRequest(ShiftRequest request) {
-        // 대타 요청 생성
+        // 1. 엔티티 조회 및 검증
+        User fromUser = userRepository.findById(request.getFromUserId())
+                .orElseThrow(() -> new EntityNotFoundException("요청자를 찾을 수 없습니다."));
+
+        User toUser = userRepository.findById(request.getToUserId())
+                .orElseThrow(() -> new EntityNotFoundException("대상자를 찾을 수 없습니다."));
+
+        Schedule schedule = scheduleRepository.findById(request.getScheduleId())
+                .orElseThrow(() -> new EntityNotFoundException("스케줄을 찾을 수 없습니다."));
+
+        // 2. 요청자가 해당 스케줄의 담당자인지 검증
+        validateScheduleOwnership(fromUser, schedule);
+
+        // 3. 대타 요청 생성
         Shift shift = Shift.builder()
-                .fromUserId(request.getFromUserId())  // 병합 후 수정 필요
-                .toUserId(request.getToUserId())      // 병합 후 수정 필요
-                .scheduleId(request.getScheduleId())  // 병합 후 수정 필요
+                .fromUser(fromUser)
+                .toUser(toUser)
+                .schedule(schedule)
                 .requestType(request.getRequestType())
                 .build();
 
         Shift savedShift = shiftRepository.save(shift);
 
-        // 알림 생성 및 전송
-        notificationService.createNotification(NotificationRequest.builder()
-                .userId(request.getToUserId())  // 병합 후 수정 필요
-                .type(NotificationType.SPECIFIC_USER)  // 특정 사용자 대상 알림
-                .message("새로운 대타 요청이 도착했습니다.")
-                .scheduleId(request.getScheduleId())
-                .build());
+        // 4. 알림 생성
+        sendShiftNotification(toUser.getId(), schedule.getId(),
+                "새로운 대타 요청이 도착했습니다.");
 
         return ShiftResponse.from(savedShift);
     }
 
-    // 대타 요청 상태 업데이트
     @Transactional
     public ShiftResponse updateShiftStatus(Long shiftId, ShiftStatus status, Long approvedById) {
+        // 1. 엔티티 조회 및 검증
         Shift shift = shiftRepository.findById(shiftId)
                 .orElseThrow(() -> new EntityNotFoundException("대타 요청을 찾을 수 없습니다."));
 
-        shift.updateStatus(status, approvedById);
+        User approver = userRepository.findById(approvedById)
+                .orElseThrow(() -> new EntityNotFoundException("승인자를 찾을 수 없습니다."));
 
-        // 상태 변경 알림 전송
-        String statusMessage = switch (status) {
-            case APPROVED -> "대타 요청이 승인되었습니다.";
-            case REJECTED -> "대타 요청이 거절되었습니다.";
-            default -> "대타 요청 상태가 변경되었습니다.";
-        };
+        // 2. 승인자 권한 검증
+        validateApproverAuthority(approver, shift.getSchedule());
 
-        notificationService.createNotification(NotificationRequest.builder()
-                .userId(shift.getFromUserId())
-                .type(NotificationType.SPECIFIC_USER)  // 특정 사용자 대상 알림
-                .message(statusMessage)
-                .scheduleId(shift.getScheduleId())
-                .build());
+        // 3. 상태 업데이트
+        shift.updateStatus(status, approver);
+
+        // 4. 알림 전송
+        String statusMessage = generateStatusMessage(status);
+        sendShiftNotification(shift.getFromUser().getId(),
+                shift.getSchedule().getId(), statusMessage);
 
         return ShiftResponse.from(shift);
     }
 
-    @Transactional
-    public NotificationResponse handleShiftRequest(ShiftRequest request) {
-        // 1. 대타 요청 저장
-        ShiftResponse shiftResponse = createShiftRequest(request);
-
-        // 2. 알림 생성 요청 (Shift에 필요한 필드만 포함)
-        NotificationRequest notificationRequest = NotificationRequest.builder()
-                .userId(request.getToUserId())
-                .type(NotificationType.SPECIFIC_USER)
-                .message("대타 요청이 도착했습니다.")
-                .scheduleId(request.getScheduleId())
-                .fromUserId(request.getFromUserId())  // 대타 요청에만 필요한 필드
-                .toUserId(request.getToUserId())      // 대타 요청에만 필요한 필드
-                .build();
-
-        // 3. Shift 전용 알림 생성 및 반환
-        return notificationService.createShiftNotification(notificationRequest, shiftResponse);
+    // 검증 메서드들
+    private void validateScheduleOwnership(User user, Schedule schedule) {
+        if (!schedule.getUser().getId().equals(user.getId())) {
+            throw new IllegalStateException("해당 스케줄의 담당자가 아닙니다.");
+        }
     }
 
+    private void validateApproverAuthority(User approver, Schedule schedule) {
+        // TODO: 승인자의 권한 검증 로직 구현 (role이 manager인지 등)
+        // 다른 팀원의 User 엔티티 구현 확인 후 수정
+    }
+
+    // 유틸리티 메서드들
+    private String generateStatusMessage(ShiftStatus status) {
+        return switch (status) {
+            case APPROVED -> "대타 요청이 승인되었습니다.";
+            case REJECTED -> "대타 요청이 거절되었습니다.";
+            default -> "대타 요청 상태가 변경되었습니다.";
+        };
+    }
+
+    private void sendShiftNotification(Long userId, Long scheduleId, String message) {
+        notificationService.createNotification(NotificationRequest.builder()
+                .userId(userId)
+                .type(NotificationType.SPECIFIC_USER)
+                .message(message)
+                .scheduleId(scheduleId)
+                .build());
+    }
 }

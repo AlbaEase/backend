@@ -7,8 +7,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ShiftRequest {
-    private Long fromUserId;  // 테스트용 임시 field
-    private Long toUserId;    // 테스트용 임시 field
-    private Long scheduleId;  // 테스트용 임시 field
+    private Long fromUserId;
+    private Long toUserId;
+    private Long scheduleId;
     private ShiftRequestType requestType;
+
+    public void setFromUserId(Long fromUserId) {
+        this.fromUserId = fromUserId;
+    }
 }
