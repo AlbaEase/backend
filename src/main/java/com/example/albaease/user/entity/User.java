@@ -1,7 +1,8 @@
 package com.example.albaease.user.entity;
-import com.example.albaease.store.Store;
+
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 @Getter
@@ -33,9 +34,9 @@ public class User {
     @Column(name = "role", nullable = false)
     private Role role;  // 역할 (사장님/알바생)
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id")  // 소속된 매장의 ID (외래 키)
-    private Store store;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "store_id")  // 소속된 매장의 ID (외래 키)
+//    private Store store;
 
     @Column(name = "business_number")
     private String businessNumber;  // 사업자 등록 번호 (사장님 가입 시 필요, NULL 허용)
@@ -55,8 +56,12 @@ public class User {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();  // 현재 시간을 생성 시간으로 설정
     }
+    //비밀번호 변경
+    public void changePassword(String newPassword, PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(newPassword);
+    }
 
-    public User(String lastName, String firstName,String loginId, String password, String phoneNumber, SocialType socialType,Role role, Store store, String businessNumber) {
+    public User(String lastName, String firstName,String loginId, String password, String phoneNumber, SocialType socialType,Role role,  String businessNumber) {
         this.lastName = lastName;
         this.firstName = firstName;
         this.loginId = loginId;
@@ -64,7 +69,7 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.socialType = socialType;
         this.role = role;
-        this.store = store;
+//        this.store = store;
         this.businessNumber = businessNumber;
     }
 }

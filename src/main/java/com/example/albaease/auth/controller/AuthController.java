@@ -2,7 +2,6 @@ package com.example.albaease.auth.controller;
 
 import com.example.albaease.auth.dto.LoginRequest;
 import com.example.albaease.auth.dto.SignupRequest;
-import com.example.albaease.auth.exception.IDAlreadyExistsException;
 import com.example.albaease.auth.service.AuthService;
 import com.example.albaease.user.entity.Role;
 import com.example.albaease.user.entity.SocialType;
@@ -11,11 +10,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -60,11 +58,32 @@ public class AuthController {
     @Operation(summary = "아이디 중복체크")
     @PostMapping("/check-id")
     public ResponseEntity<String> checkId(@RequestParam String id, HttpSession session) {
-        try {
-            authService.checkIdDuplicate(id, session);
-            return ResponseEntity.ok("사용 가능한 ID입니다.");
-        } catch (IDAlreadyExistsException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        authService.checkIdDuplicate(id, session);
+        return ResponseEntity.ok("사용 가능한 ID입니다.");
+
     }
+
+    //비밀번호 확인
+    @Operation(summary = "현재 비밀번호 확인")
+    @PostMapping("/verify-password")
+    public ResponseEntity<String> verifyPassword(@RequestParam String currentPassword, @RequestHeader(value = "Authorization",required = false) String token) {
+        System.out.println("걍 로그");
+        System.out.println("컨트롤러에서 토큰 확인"+ token);
+        if (token == null || token.isEmpty()) {
+            System.out.println("토큰이 전달되지 않음! 403 오류 가능");
+            return ResponseEntity.status(403).body("토큰이 필요합니다.");
+        }
+        authService.verifyCurrentPassword(currentPassword, token);
+        return ResponseEntity.ok("비밀번호 확인 완료");
+    }
+    //비밀번호 변경
+    @Operation(summary = "비밀번호 변경")
+    @PostMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestParam String newPassword, @RequestParam String confirmNewPassword, @RequestHeader("Authorization") String token) {
+        authService.changePassword(newPassword, confirmNewPassword, token);
+        return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+
+    }
+
+
 }

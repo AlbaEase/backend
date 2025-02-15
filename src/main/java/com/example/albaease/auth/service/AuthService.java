@@ -5,7 +5,7 @@ import com.example.albaease.auth.exception.*;
 import com.example.albaease.user.entity.SocialType;
 import com.example.albaease.user.entity.User;
 import com.example.albaease.user.repository.UserRepository;
-import com.example.albaease.util.JwtUtil;
+import com.example.albaease.auth.jwt.JwtUtil;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,7 +51,7 @@ public class AuthService {
                 request.getPhoneNumber(),
                 socialType,
                 request.getRole(),
-                null,  // store는 일단 null
+//                null,  // store는 일단 null
                 null   // businessNumber도 null
         );
         // 사용자 정보를 DB에 저장
@@ -83,6 +83,34 @@ public class AuthService {
         }
         // 아이디 중복 검사 완료 후 세션에 상태 저장하기(회원가입시 중복검사 안하면 못넘어가도록)
         session.setAttribute("isIdChecked", true);
+    }
+    //현재 비밀번호 확인
+    public void verifyCurrentPassword(String currentPassword, String token) {
+        //토큰을 통해 userId 가져옴
+        Long userId = Long.valueOf(jwtUtil.extractUserId(token));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new InvalidCredentialsException("유저를 찾을 수 없습니다."));
+
+        // 비밀번호 검증
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
+        }
+    }
+
+    //비밀번호 변경
+    public void changePassword(String newPassword,String confirmNewPassword, String token) {
+        // 토큰을 통해 userId 가져옴
+        System.out.println("서비스에서 토큰 확인 로그" + token);
+        Long userId = Long.valueOf(jwtUtil.extractUserId(token));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new InvalidCredentialsException("유저를 찾을 수 없습니다."));
+
+        if(!newPassword.equals(confirmNewPassword)){
+            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
+        }
+        user.changePassword(newPassword, passwordEncoder);
+        userRepository.save(user); //변경된 비밀번호 저장
     }
 }
 

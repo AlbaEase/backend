@@ -44,7 +44,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated())  // 그 외 요청은 인증 필요
                 .addFilterBefore(new JwtFilter(jwtUtil, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);  // JWT 필터 추가
 
-        return http.build();    }
+        return http.build();
+    }
 
     // 비밀번호 암호화 방식
     @Bean
