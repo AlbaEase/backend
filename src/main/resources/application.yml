@@ -19,7 +19,7 @@ spring:
       init:
         mode: always  # 항상 data.sql 실행, 테스트용
     hibernate:
-      ddl-auto: create  # 배포 시 update 또는 validate로 변경 필요
+      ddl-auto: validate  # 배포 시 validate 유지
     show-sql: true
     properties:
       hibernate:
@@ -47,15 +47,21 @@ jwt:
   secret: mysecretkey
   expiration-time: 3600000 # 1시간 (milliseconds)
 
-# Redis 설정 (남의 코드 반영)
+# Redis 설정
 redis:
   host: localhost
   port: 6379
   password:
 
-# WebSocket 설정 (남의 코드 반영)
+# CoolSMS 설정
+coolsms:
+  api:
+    key:
+    secret:
+    number:
+
+# WebSocket 설정
 websocket:
   allowed-origins: "*"
   endpoint: /ws
   destination-prefixes: /topic, /queue
-
