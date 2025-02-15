@@ -2,13 +2,13 @@ package com.example.albaease.notification.domain.entity;
 
 import com.example.albaease.notification.domain.enums.NotificationReadStatus;
 import com.example.albaease.notification.domain.enums.NotificationType;
-import com.example.albaease.schedule.domain.Schedule;
 import com.example.albaease.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.maven.lifecycle.Schedule;
 
 import java.time.LocalDateTime;
 
@@ -23,9 +23,9 @@ public class Notification {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id")
-    private Schedule schedule;
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "schedule_id")
+    // private Schedule schedule;
 
     @Column(columnDefinition = "TEXT")
     private String message;
@@ -42,7 +42,7 @@ public class Notification {
     public Notification(User user, Schedule schedule, String message,
                         NotificationReadStatus status, NotificationType requestType) {
         this.user = user;
-        this.schedule = schedule;
+        // this.schedule = schedule;
         this.message = message;
         this.status = status;
         this.requestType = requestType;

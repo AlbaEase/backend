@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -24,22 +24,11 @@ public class AuthController {
     @ApiResponse(responseCode = "200", description = "회원가입 성공")
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestParam SocialType socialType,
-                                         @RequestParam String lastName,
-                                         @RequestParam String firstName,
-                                         @RequestParam String id,
-                                         @RequestParam String password,
-                                         @RequestParam String confirmPassword,
-                                         @RequestParam String phoneNumber,
-                                         @RequestParam Role role,
-                                         HttpSession session) {
-        // SignupRequest 객체 생성
-        SignupRequest request = new SignupRequest(socialType, lastName, firstName, id, password, confirmPassword, phoneNumber, role);
-
-        // 회원가입 서비스 호출
+    public ResponseEntity<String> signup(@RequestBody SignupRequest request, HttpSession session) {
         authService.signup(request, session);
         return ResponseEntity.ok("회원가입 성공");
     }
+
 
     //스웨거 어노테이션
     @Operation(summary = "로그인", description = "사용자가 로그인 후 JWT 토큰을 요청합니다.")

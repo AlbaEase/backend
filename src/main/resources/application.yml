@@ -19,14 +19,14 @@ spring:
       init:
         mode: always  # 항상 data.sql 실행, 테스트용
     hibernate:
-      ddl-auto: validate  # 배포 시 validate 유지
+      ddl-auto:  update   # 배포 시 validate 유지
     show-sql: true
     properties:
       hibernate:
         format_sql: true
 
 server:
-  port: 8081
+  port: 8080
 
 # Swagger 설정
 springdoc:

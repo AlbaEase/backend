@@ -9,9 +9,10 @@ import java.util.List;
 // Repository
 @Repository
 public interface ModificationRepository extends JpaRepository<Modification, Long> {
-    // 사용자별 수정 요청 목록 조회 (생성일시 기준 내림차순)
-    List<Modification> findByUserIdOrderByCreatedAtDesc(Long userId);
+
+    List<Modification> findByUser_UserIdOrderByCreatedAtDesc(Long userId);
+
 
     // 스케줄별 수정 요청 목록 조회 (생성일시 기준 내림차순)
-    List<Modification> findByScheduleIdOrderByCreatedAtDesc(Long scheduleId);
+   // List<Modification> findByScheduleIdOrderByCreatedAtDesc(Long scheduleId);
 }

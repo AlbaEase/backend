@@ -23,7 +23,7 @@ public class ModificationResponse {
         return ModificationResponse.builder()
                 .id(modification.getModification_id())
                 .userId(modification.getUser().getUserId())
-                .scheduleId(modification.getSchedule().getScheduleId())
+                // .scheduleId(modification.getSchedule().getScheduleId())
                 .details(modification.getDetails())
                 .status(modification.getStatus())
                 .createdAt(modification.getCreatedAt())

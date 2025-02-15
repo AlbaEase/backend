@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface ShiftRepository extends JpaRepository<Shift, Long> {
-    List<Shift> findByToUserIdOrderByCreatedAtDesc(Long toUserId);
+    // List<Shift> findByToUser_UserIdOrderByCreatedAtDesc(Long userId);
+
 }

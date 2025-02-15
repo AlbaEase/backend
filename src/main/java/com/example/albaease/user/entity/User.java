@@ -1,9 +1,5 @@
 package com.example.albaease.user.entity;
-<<<<<<< HEAD
-import com.example.albaease.store.domain.Store;
-=======
 
->>>>>>> c3e0c67f241020bc3b79dcbc0ff6ead3bd80bcd7
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -27,7 +27,7 @@ public class ShiftResponse {
                 .id(shift.getRequest_id())
                 .fromUserId(shift.getFromUser().getUserId())
                 .toUserId(shift.getToUser().getUserId())
-                .scheduleId(shift.getSchedule().getScheduleId())
+               // .scheduleId(shift.getSchedule().getScheduleId())
                 .approvedBy(shift.getApprovedBy().getUserId())
                 .requestType(shift.getRequestType())
                 .status(shift.getStatus())
