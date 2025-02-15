@@ -22,8 +22,8 @@ public class ModificationResponse {
     public static ModificationResponse from(Modification modification) {
         return ModificationResponse.builder()
                 .id(modification.getModification_id())
-                .userId(modification.getUser().getId())
-                .scheduleId(modification.getSchedule().getId())
+                .userId(modification.getUser().getUserId())
+                .scheduleId(modification.getSchedule().getScheduleId())
                 .details(modification.getDetails())
                 .status(modification.getStatus())
                 .createdAt(modification.getCreatedAt())

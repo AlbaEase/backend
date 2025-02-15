@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/AlbaEase.iml" filepath="$PROJECT_DIR$/.idea/AlbaEase.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/AlbaEase.main.iml" filepath="$PROJECT_DIR$/.idea/modules/AlbaEase.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/AlbaEase.test.iml" filepath="$PROJECT_DIR$/.idea/modules/AlbaEase.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.example.AlbaEase.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.example.AlbaEase.main.iml" />
     </modules>
   </component>
 </project>

@@ -2,6 +2,8 @@ package com.example.albaease.notification.domain.entity;
 
 import com.example.albaease.notification.domain.enums.NotificationReadStatus;
 import com.example.albaease.notification.domain.enums.NotificationType;
+import com.example.albaease.schedule.domain.Schedule;
+import com.example.albaease.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

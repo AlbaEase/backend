@@ -1,7 +1,5 @@
 package com.example.albaease.shift.controller;
 
-import com.example.albaease.notification.domain.enums.NotificationReadStatus;
-import com.example.albaease.notification.domain.enums.NotificationType;
 import com.example.albaease.notification.dto.NotificationResponse;
 import com.example.albaease.shift.domain.enums.ShiftStatus;
 import com.example.albaease.shift.dto.ShiftRequest;
@@ -18,32 +16,28 @@ import java.security.Principal;
 
 @Slf4j
 @RestController
-@RequestMapping("/shift-requests")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class ShiftController {
     private final ShiftService shiftService;
 
     // 대타 요청 생성
-    @PostMapping
+    @PostMapping("/shift-requests/store/{storeId}")
     public ResponseEntity<ShiftResponse> createShiftRequest(
             @RequestBody ShiftRequest request,
             Principal principal) {
-        // Principal에서 현재 로그인한 사용자 ID를 가져와서 요청자로 설정
         String userId = principal.getName();
         request.setFromUserId(Long.parseLong(userId));
-
         return ResponseEntity.ok(shiftService.createShiftRequest(request));
     }
 
     // 대타 요청 상태 업데이트
-    @PatchMapping("/{shiftId}/status")
+    @PatchMapping("/shift-requests/{shiftId}/status")
     public ResponseEntity<ShiftResponse> updateStatus(
             @PathVariable Long shiftId,
             @RequestParam ShiftStatus status,
             Principal principal) {
-        // Principal에서 현재 로그인한 사용자 ID를 가져와서 승인자로 설정
         String approverId = principal.getName();
-
         return ResponseEntity.ok(shiftService.updateShiftStatus(
                 shiftId,
                 status,
@@ -51,15 +45,14 @@ public class ShiftController {
         );
     }
 
+    // WebSocket을 통해 알림 전송
     @MessageMapping("/shift-requests")
     @SendToUser("/queue/notifications")
     public NotificationResponse handleShiftRequest(
             ShiftRequest request,
             Principal principal) {
-        // Principal에서 현재 로그인한 사용자 ID를 가져와서 요청자로 설정
         String userId = principal.getName();
         request.setFromUserId(Long.parseLong(userId));
-
         return shiftService.handleShiftRequest(request);
     }
 }

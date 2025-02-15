@@ -1,5 +1,9 @@
+package com.example.albaease.shift.domain.entity;
+
+import com.example.albaease.schedule.domain.Schedule;
 import com.example.albaease.shift.domain.enums.ShiftRequestType;
 import com.example.albaease.shift.domain.enums.ShiftStatus;
+import com.example.albaease.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

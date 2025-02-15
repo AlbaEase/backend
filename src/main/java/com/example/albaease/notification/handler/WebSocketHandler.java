@@ -24,9 +24,11 @@ public class WebSocketHandler {
     private static final Map<String, String> CLIENTS = new ConcurrentHashMap<>();
 
     public void sendNotification(NotificationResponse notification) {
+        // 전체 사용자에게 알림 전송
         if (notification.getType() == NotificationType.ALL_USERS) {
             messagingTemplate.convertAndSend("/topic/notifications", notification);
         } else {
+            // 특정 사용자에게 알림 전송
             messagingTemplate.convertAndSendToUser(
                     notification.getUserId().toString(),
                     "/queue/notifications",
@@ -59,6 +61,7 @@ public class WebSocketHandler {
         );
     }
 
+    // 사용자가 웹소켓에 연결된 후 세션 정보를 저장
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());

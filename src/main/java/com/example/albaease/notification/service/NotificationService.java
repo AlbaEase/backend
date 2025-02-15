@@ -8,16 +8,17 @@ import com.example.albaease.notification.dto.NotificationRequest;
 import com.example.albaease.notification.dto.NotificationResponse;
 import com.example.albaease.notification.handler.WebSocketHandler;
 import com.example.albaease.notification.repository.NotificationRepository;
+import com.example.albaease.schedule.domain.Schedule;
+import com.example.albaease.schedule.repository.ScheduleRepository;
 import com.example.albaease.shift.dto.ShiftResponse;
+import com.example.albaease.user.entity.User;
+import com.example.albaease.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -52,7 +53,7 @@ public class NotificationService {
         NotificationResponse response = NotificationResponse.from(savedNotification);
 
         messagingTemplate.convertAndSendToUser(
-                user.getId().toString(),
+                user.getUserId().toString(),
                 "/queue/notifications",
                 response
         );
@@ -83,11 +84,11 @@ public class NotificationService {
 
         NotificationResponse response = NotificationResponse.builder()
                 .id(savedNotification.getNotification_id())
-                .userId(user.getId())
+                .userId(user.getUserId())
                 .type(request.getType())
                 .readStatus(NotificationReadStatus.UNREAD)
                 .message(request.getMessage())
-                .scheduleId(schedule != null ? schedule.getId() : null)
+                .scheduleId(schedule.getScheduleId())
                 .fromUserId(request.getFromUserId())
                 .toUserId(request.getToUserId())
                 .createdAt(savedNotification.getCreatedAt())
@@ -122,11 +123,11 @@ public class NotificationService {
 
         NotificationResponse response = NotificationResponse.builder()
                 .id(savedNotification.getNotification_id())
-                .userId(user.getId())
+                .userId(user.getUserId())
                 .type(request.getType())
                 .readStatus(NotificationReadStatus.UNREAD)
                 .message(request.getMessage())
-                .scheduleId(schedule != null ? schedule.getId() : null)
+                .scheduleId(schedule.getScheduleId())
                 .details(request.getDetails())
                 .createdAt(savedNotification.getCreatedAt())
                 .modificationStatus(modificationResponse.getStatus())
@@ -155,5 +156,6 @@ public class NotificationService {
     @Transactional
     public void deleteAllNotifications(Long userId) {
         notificationRepository.deleteByUserId(userId);
+        webSocketHandler.sendNotificationDeleteAll(userId);
     }
 }

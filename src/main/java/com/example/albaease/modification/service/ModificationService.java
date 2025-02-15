@@ -7,8 +7,16 @@ import com.example.albaease.modification.dto.ModificationResponse;
 import com.example.albaease.modification.repository.ModificationRepository;
 import com.example.albaease.notification.domain.enums.NotificationType;
 import com.example.albaease.notification.dto.NotificationResponse;
+import com.example.albaease.notification.handler.WebSocketHandler;
 import com.example.albaease.notification.service.NotificationService;
 import com.example.albaease.notification.dto.NotificationRequest;
+import com.example.albaease.schedule.domain.Schedule;
+import com.example.albaease.schedule.repository.ScheduleRepository;
+import com.example.albaease.modification.domain.enums.ModificationStatus;
+import com.example.albaease.store.domain.Store;
+import com.example.albaease.store.repository.StoreRepository;
+import com.example.albaease.user.entity.User;
+import com.example.albaease.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +33,7 @@ public class ModificationService {
     private final NotificationService notificationService;
     private final UserRepository userRepository;
     private final ScheduleRepository scheduleRepository;
+    private final WebSocketHandler webSocketHandler;
 
     @Transactional
     public ModificationResponse createModification(ModificationRequest request) {
@@ -43,10 +52,10 @@ public class ModificationService {
         Modification savedModification = modificationRepository.save(modification);
 
         notificationService.createNotification(NotificationRequest.builder()
-                .userId(user.getId())
+                .userId(user.getUserId())
                 .type(NotificationType.SPECIFIC_USER)
                 .message("근무 시간 수정 요청이 도착했습니다.")
-                .scheduleId(schedule.getId())
+                .scheduleId(schedule.getScheduleId())
                 .build());
 
         return ModificationResponse.from(savedModification);
@@ -59,15 +68,35 @@ public class ModificationService {
                 .orElseThrow(() -> new EntityNotFoundException("수정 요청을 찾을 수 없습니다."));
 
         modification.updateStatus(status);
+
+        String statusMessage = switch (status) {
+            case APPROVED -> "근무시간 수정 요청이 승인되었습니다.";
+            case REJECTED -> "근무시간 수정 요청이 거절되었습니다.";
+            default -> "근무시간 수정 요청 상태가 변경되었습니다.";
+        };
+
+        // 상태 변경 알림 전송
+        webSocketHandler.sendModificationStatusUpdate(
+                modification.getUser().getUserId(),
+                statusMessage
+        );
+
+        notificationService.createNotification(NotificationRequest.builder()
+                .userId(modification.getUser().getUserId())
+                .type(NotificationType.SPECIFIC_USER)
+                .message(statusMessage)
+                .scheduleId(modification.getSchedule().getUserId())
+                .build());
+
         return ModificationResponse.from(modification);
     }
 
     @Transactional
     public NotificationResponse handleModificationRequest(ModificationRequest request) {
-        // 1. 수정 요청 저장
+        // 수정 요청 저장
         ModificationResponse modificationResponse = createModification(request);
 
-        // 2. 알림 생성 요청 (Modification에 필요한 필드만 포함)
+        // 알림 생성 요청 (Modification에 필요한 필드만 포함)
         NotificationRequest notificationRequest = NotificationRequest.builder()
                 .userId(request.getUserId())
                 .type(NotificationType.SPECIFIC_USER)
@@ -76,10 +105,12 @@ public class ModificationService {
                 .details(request.getDetails())  // 수정 요청에만 필요한 필드
                 .build();
 
-        // 3. Modification 전용 알림 생성 및 반환
+        // Modification 전용 알림 생성 및 반환
         return notificationService.createModificationNotification(notificationRequest, modificationResponse);
     }
-
+    
+    // 추후 필요하면 주석 해제 예정
+    /*
     // 단일 수정 요청 조회
     public ModificationResponse getModification(Long modificationId) {
         return ModificationResponse.from(modificationRepository.findById(modificationId)
@@ -99,4 +130,6 @@ public class ModificationService {
                 .map(ModificationResponse::from)
                 .collect(Collectors.toList());
     }
+*/
+
 }

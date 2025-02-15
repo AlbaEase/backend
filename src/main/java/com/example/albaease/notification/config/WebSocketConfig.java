@@ -24,13 +24,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    // 클라이언트에서 메시지를 보내는 기본 경로(prefix) 지정
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/queue", "/topic");
-        registry.setApplicationDestinationPrefixes("/app");
-        registry.setUserDestinationPrefix("/user");
+        registry.enableSimpleBroker("/queue", "/topic"); // 구독 경로
+        registry.setApplicationDestinationPrefixes("/app"); // 클라이언트 요청 루트 경로
+        registry.setUserDestinationPrefix("/user"); // 사용자별 목적지 경로
     }
 
+    // 클라이언트가 웹소켓에 연결할 수 있는 엔드포인트
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
@@ -38,6 +40,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .withSockJS();
     }
 
+    // WebSocket 핸드셰이크 시 사용자 정보를 세션에 저장
+    // Principal 객체에서 사용자 ID를 추출하여 WebSocket 세션에 추가
     @Bean
     public HandshakeInterceptor handshakeInterceptor() {
         return new HandshakeInterceptor() {

@@ -28,7 +28,7 @@ spring:
 server:
   port: 8081
 
-# Swagger 설정 (사용하는 것으로 유지)
+# Swagger 설정
 springdoc:
   api-docs:
     enabled: true       # API 문서 활성화
@@ -42,7 +42,7 @@ logging:
     org.hibernate.SQL: debug
     com.example.albaease: debug
 
-# JWT 설정 (남의 코드 반영)
+# JWT 설정
 jwt:
   secret: mysecretkey
   expiration-time: 3600000 # 1시간 (milliseconds)

@@ -1,5 +1,5 @@
 package com.example.albaease.user.entity;
-import com.example.albaease.store.Store;
+import com.example.albaease.store.domain.Store;
 import jakarta.persistence.*;
 import lombok.*;
 

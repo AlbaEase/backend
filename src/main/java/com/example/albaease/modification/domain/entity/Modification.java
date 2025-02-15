@@ -1,6 +1,8 @@
 package com.example.albaease.modification.domain.entity;
 
 import com.example.albaease.modification.domain.enums.ModificationStatus;
+import com.example.albaease.schedule.domain.Schedule;
+import com.example.albaease.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
