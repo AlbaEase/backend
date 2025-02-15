@@ -66,21 +66,20 @@ public class AuthController {
     //비밀번호 확인
     @Operation(summary = "현재 비밀번호 확인")
     @PostMapping("/verify-password")
-    public ResponseEntity<String> verifyPassword(@RequestParam String currentPassword, @RequestHeader(value = "Authorization",required = false) String token) {
-        System.out.println("걍 로그");
+    public ResponseEntity<String> verifyPassword(@RequestParam String currentPassword, @RequestHeader(value = "Authorization",required = false) String token, HttpSession session) {
         System.out.println("컨트롤러에서 토큰 확인"+ token);
         if (token == null || token.isEmpty()) {
             System.out.println("토큰이 전달되지 않음! 403 오류 가능");
             return ResponseEntity.status(403).body("토큰이 필요합니다.");
         }
-        authService.verifyCurrentPassword(currentPassword, token);
+        authService.verifyCurrentPassword(currentPassword, token, session);
         return ResponseEntity.ok("비밀번호 확인 완료");
     }
     //비밀번호 변경
     @Operation(summary = "비밀번호 변경")
     @PostMapping("/change-password")
-    public ResponseEntity<String> changePassword(@RequestParam String newPassword, @RequestParam String confirmNewPassword, @RequestHeader("Authorization") String token) {
-        authService.changePassword(newPassword, confirmNewPassword, token);
+    public ResponseEntity<String> changePassword(@RequestParam String newPassword, @RequestParam String confirmNewPassword, @RequestHeader(value = "Authorization", required = false) String token, HttpSession session) {
+        authService.changePassword(newPassword, confirmNewPassword, token, session);
         return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
 
     }

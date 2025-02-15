@@ -27,28 +27,24 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = getTokenFromRequest(request);
 
         if (token != null && !jwtUtil.isTokenExpired(token)) {
-            String userId = jwtUtil.extractUserId(token);
-
+            String userId = jwtUtil.extractUserId(token);;
             // 사용자 정보 로드 (CustomUserDetailsService 사용)
-            CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(userId);
+            CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserById(Long.valueOf(userId));
 
             // SecurityContext에 인증된 사용자 설정
             var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-
         filterChain.doFilter(request, response);
     }
     //요청에서 jwt토큰 추출
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        logger.info("Authorization Header: " + bearerToken);  // 로그 추가
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-//            String token = bearerToken.substring(7); // Bearer 제외한 토큰 부분만 추출
-            logger.info("Extracted JWT Token: " + bearerToken.substring(7));  // 토큰만 로그 출력
 
-            return bearerToken.substring(7);
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            String token = bearerToken.substring(7).trim();  // 공백 제거
+            return token;
         }
         return null;
     }
