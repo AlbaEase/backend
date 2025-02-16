@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class SmsController {
     private final SmsService smsService;
-    //
+
     public SmsController(SmsService smsService) {
         this.smsService = smsService;
     }
