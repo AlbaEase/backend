@@ -58,7 +58,7 @@ coolsms:
   api:
     key:
     secret:
-    number:
+    number: 01028585971
 
 # WebSocket 설정
 websocket:

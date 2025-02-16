@@ -2,7 +2,6 @@ package com.example.albaease.auth.service;
 import com.example.albaease.auth.dto.LoginRequest;
 import com.example.albaease.auth.dto.SignupRequest;
 import com.example.albaease.auth.exception.*;
-import com.example.albaease.auth.jwt.JwtUtil;
 import com.example.albaease.user.entity.SocialType;
 import com.example.albaease.user.entity.User;
 import com.example.albaease.user.repository.UserRepository;
@@ -86,9 +85,10 @@ public class AuthService {
         session.setAttribute("isIdChecked", true);
     }
     //현재 비밀번호 확인
-    public void verifyCurrentPassword(String currentPassword, String token) {
+    public void verifyCurrentPassword(String currentPassword, String token ,HttpSession session) {
         //토큰을 통해 userId 가져옴
         Long userId = Long.valueOf(jwtUtil.extractUserId(token));
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new InvalidCredentialsException("유저를 찾을 수 없습니다."));
 
@@ -96,12 +96,18 @@ public class AuthService {
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
+        session.setAttribute("isPasswordChecked", true);
     }
 
     //비밀번호 변경
-    public void changePassword(String newPassword,String confirmNewPassword, String token) {
+    public void changePassword(String newPassword,String confirmNewPassword, String token, HttpSession session) {
+        Boolean isPasswordChecked = (Boolean) session.getAttribute("isPasswordChecked");
+        // 세션에서 비밀번호 확인 했는지 확인
+        if (isPasswordChecked == null || !isPasswordChecked) {
+            throw new IdDuplicationCheckRequiredException("비밀번호 체크를 먼저 진행해주세요.");
+        }
         // 토큰을 통해 userId 가져옴
-        System.out.println("서비스에서 토큰 확인 로그" + token);
+
         Long userId = Long.valueOf(jwtUtil.extractUserId(token));
 
         User user = userRepository.findById(userId)
@@ -114,4 +120,3 @@ public class AuthService {
         userRepository.save(user); //변경된 비밀번호 저장
     }
 }
-

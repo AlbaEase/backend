@@ -19,7 +19,6 @@ public class JwtUtil {
 
     // JWT 토큰 생성
     public String generateToken(String userId, String role) {
-
         String token = Jwts.builder()
                 .setSubject(userId)  // 토큰에 저장할 사용자 정보
                 .claim("role", role)  // 사용자 역할
@@ -35,12 +34,18 @@ public class JwtUtil {
 
     // JWT 토큰에서 사용자 ID 추출
     public String extractUserId(String token) {
-        System.out.println("extractUserId "+token);
+
+        // Bearer 부분을 제거
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);  // "Bearer "의 길이 7을 잘라냄
+        }
+
         String userId = Jwts.parser()
                 .setSigningKey(secretKey) // 서명에 사용된 비밀 키 저장
                 .parseClaimsJws(token) // 토큰을 파싱해서 jws 클레임 추출
                 .getBody() // 클레이 바디 부분 가져옴
                 .getSubject(); // userId저장된 subject 값 반환
+
         return userId;
     }
 
