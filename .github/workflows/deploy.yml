@@ -22,8 +22,13 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test
         
+      - name: List build directory
+        run: ls -la build/libs/
+        
       - name: Copy JAR file
-        run: cp build/libs/*.jar app.jar
+        run: |
+          mkdir -p ~/backend
+          cp build/libs/AlbaEase-0.0.1-SNAPSHOT.jar app.jar
           
       - name: SSH and Deploy
         uses: appleboy/ssh-action@master
