@@ -2,58 +2,66 @@ spring:
   application:
     name: albaease
 
+  main:
+    allow-bean-definition-overriding: true
+
   datasource:
-    url: jdbc:mysql://localhost:3306/albaease
-    username: root
-    password:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     database: mysql
+    defer-datasource-initialization: true  # SQL 초기화 지연, 테스트용
     database-platform: org.hibernate.dialect.MySQLDialect
+    sql:
+      init:
+        mode: always  # 항상 data.sql 실행, 테스트용
     hibernate:
-      ddl-auto: validate # api테스트용, 배포시 validate 수정예정
+      ddl-auto:  update   # 배포 시 validate 유지
     show-sql: true
     properties:
       hibernate:
         format_sql: true
 
 server:
-  port: 8081
+  port: 8080
+
+# Swagger 설정
+springdoc:
+  api-docs:
+    enabled: true       # API 문서 활성화
+    path: /v3/api-docs  # 기본 경로 설정
+  swagger-ui:
+    enabled: true        # Swagger UI 활성화
+    path: /swagger-ui.html  # UI 경로 설정
 
 logging:
   level:
     org.hibernate.SQL: debug
     com.example.albaease: debug
 
-# Swagger
-springdoc:
-  api-docs:
-    enabled: true       # API 문서 생성을 활성화
-    path: /v3/api-docs  # 기본 경로 설정
-  swagger-ui:
-    enabled: true        # Swagger UI 활성화
-    path: /swagger-ui.html  # UI 경로 설정
-
-# JWT
+# JWT 설정
 jwt:
-  secret:
+  secret: mysecretkey
+  expiration-time: 3600000 # 1시간 (milliseconds)
 
-#coolsms
+# Redis 설정
+redis:
+  host: localhost
+  port: 6379
+  password:
+
+# CoolSMS 설정
 coolsms:
   api:
     key:
     secret:
     number: 01028585971
 
-#Redis
-  redis:
-    host: localhost
-    port: 6379
-    password:
-
-
-# WebSocket
-#websocket:
-#  allowed-origins: "*"
-#  endpoint: /ws
-#  destination-prefixes: /topic, /queue
+# WebSocket 설정
+websocket:
+  allowed-origins: "*"
+  endpoint: /ws
+  destination-prefixes: /topic, /queue
