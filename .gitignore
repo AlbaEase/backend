@@ -2,6 +2,8 @@
 .idea/**/workspace.xml
 HELP.md
 .idea/**/tasks.xml
+.idea/compiler.xml
+.idea/modules.xml
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
