@@ -44,7 +44,6 @@ public class AuthController {
     //스웨거 어노테이션
     @Operation(summary = "로그인", description = "사용자가 로그인 후 JWT 토큰을 요청합니다.")
     @ApiResponse(responseCode = "200", description = "로그인 성공, JWT 토큰 반환")
-//    @ApiResponse(responseCode = "401", description = "잘못된 ID 또는 비밀번호")
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestParam String id, @RequestParam String password) {
