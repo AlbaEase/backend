@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
     //스웨거 어노테이션
-    @Operation(summary = "회원가입", description = "사용자가 회원가입을 요청합니다.")
+    @Operation(summary = "회원가입zz", description = "사용자가 회원가입을 요청합니다.")
     @ApiResponse(responseCode = "200", description = "회원가입 성공")
 
     @PostMapping("/signup")
