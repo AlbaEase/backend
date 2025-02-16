@@ -43,7 +43,7 @@ coolsms:
   api:
     key:
     secret:
-    number:
+    number: 01028585971
 
 #Redis
   redis:
