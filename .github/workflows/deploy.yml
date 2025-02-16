@@ -47,6 +47,6 @@ jobs:
             git pull
             mv *.jar app.jar
             docker-compose down
-            docker rm -f mysql-container || true 
+            docker rm -f mysql-container || true # 자고싶다
             docker rm -f springapp || true
             docker-compose up -d --build
