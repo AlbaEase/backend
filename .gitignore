@@ -1,6 +1,6 @@
 ### IntelliJ ###
-HELP.md
 .idea/**/workspace.xml
+HELP.md
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
