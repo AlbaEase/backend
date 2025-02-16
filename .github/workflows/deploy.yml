@@ -27,4 +27,5 @@ jobs:
               git pull
               docker-compose down
               docker rm -f mysql-container || true  # 컨테이너가 있으면 제거, 없어도 에러 발생하지 않음
+               docker rm -f springapp || true  # springapp 컨테이너도 실행 중이면 강제 제거
               docker-compose up -d --build
