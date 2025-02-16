@@ -26,4 +26,5 @@ jobs:
               git checkout develop  # develop 브랜치 명시적 지정
               git pull
               docker-compose down
+              docker rm -f mysql-container || true  # 컨테이너가 있으면 제거, 없어도 에러 발생하지 않음
               docker-compose up -d --build
