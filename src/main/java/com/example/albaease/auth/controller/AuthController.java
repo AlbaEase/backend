@@ -54,7 +54,7 @@ public class AuthController {
     }
 
     //아이디 중복체크
-    @Operation(summary = "아이디 중복체크")
+    @Operation(summary = "아이디 중복 체크")
     @PostMapping("/check-id")
     public ResponseEntity<String> checkId(@RequestParam String id, HttpSession session) {
         authService.checkIdDuplicate(id, session);
