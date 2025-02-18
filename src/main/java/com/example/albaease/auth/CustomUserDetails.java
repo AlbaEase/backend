@@ -27,6 +27,10 @@ public class CustomUserDetails implements UserDetails {
         return user.getPassword();
     }
 
+    public Long getUserId() { // userId 반환하는 메서드 추가
+        return user.getUserId();
+    }
+
     @Override
     public String getUsername() {
         return user.getLoginId();
