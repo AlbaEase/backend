@@ -6,7 +6,6 @@ import com.example.albaease.auth.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
 
@@ -28,7 +28,6 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
 
-    // AuthenticationManager Bean 등록
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -37,26 +36,25 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://3.39.237.218:8080"));
+        configuration.setAllowedOrigins(List.of("*"));  // 모든 origin 허용
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true); // 인증정보 포함 허용
+        configuration.setAllowCredentials(false);  // false로 설정
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // 모든 엔드포인트에 동일한 CORS 정책 적용
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
-    // SecurityFilterChain 설정
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    CustomUserDetailsService customUserDetailsService) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(HttpMethod.GET, "/").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/user/**").permitAll()
+                        .requestMatchers("/user/send-sms", "/user/verify-sms").permitAll() // SMS 엔드포인트 명시적 허용
+                        .requestMatchers("/user/**").permitAll()  // 다른 user 관련 엔드포인트도 허용
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
@@ -66,14 +64,12 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                // JWT 필터 등록
                 .addFilterBefore(new JwtFilter(jwtUtil, customUserDetailsService),
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // 비밀번호 암호화 방식
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
