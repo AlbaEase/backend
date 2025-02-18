@@ -20,7 +20,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -37,13 +36,22 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // 모든 도메인 허용
+        // 배포된 Swagger UI에서 접근하는 도메인/포트만 정확히 지정하는 것을 권장
+        // 예: configuration.addAllowedOrigin("http://3.39.237.218:8080");
+        // 여러 개가 필요하면 addAllowedOrigin() 여러 번 호출
+        // 여기서는 일단 모든 출처(*) 허용
         configuration.addAllowedOriginPattern("*");
+
+        // 허용할 HTTP 메서드
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // 허용할 헤더
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        // 모든 도메인 허용시에는 false로 설정
-        configuration.setAllowCredentials(false);
+
+        // 세션(쿠키) 사용을 위해 반드시 true
+        configuration.setAllowCredentials(true);
+
+        // Preflight 요청 결과 캐싱 시간
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -57,6 +65,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // 세션 정책. 여기서는 인증번호 세션을 쓰므로 IF_REQUIRED
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
@@ -80,3 +89,4 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
+
