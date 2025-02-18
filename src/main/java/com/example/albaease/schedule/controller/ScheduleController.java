@@ -40,13 +40,13 @@ public class ScheduleController {
     }
 
     // 특정 알바생의 스토어별 스케줄 조회. 스토어 아이디 부분 수정 필요
-    @GetMapping("/store/{storeId}/user/{userId}")
-    public ResponseEntity<List<ScheduleResponse>> getSchedulesByStoreIdAndUserId(
-            @PathVariable Long storeId,
-            @PathVariable Long userId) {
-        List<ScheduleResponse> schedules = scheduleService.getSchedulesByStoreIdAndUserId(storeId, userId);
-        return ResponseEntity.ok(schedules);
-    }
+    //@GetMapping("/store/{storeId}/user/{userId}")
+    //public ResponseEntity<List<ScheduleResponse>> getSchedulesByStoreIdAndUserId(
+    //        @PathVariable Long storeId,
+    //        @PathVariable Long userId) {
+    //    List<ScheduleResponse> schedules = scheduleService.getSchedulesByStoreIdAndUserId(storeId, userId);
+    //    return ResponseEntity.ok(schedules);
+    //}
 
     // 스케줄 ID로 조회
     @GetMapping("/{scheduleId}")

@@ -33,12 +33,12 @@ public class ScheduleService {
     }
 
     // 특정 스토어 내 특정 사용자의 스케줄 조회
-    public List<ScheduleResponse> getSchedulesByStoreIdAndUserId(Long storeId, Long userId) {
-        return scheduleRepository.findByStoreIdAndUserId(storeId, userId)
-                .stream()
-                .map(ScheduleResponse::fromEntity)
-                .collect(Collectors.toList());
-    }
+   // public List<ScheduleResponse> getSchedulesByStoreIdAndUserId(Long storeId, Long userId) {
+    //   return scheduleRepository.findByStoreIdAndUserId(storeId, userId)
+    //            .stream()
+    //            .map(ScheduleResponse::fromEntity)
+    //            .collect(Collectors.toList());
+    //}
 
 
     // 특정 스케줄 ID로 조회
