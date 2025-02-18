@@ -34,16 +34,9 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    /**
-     * CORS 설정을 위한 CorsConfigurationSource Bean
-     * - Bean 이름은 아무거나 가능하나,
-     *   타입이 CorsConfigurationSource인 Bean이 등록되어 있으면
-     *   Spring Security가 자동으로 CorsFilter를 등록합니다.
-     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // 실 서비스 환경에서는 * 대신 허용할 도메인(Origin)을 구체적으로 작성하세요.
         configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
@@ -59,7 +52,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    CustomUserDetailsService customUserDetailsService) throws Exception {
-        // http.cors()는 Deprecated이므로 호출하지 않습니다.
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
                 .authorizeHttpRequests(authz -> authz
