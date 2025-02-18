@@ -36,15 +36,17 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));  // 모든 origin 허용
+        configuration.setAllowedOrigins(List.of("*"));  // 모든 출처 허용
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(false);  // false로 설정
+        configuration.setExposedHeaders(List.of("*"));  // 이 부분 추가
+        configuration.setAllowCredentials(false);  // false로 설정 (중요)
+        configuration.setMaxAge(3600L);  // preflight 캐시 시간
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
+    }ㅎ
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,

@@ -7,7 +7,6 @@ import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/user")
 public class SmsController {
