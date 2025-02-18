@@ -37,14 +37,18 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // 특정 Origin만 허용
-        configuration.setAllowedOrigins(List.of("http://3.39.237.218:8080"));
-        // 또는 모든 Origin 허용시
-        // configuration.addAllowedOriginPattern("*");
+        configuration.addAllowedOrigin("http://3.39.237.218:8080");  // 정확한 Origin 지정
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
 
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);  // JSESSIONID 쿠키 사용을 위해 true로 설정
+        // CORS 응답 헤더 명시적 설정
+        configuration.addExposedHeader("Access-Control-Allow-Origin");
+        configuration.addExposedHeader("Access-Control-Allow-Methods");
+        configuration.addExposedHeader("Access-Control-Allow-Headers");
+        configuration.addExposedHeader("Access-Control-Max-Age");
+
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
