@@ -19,6 +19,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -37,17 +38,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.addAllowedOrigin("http://3.39.237.218:8080");  // 정확한 Origin 지정
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-
-        // CORS 응답 헤더 명시적 설정
-        configuration.addExposedHeader("Access-Control-Allow-Origin");
-        configuration.addExposedHeader("Access-Control-Allow-Methods");
-        configuration.addExposedHeader("Access-Control-Allow-Headers");
-        configuration.addExposedHeader("Access-Control-Max-Age");
-
-        configuration.setAllowCredentials(true);
+        // 모든 도메인 허용
+        configuration.addAllowedOriginPattern("*");
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        // 모든 도메인 허용시에는 false로 설정
+        configuration.setAllowCredentials(false);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
