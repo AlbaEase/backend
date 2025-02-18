@@ -19,7 +19,7 @@ spring:
       init:
         mode: always  # 항상 data.sql 실행, 테스트용
     hibernate:
-      ddl-auto:  update   # 배포 시 validate 유지
+      ddl-auto: update   # 배포 시 validate 유지
     show-sql: true
     properties:
       hibernate:
@@ -31,11 +31,11 @@ server:
 # Swagger 설정
 springdoc:
   api-docs:
-    enabled: true       # API 문서 활성화
-    path: /v3/api-docs  # 기본 경로 설정
+    enabled: true
+    path: /v3/api-docs
   swagger-ui:
-    enabled: true        # Swagger UI 활성화
-    path: /swagger-ui.html  # UI 경로 설정
+    enabled: true
+    path: /swagger-ui.html
 
 logging:
   level:
@@ -44,7 +44,7 @@ logging:
 
 # JWT 설정
 jwt:
-  secret: mysecretkey
+  secret: ${JWT_SECRET}
   expiration-time: 3600000 # 1시간 (milliseconds)
 
 # Redis 설정
@@ -56,9 +56,9 @@ redis:
 # CoolSMS 설정
 coolsms:
   api:
-    key:
-    secret:
-    number: 01028585971
+    key: ${COOLSMS_API_KEY}
+    secret: ${COOLSMS_API_SECRET}
+    number: ${COOLSMS_SENDER_NUMBER}
 
 # WebSocket 설정
 websocket:
