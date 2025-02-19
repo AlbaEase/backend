@@ -29,13 +29,7 @@ public class SmsService {
         this.apiSecret = apiSecret;
         this.senderNumber = senderNumber;
     }
-    //로그확인
-    @PostConstruct
-    public void init() {
-        System.out.println(" CoolSMS API Key: " + apiKey);
-        System.out.println(" CoolSMS API Secret: " + apiSecret);
-        System.out.println(" CoolSMS Sender Number: " + senderNumber);
-    }
+
 
     // 인증번호 전송
     public boolean sendVerificationCode(String phoneNumber, HttpSession session) throws CoolsmsException {
