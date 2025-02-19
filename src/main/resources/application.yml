@@ -20,14 +20,14 @@ spring:
 
   jpa:
     database: mysql
-    database-platform: org.hibernate.dialect.MySQLDialect
+    //database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: create # api테스트용, 배포시 validate 수정예정
+      ddl-auto: validate # api테스트용, 배포시 validate 수정예정
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-
+    open-in-view: false
 server:
   port: 8080
 

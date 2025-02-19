@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Random;
 
 @Getter
 @Setter
@@ -34,29 +33,12 @@ public class Store {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public Store(String storeCode, String name, String location, Boolean requiresApproval) {
-        this.storeCode = generateRandomStoreCode();
+        this.storeCode = storeCode;  // 랜덤코드는 서비스에서 생성
         this.name = name;
         this.location = location;
         this.requiresApproval = requiresApproval;
     }
-    //랜덤 코드 생성 6자리(영어 1자리 + 숫자 2자리 + 영어 2자리 + 숫자 1자리)
-    private String generateRandomStoreCode() {
-        Random random = new Random();
-        char letter1 = (char) ('A' + random.nextInt(26)); // A-Z 중 하나
-        int number1 = random.nextInt(100); // 00-99
-        char letter2 = (char) ('A' + random.nextInt(26)); // A-Z 중 하나
-        char letter3 = (char) ('A' + random.nextInt(26)); // A-Z 중 하나
-        int number2 = random.nextInt(10); // 0-9
 
-        return String.format("%c%02d%c%c%d", letter1, number1, letter2, letter3, number2);
-    }
-    //StoreCode가 비어있을 경우 자동 생성
-    @PrePersist
-    public void prePersist() {
-        if (this.storeCode == null) {
-            this.storeCode = generateRandomStoreCode();
-        }
-    }
     // 매장 정보 업데이트
     public void update(StoreRequestDto requestDto) {
         this.storeCode = requestDto.getStoreCode();
