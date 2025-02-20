@@ -7,6 +7,8 @@ import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/user")
 public class SmsController {
@@ -18,7 +20,8 @@ public class SmsController {
     // 전화번호 인증 요청
     @Operation(summary = "전화번호 인증요청")
     @PostMapping("/send-sms")
-    public ResponseEntity<String> sendSms(@RequestParam String phoneNumber, HttpSession session) {
+    public ResponseEntity<String> sendSms(@RequestBody Map<String, String> request, HttpSession session) {
+        String phoneNumber = request.get("phoneNumber");
         try {
             smsService.sendVerificationCode(phoneNumber, session);
             return ResponseEntity.ok("인증번호가 전송되었습니다.");
