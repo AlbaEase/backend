@@ -28,11 +28,18 @@ spring:
   redis:
     host: ${REDIS_HOST:redis}
     port: ${REDIS_PORT:6379}
+    database: 0
+    timeout: 60000
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
 
 server:
   port: 8080
 
-# Swagger 설정
 springdoc:
   api-docs:
     enabled: true
@@ -46,19 +53,16 @@ logging:
     org.hibernate.SQL: debug
     com.example.albaease: debug
 
-# JWT 설정
 jwt:
   secret: ${JWT_SECRET}
   expiration-time: 3600000 # 1시간 (milliseconds)
 
-# CoolSMS 설정
 coolsms:
   api:
     key: ${COOLSMS_API_KEY}
     secret: ${COOLSMS_API_SECRET}
     number: ${COOLSMS_SENDER_NUMBER}
 
-# WebSocket 설정
 websocket:
   allowed-origins: "*"
   endpoint: /ws
