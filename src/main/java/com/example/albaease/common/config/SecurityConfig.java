@@ -36,22 +36,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // 배포된 Swagger UI에서 접근하는 도메인/포트만 정확히 지정하는 것을 권장
-        // 예: configuration.addAllowedOrigin("http://3.39.237.218:8080");
-        // 여러 개가 필요하면 addAllowedOrigin() 여러 번 호출
-        // 여기서는 일단 모든 출처(*) 허용
-        configuration.addAllowedOriginPattern("*");
 
-        // 허용할 HTTP 메서드
+        configuration.addAllowedOriginPattern("*");  // 모든 출처 허용
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-        // 허용할 헤더
         configuration.setAllowedHeaders(Arrays.asList("*"));
-
-        // 세션(쿠키) 사용을 위해 반드시 true
-        configuration.setAllowCredentials(true);
-
-        // Preflight 요청 결과 캐싱 시간
+        configuration.setAllowCredentials(false);  // credentials 사용하지 않을 경우
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
