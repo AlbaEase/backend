@@ -1,6 +1,5 @@
 package com.example.albaease.auth.service;
-import com.example.albaease.auth.dto.LoginRequest;
-import com.example.albaease.auth.dto.SignupRequest;
+import com.example.albaease.auth.dto.*;
 import com.example.albaease.auth.exception.*;
 import com.example.albaease.user.entity.SocialType;
 import com.example.albaease.user.entity.User;
@@ -76,16 +75,16 @@ public class AuthService {
     }
 
     //로그인 아이디 중복 검사
-    public void checkIdDuplicate(String id, HttpSession session) {
+    public void checkIdDuplicate(IdCheckRequest request, HttpSession session) {
         // ID 중복 검사
-        if (userRepository.existsByLoginId(id)) {
+        if (userRepository.existsByLoginId(request.getId())) {
             throw new IDAlreadyExistsException("이미 존재하는 ID입니다.");
         }
         // 아이디 중복 검사 완료 후 세션에 상태 저장하기(회원가입시 중복검사 안하면 못넘어가도록)
         session.setAttribute("isIdChecked", true);
     }
     //현재 비밀번호 확인
-    public void verifyCurrentPassword(String currentPassword, String token ,HttpSession session) {
+    public void verifyCurrentPassword(VerifyPasswordRequest request, String token , HttpSession session) {
         //토큰을 통해 userId 가져옴
         Long userId = Long.valueOf(jwtUtil.extractUserId(token));
 
@@ -93,14 +92,14 @@ public class AuthService {
                 .orElseThrow(() -> new InvalidCredentialsException("유저를 찾을 수 없습니다."));
 
         // 비밀번호 검증
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
         session.setAttribute("isPasswordChecked", true);
     }
 
     //비밀번호 변경
-    public void changePassword(String newPassword,String confirmNewPassword, String token, HttpSession session) {
+    public void changePassword(PasswordChangeRequest request, String token, HttpSession session) {
         Boolean isPasswordChecked = (Boolean) session.getAttribute("isPasswordChecked");
         // 세션에서 비밀번호 확인 했는지 확인
         if (isPasswordChecked == null || !isPasswordChecked) {
@@ -113,10 +112,10 @@ public class AuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new InvalidCredentialsException("유저를 찾을 수 없습니다."));
 
-        if(!newPassword.equals(confirmNewPassword)){
+        if(!request.getNewPassword().equals(request.getConfirmNewPassword())){
             throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
-        user.changePassword(newPassword, passwordEncoder);
+        user.changePassword(request.getNewPassword(), passwordEncoder);
         userRepository.save(user); //변경된 비밀번호 저장
     }
 }
