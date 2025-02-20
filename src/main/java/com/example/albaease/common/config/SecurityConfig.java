@@ -37,10 +37,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.addAllowedOriginPattern("*");  // 모든 출처 허용
+        // 리액트 앱과 스웨거 UI 도메인을 명시적으로 허용
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://3.39.237.218:8080"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(false);  // credentials 사용하지 않을 경우
+        configuration.setAllowCredentials(true);  // 세션 쿠키 공유를 위해 true로 설정
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
