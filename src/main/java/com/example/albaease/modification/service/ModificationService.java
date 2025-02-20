@@ -10,6 +10,8 @@ import com.example.albaease.notification.dto.NotificationResponse;
 import com.example.albaease.notification.handler.WebSocketHandler;
 import com.example.albaease.notification.service.NotificationService;
 import com.example.albaease.notification.dto.NotificationRequest;
+import com.example.albaease.schedule.domain.Schedule;
+import com.example.albaease.schedule.repository.ScheduleRepository;
 import com.example.albaease.user.entity.User;
 import com.example.albaease.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,7 +28,7 @@ public class ModificationService {
     private final ModificationRepository modificationRepository;
     private final NotificationService notificationService;
     private final UserRepository userRepository;
-    // private final ScheduleRepository scheduleRepository;
+    private final ScheduleRepository scheduleRepository;
     private final WebSocketHandler webSocketHandler;
 
     @Transactional
@@ -34,8 +36,8 @@ public class ModificationService {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 
-        // Schedule schedule = scheduleRepository.findById(request.getScheduleId())
-        // .orElseThrow(() -> new EntityNotFoundException("스케줄을 찾을 수 없습니다."));
+        Schedule schedule = scheduleRepository.findById(request.getScheduleId())
+         .orElseThrow(() -> new EntityNotFoundException("스케줄을 찾을 수 없습니다."));
 
         Modification modification = Modification.builder()
                 .user(user)
@@ -49,7 +51,7 @@ public class ModificationService {
                 .userId(user.getUserId())
                 .type(NotificationType.SPECIFIC_USER)
                 .message("근무 시간 수정 요청이 도착했습니다.")
-                // .scheduleId(schedule.getScheduleId())
+                .scheduleId(schedule.getScheduleId())
                 .build());
 
         return ModificationResponse.from(savedModification);
@@ -79,7 +81,7 @@ public class ModificationService {
                 .userId(modification.getUser().getUserId())
                 .type(NotificationType.SPECIFIC_USER)
                 .message(statusMessage)
-                // .scheduleId(modification.getSchedule().getUserId())
+                .scheduleId(modification.getSchedule().getUserId())
                 .build());
 
         return ModificationResponse.from(modification);

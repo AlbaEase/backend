@@ -2,12 +2,12 @@ package com.example.albaease.modification.domain.entity;
 
 import com.example.albaease.modification.domain.enums.ModificationStatus;
 import com.example.albaease.user.entity.User;
+import com.example.albaease.schedule.domain.Schedule;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.maven.lifecycle.Schedule;
 
 import java.time.LocalDateTime;
 
@@ -22,9 +22,9 @@ public class Modification {
     @JoinColumn(name = "user_id")
     private User user;
 
-    //@ManyToOne(fetch = FetchType.LAZY)
-    //@JoinColumn(name = "schedule_id")
-    //private Schedule schedule;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id")
+    private Schedule schedule;
 
     @Column(columnDefinition = "TEXT")
     private String details;
