@@ -58,18 +58,22 @@ public class SmsService {
     }
 
     // 인증번호 검증
-    // 인증번호 검증
-    public boolean verifyCode(String verificationCode) {
-        // Redis에서 마지막으로 요청된 인증번호 확인
-        String storedCode = redisTemplate.opsForValue().get(verificationCode);
+    public boolean verifyCode(String phoneNumber, String verificationCode) {
+        // Redis에서 phoneNumber를 키로 저장했으므로, phoneNumber로 조회
+        String storedCode = redisTemplate.opsForValue().get(phoneNumber);
 
-        // 인증번호가 일치하는지 확인
+        // storedCode가 없으면 만료 or 잘못된 번호
         if (storedCode == null) {
             throw new InvalidVerificationCodeException("인증번호가 만료되었거나 존재하지 않습니다.");
         }
 
-        // 인증 성공하면 Redis에서 해당 코드 삭제
-        redisTemplate.delete(verificationCode);
+        // 인증번호 불일치
+        if (!storedCode.equals(verificationCode)) {
+            throw new InvalidVerificationCodeException("인증번호가 일치하지 않습니다.");
+        }
+
+        // 인증 성공 시 Redis에서 해당 phoneNumber 삭제 (재사용 방지)
+        redisTemplate.delete(phoneNumber);
 
         return true;
     }

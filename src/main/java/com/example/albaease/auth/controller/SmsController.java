@@ -34,12 +34,21 @@ public class SmsController {
     @Operation(summary = "인증 번호확인")
     @PostMapping("/verify-sms")
     public ResponseEntity<String> verifySms(@RequestBody Map<String, String> request) {
+        // requestBody에서 JSON key "phoneNumber", "verificationCode" 추출
+        String phoneNumber = request.get("phoneNumber");
+        String verificationCode = request.get("verificationCode");
+
+        // phoneNumber나 verificationCode가 null이라면 잘못된 요청
+        if (phoneNumber == null || verificationCode == null) {
+            return ResponseEntity.badRequest().body("전화번호 또는 인증번호가 누락되었습니다.");
+        }
+
         try {
-            String verificationCode = request.get("verificationCode");
-            String phoneNumber = request.get("phoneNumber");  // 전화번호도 함께 받기
-            smsService.verifyCode(verificationCode);
+            // 수정된 서비스 메서드(verifyCode) 호출
+            smsService.verifyCode(phoneNumber, verificationCode);
             return ResponseEntity.ok("인증이 성공적으로 완료되었습니다.");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
+            // 인증번호가 일치하지 않거나 만료되었을 때
             return ResponseEntity.status(400).body(e.getMessage());
         }
     }
