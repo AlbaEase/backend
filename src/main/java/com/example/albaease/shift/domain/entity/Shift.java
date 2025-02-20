@@ -8,8 +8,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.maven.lifecycle.Schedule;
-
+import com.example.albaease.schedule.domain.Schedule;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,9 +27,9 @@ public class Shift {
     @JoinColumn(name = "to_user_id")
     private User toUser;
 
-   // @ManyToOne(fetch = FetchType.LAZY)
-   // @JoinColumn(name = "schedule_id")
-    //  private Schedule schedule;
+   @ManyToOne(fetch = FetchType.LAZY)
+   @JoinColumn(name = "schedule_id")
+   private Schedule schedule;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approved_by")
@@ -50,7 +49,7 @@ public class Shift {
                  ShiftRequestType requestType) {
         this.fromUser = fromUser;
         this.toUser = toUser;
-        // this.schedule = schedule;
+        this.schedule = schedule;
         this.requestType = requestType;
         this.status = ShiftStatus.PENDING;
         this.createdAt = LocalDateTime.now();

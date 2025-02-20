@@ -2,6 +2,8 @@ package com.example.albaease.shift.service;
 
 import com.example.albaease.notification.dto.NotificationResponse;
 import com.example.albaease.notification.handler.WebSocketHandler;
+import com.example.albaease.schedule.domain.Schedule;
+import com.example.albaease.schedule.repository.ScheduleRepository;
 import com.example.albaease.user.entity.User;
 import com.example.albaease.user.repository.UserRepository;
 import com.example.albaease.notification.domain.enums.NotificationType;
@@ -14,7 +16,7 @@ import com.example.albaease.shift.dto.ShiftResponse;
 import com.example.albaease.shift.repository.ShiftRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.maven.lifecycle.Schedule;
+import com.example.albaease.schedule.domain.Schedule;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +26,7 @@ public class ShiftService {
     private final ShiftRepository shiftRepository;
     private final NotificationService notificationService;
     private final UserRepository userRepository;
-   // private final ScheduleRepository scheduleRepository;
+    private final ScheduleRepository scheduleRepository;
     private final WebSocketHandler webSocketHandler;
 
     @Transactional
@@ -36,8 +38,8 @@ public class ShiftService {
         User toUser = userRepository.findById(request.getToUserId())
                 .orElseThrow(() -> new EntityNotFoundException("대상자를 찾을 수 없습니다."));
 
-        //Schedule schedule = scheduleRepository.findById(request.getScheduleId())
-        //        .orElseThrow(() -> new EntityNotFoundException("스케줄을 찾을 수 없습니다."));
+        Schedule schedule = scheduleRepository.findById(request.getScheduleId())
+                .orElseThrow(() -> new EntityNotFoundException("스케줄을 찾을 수 없습니다."));
 
 
         // 대타 요청 생성
@@ -51,8 +53,8 @@ public class ShiftService {
         Shift savedShift = shiftRepository.save(shift);
 
         // 알림 생성
-        // sendShiftNotification(toUser.getUserId(), schedule.getScheduleId(),
-        // "새로운 대타 요청이 도착했습니다.");
+        sendShiftNotification(toUser.getUserId(), schedule.getScheduleId(),
+         "새로운 대타 요청이 도착했습니다.");
 
         return ShiftResponse.from(savedShift);
     }
@@ -75,8 +77,8 @@ public class ShiftService {
             default -> "대타 요청 상태가 변경되었습니다.";
         };
 
-        //sendShiftNotification(shift.getFromUser().getUserId(),
-        //        shift.getSchedule().getScheduleId(), statusMessage);
+        sendShiftNotification(shift.getFromUser().getUserId(),
+                shift.getSchedule().getScheduleId(), statusMessage);
 
         // 상태 변경 알림 전송
         webSocketHandler.sendShiftStatusUpdate(

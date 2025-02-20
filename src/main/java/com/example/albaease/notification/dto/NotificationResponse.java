@@ -41,7 +41,7 @@ public class NotificationResponse {
         return NotificationResponse.builder()
                 .id(notification.getNotification_id())
                 .userId(notification.getUser().getUserId())
-                // .scheduleId(notification.getSchedule().getScheduleId())
+                .scheduleId(notification.getSchedule().getScheduleId())
                 .type(notification.getRequestType())
                 .readStatus(notification.getStatus())
                 .message(notification.getMessage())
