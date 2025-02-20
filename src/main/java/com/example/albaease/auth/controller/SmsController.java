@@ -33,9 +33,11 @@ public class SmsController {
     // 인증번호 확인
     @Operation(summary = "인증 번호확인")
     @PostMapping("/verify-sms")
-    public ResponseEntity<String> verifySms(@RequestParam String verificationCode, HttpSession session) {
+    public ResponseEntity<String> verifySms(@RequestBody Map<String, String> request) {
         try {
-            smsService.verifyCode(verificationCode, session);
+            String verificationCode = request.get("verificationCode");
+            String phoneNumber = request.get("phoneNumber");  // 전화번호도 함께 받기
+            smsService.verifyCode(verificationCode);
             return ResponseEntity.ok("인증이 성공적으로 완료되었습니다.");
         } catch(IllegalArgumentException e) {
             return ResponseEntity.status(400).body(e.getMessage());
