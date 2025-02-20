@@ -38,7 +38,7 @@ public class AuthController {
 
         // 회원가입 서비스 호출
         authService.signup(request, session);
-        return ResponseEntity.ok("회원가입 성공");
+        return ResponseEntity.ok("회원 가입 성공");
     }
 
     //스웨거 어노테이션
