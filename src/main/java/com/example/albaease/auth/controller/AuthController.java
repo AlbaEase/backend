@@ -24,6 +24,11 @@ public class AuthController {
     public ResponseEntity<String> signup(@RequestBody SignupRequest request, HttpSession session) {
         // 세션에서 확인
         Boolean isVerified = (Boolean) session.getAttribute("isPhoneVerified");
+
+        // 로그 추가
+        System.out.println("Signup attempt. Session ID: " + session.getId());
+        System.out.println("isPhoneVerified in session: " + session.getAttribute("isPhoneVerified"));
+
         if (isVerified == null || !isVerified) {
             return ResponseEntity.badRequest().body("전화번호 인증을 먼저 진행해주세요.");
         }

@@ -68,6 +68,9 @@ public class SmsService {
         if (!storedCode.equals(verificationCode)) {
             throw new InvalidVerificationCodeException("인증번호가 일치하지 않습니다.");
         }
+        // 로그 추가
+        System.out.println("Phone verification success. Session ID: " + session.getId());
+        System.out.println("isPhoneVerified in session: " + session.getAttribute("isPhoneVerified"));
 
         // 인증 성공 시
         redisTemplate.delete(phoneNumber);  // 인증번호 삭제
