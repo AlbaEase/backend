@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -22,12 +24,13 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody SignupRequest request, HttpSession session) {
-        // 세션에서 확인
-        Boolean isVerified = (Boolean) session.getAttribute("isPhoneVerified");
-
         // 로그 추가
+        System.out.println("All session attributes: " + Collections.list(session.getAttributeNames()));
         System.out.println("Signup attempt. Session ID: " + session.getId());
-        System.out.println("isPhoneVerified in session: " + session.getAttribute("isPhoneVerified"));
+
+        // 세션에서 확인 - 전화번호와 함께 키 생성
+        Boolean isVerified = (Boolean) session.getAttribute("VERIFIED_PHONE_" + request.getPhoneNumber());
+        System.out.println("isPhoneVerified in session: " + isVerified);
 
         if (isVerified == null || !isVerified) {
             return ResponseEntity.badRequest().body("전화번호 인증을 먼저 진행해주세요.");
