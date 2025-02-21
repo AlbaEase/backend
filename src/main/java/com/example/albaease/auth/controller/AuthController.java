@@ -24,7 +24,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody SignupRequest request, HttpSession session) {
-
+//
 //        // 로그 추가
 //        System.out.println("All session attributes: " + Collections.list(session.getAttributeNames()));
 //        System.out.println("Signup attempt. Session ID: " + session.getId());
