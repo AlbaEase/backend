@@ -23,7 +23,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody SignupRequest request, HttpSession session) {
         // 세션에서 확인
-        Boolean isVerified = (Boolean) session.getAttribute("VERIFIED_PHONE_" + request.getPhoneNumber());
+        Boolean isVerified = (Boolean) session.getAttribute("isPhoneVerified");
         if (isVerified == null || !isVerified) {
             return ResponseEntity.badRequest().body("전화번호 인증을 먼저 진행해주세요.");
         }
