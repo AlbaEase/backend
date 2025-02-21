@@ -58,7 +58,7 @@ public class SmsService {
     }
 
     // 인증번호 검증
-    public boolean verifyCode(String phoneNumber, String verificationCode, HttpSession session) {  // HttpSession 파라미터 추가
+    public boolean verifyCode(String phoneNumber, String verificationCode, HttpSession session) {
         String storedCode = redisTemplate.opsForValue().get(phoneNumber);
 
         if (storedCode == null) {
@@ -68,13 +68,14 @@ public class SmsService {
         if (!storedCode.equals(verificationCode)) {
             throw new InvalidVerificationCodeException("인증번호가 일치하지 않습니다.");
         }
-        // 로그 추가
-        System.out.println("Phone verification success. Session ID: " + session.getId());
-        System.out.println("isPhoneVerified in session: " + session.getAttribute("isPhoneVerified"));
 
         // 인증 성공 시
-        redisTemplate.delete(phoneNumber);  // 인증번호 삭제
-        session.setAttribute("isPhoneVerified", true);  // 세션에 인증 상태 저장
+        session.setAttribute("isPhoneVerified", true);  // 먼저 저장
+        redisTemplate.delete(phoneNumber);  // 그 다음 인증번호 삭제
+
+        // 로그는 setAttribute 후에 찍기
+        System.out.println("Phone verification success. Session ID: " + session.getId());
+        System.out.println("isPhoneVerified in session: " + session.getAttribute("isPhoneVerified"));
 
         return true;
     }
