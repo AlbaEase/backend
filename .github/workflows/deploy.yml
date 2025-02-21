@@ -38,5 +38,5 @@ jobs:
             docker-compose down
             docker rm -f mysql-container || true
             docker rm -f springapp || true
-            docker system prune -f  # 이전 이미지와 캐시 정리
+            docker system prune -f  # 이전 이미지와 캐시정리
             docker-compose up -d --build
