@@ -37,10 +37,13 @@ public class SmsController {
         String phoneNumber = request.get("phoneNumber");
         String verificationCode = request.get("verificationCode");
 
+        if (phoneNumber == null || verificationCode == null) {
+            return ResponseEntity.badRequest().body("전화번호 또는 인증번호가 누락되었습니다.");
+        }
+
         try {
-            smsService.verifyCode(phoneNumber, verificationCode);
-            // 세션에 저장
-            session.setAttribute("VERIFIED_PHONE_" + phoneNumber, true);
+            // session 전달
+            smsService.verifyCode(phoneNumber, verificationCode, session);
             return ResponseEntity.ok("인증이 성공적으로 완료되었습니다.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(400).body(e.getMessage());
