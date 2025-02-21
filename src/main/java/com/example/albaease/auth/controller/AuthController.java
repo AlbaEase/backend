@@ -21,8 +21,14 @@ public class AuthController {
     @ApiResponse(responseCode = "200", description = "회원가입 성공")
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody SignupRequest request,HttpSession session) {
-        // 회원가입 서비스 호출
+    public ResponseEntity<String> signup(@RequestBody SignupRequest request, HttpSession session) {
+        // 세션에서 확인
+        Boolean isVerified = (Boolean) session.getAttribute("VERIFIED_PHONE_" + request.getPhoneNumber());
+        if (isVerified == null || !isVerified) {
+            return ResponseEntity.badRequest().body("전화번호 인증을 먼저 진행해주세요.");
+        }
+
+        // session 파라미터 추가
         authService.signup(request, session);
         return ResponseEntity.ok("회원 가입 성공");
     }
