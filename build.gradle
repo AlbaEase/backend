@@ -50,6 +50,8 @@ dependencies {
     implementation 'org.webjars:stomp-websocket:2.3.4'
     implementation 'org.webjars:sockjs-client:1.5.1'
 
+    implementation 'org.springframework.session:spring-session-data-redis'
+
     // Spring Security + JWT (인증/인가)
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
