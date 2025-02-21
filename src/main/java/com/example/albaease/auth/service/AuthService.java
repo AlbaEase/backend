@@ -20,18 +20,20 @@ public class AuthService {
 
     //회원가입 메서드
     public void signup(SignupRequest request, HttpSession session) {
-        Boolean isIdChecked = (Boolean) session.getAttribute("isIdChecked");
-        Boolean isPhoneVerified = (Boolean) session.getAttribute("isPhoneVerified");
-
-        //세션에서 전화번호 인증했는지 확인
-        if (isPhoneVerified == null || !(Boolean) session.getAttribute("isPhoneVerified")) {
-            throw new PhoneVerificationRequiredException("전화번호 인증을 먼저 진행해주세요.");
-        }
-
-        // 세션에서 아이디 중복검사 했는지 확인
-        if (isIdChecked == null || !isIdChecked) {
-            throw new IdDuplicationCheckRequiredException("아이디 중복 검사를 먼저 진행해주세요.");
-        }
+//        Boolean isIdChecked = (Boolean) session.getAttribute("isIdChecked");
+//        Boolean isPhoneVerified = (Boolean) session.getAttribute("isPhoneVerified");
+//
+//        //세션에서 전화번호 인증했는지 확인
+//        if (isPhoneVerified == null || !(Boolean) session.getAttribute("isPhoneVerified")) {
+//            System.out.println("isPhoneVerified확인" + isPhoneVerified);
+//            throw new PhoneVerificationRequiredException("전화번호 인증을 먼저 진행해주세요.");
+//        }
+//
+//        // 세션에서 아이디 중복검사 했는지 확인
+//        if (isIdChecked == null || !isIdChecked) {
+//            System.out.println("isIdChecked확인" + isIdChecked);
+//            throw new IdDuplicationCheckRequiredException("아이디 중복 검사를 먼저 진행해주세요.");
+//        }
 
         // 비밀번호 확인 추가 (비밀번호와 비밀번호 확인 필드가 있다고 가정)
         if (!request.getPassword().equals(request.getConfirmPassword())) {
@@ -80,8 +82,6 @@ public class AuthService {
         if (userRepository.existsByLoginId(request.getId())) {
             throw new IDAlreadyExistsException("이미 존재하는 ID입니다.");
         }
-        // 아이디 중복 검사 완료 후 세션에 상태 저장하기(회원가입시 중복검사 안하면 못넘어가도록)
-        session.setAttribute("isIdChecked", true);
     }
     //현재 비밀번호 확인
     public void verifyCurrentPassword(VerifyPasswordRequest request, String token , HttpSession session) {
@@ -95,7 +95,8 @@ public class AuthService {
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
-        session.setAttribute("isPasswordChecked", true);
+
+//        session.setAttribute("isPasswordChecked", true);
     }
 
     //비밀번호 변경
