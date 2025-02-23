@@ -68,6 +68,7 @@ public class AuthController {
         authService.verifyCurrentPassword(request, token, session);
         return ResponseEntity.ok("비밀번호 확인 완료");
     }
+    
     //비밀번호 변경
     @Operation(summary = "비밀번호 변경", description = "비밀번호 변경을 진행합니다.")
     @PostMapping("/change-password")

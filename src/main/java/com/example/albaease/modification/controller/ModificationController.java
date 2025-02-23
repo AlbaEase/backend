@@ -16,7 +16,6 @@ import java.security.Principal;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class ModificationController {
     private final ModificationService modificationService;
