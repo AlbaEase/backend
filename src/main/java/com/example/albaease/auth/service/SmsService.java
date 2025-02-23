@@ -70,12 +70,12 @@ public class SmsService {
         }
 
         // 인증 성공 시
-        session.setAttribute("VERIFIED_PHONE_" + phoneNumber, true); // 먼저 저장
+//        session.setAttribute("VERIFIED_PHONE_" + phoneNumber, true); // 먼저 저장
         redisTemplate.delete(phoneNumber);  // 그 다음 인증번호 삭제
 
         // 로그는 setAttribute 후에 찍기
-        System.out.println("Phone verification success. Session ID: " + session.getId());
-        System.out.println("isPhoneVerified in session: " + session.getAttribute("isPhoneVerified"));
+//        System.out.println("Phone verification success. Session ID: " + session.getId());
+//        System.out.println("isPhoneVerified in session: " + session.getAttribute("isPhoneVerified"));
 
         return true;
     }
