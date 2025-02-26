@@ -1,6 +1,8 @@
 package com.example.albaease.schedule.dto;
 
 import com.example.albaease.schedule.domain.Schedule;
+import com.example.albaease.store.domain.Store;
+import com.example.albaease.store.repository.StoreRepository;
 import com.example.albaease.user.entity.User; // User 엔티티 추가
 import com.example.albaease.user.repository.UserRepository; // UserRepository 추가
 import lombok.Getter;
@@ -24,16 +26,19 @@ public class ScheduleRequest {
     private LocalDate repeatEndDate;
 
     // 여러 사용자에 대한 스케줄을 생성하는 로직
-    public List<Schedule> toEntities(UserRepository userRepository) {
+    public List<Schedule> toEntities(UserRepository userRepository, StoreRepository storeRepository) {
         List<Schedule> schedules = new ArrayList<>();
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new RuntimeException("Store not found with id: " + storeId));
 
         for (Long userId : userIds) {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
             Schedule schedule = new Schedule();
-            schedule.setUser(user); // 사용자 설정
-            schedule.setStoreId(storeId);
+            schedule.setUser(user);
+            schedule.setStore(store);
             schedule.setWorkDate(workDate);
             schedule.setStartTime(startTime);
             schedule.setEndTime(endTime);

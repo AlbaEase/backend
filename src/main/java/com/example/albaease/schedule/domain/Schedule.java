@@ -1,5 +1,6 @@
 package com.example.albaease.schedule.domain;
 
+import com.example.albaease.store.domain.Store;
 import com.example.albaease.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -18,16 +19,18 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "Schedule")
 public class Schedule {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scheduleId;
 
-    private Long storeId; // 매장 ID
+    // Store와의 관계 추가
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)  // User와 관계 설정
-    private User user;  // 유저 객체로 변경
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     private LocalDate workDate;
     private LocalTime startTime;
@@ -35,14 +38,19 @@ public class Schedule {
     private LocalTime breakTime;
 
     @Column(name = "repeat_days")
-    private String repeatDays;  // 반복 요일
+    private String repeatDays;
 
     @Column(name = "repeat_end_date")
-    private LocalDate repeatEndDate;  // 반복 종료 날짜
+    private LocalDate repeatEndDate;
 
-    // userId 반환 메서드
+    // 기존 메서드들 유지
     public Long getUserId() {
         return user != null ? user.getUserId() : null;
+    }
+
+    // Store ID를 가져오는 메서드 추가
+    public Long getStoreId() {
+        return store != null ? store.getId() : null;
     }
 
     public List<String> getRepeatDaysList() {
@@ -53,5 +61,3 @@ public class Schedule {
         this.repeatDays = days != null ? String.join(",", days) : null;
     }
 }
-
-
