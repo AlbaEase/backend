@@ -43,8 +43,8 @@ public class AuthController {
     //아이디 중복체크
     @Operation(summary = "아이디 중복 체크",description = "회원가입 전 아이디 중복 체크를 진행합니다.")
     @PostMapping("/check-id")
-    public ResponseEntity<String> checkId(@RequestBody IdCheckRequest request, HttpSession session) {
-        authService.checkIdDuplicate(request, session);
+    public ResponseEntity<String> checkId(@RequestBody IdCheckRequest request) {
+        authService.checkIdDuplicate(request);
         return ResponseEntity.ok("사용 가능한 ID입니다.");
 
     }

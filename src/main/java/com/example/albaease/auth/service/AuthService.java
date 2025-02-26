@@ -93,7 +93,7 @@ public class AuthService {
     }
 
     //로그인 아이디 중복 검사
-    public void checkIdDuplicate(IdCheckRequest request, HttpSession session) {
+    public void checkIdDuplicate(IdCheckRequest request) {
         // ID 중복 검사
         if (userRepository.existsByLoginId(request.getId())) {
             throw new IDAlreadyExistsException("이미 존재하는 ID입니다.");
