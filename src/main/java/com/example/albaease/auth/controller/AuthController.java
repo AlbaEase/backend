@@ -23,9 +23,9 @@ public class AuthController {
     @ApiResponse(responseCode = "200", description = "회원가입 성공")
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody SignupRequest request, HttpSession session) {
+    public ResponseEntity<String> signup(@RequestBody SignupRequest request) {
         // session 파라미터 추가
-        authService.signup(request, session);
+        authService.signup(request);
         return ResponseEntity.ok("회원 가입 성공");
     }
 
@@ -34,7 +34,7 @@ public class AuthController {
     @ApiResponse(responseCode = "200", description = "로그인 성공, JWT 토큰 반환")
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request, HttpSession session) {
+    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
 
         String token = authService.login(request);
         return ResponseEntity.ok(token);

@@ -1,18 +1,33 @@
 package com.example.albaease.auth;
 
 import com.example.albaease.user.entity.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+@Getter
+
 public class CustomUserDetails implements UserDetails {
     private final User user;
+    private Long userId;
+    private final String phoneNumber;
+    private final String loginId;
+//    private final String password;
+    private final String fullName;
+    private final String role;
 
     public CustomUserDetails(User user) {
         this.user = user;
+        this.loginId = user.getLoginId();
+//        this.password = user.getPassword();
+        this.fullName =   user.getLastName() + user.getFirstName();
+        this.role = user.getRole().name();
+        this.phoneNumber = user.getPhoneNumber();
     }
 
     @Override
@@ -33,7 +48,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getLoginId();
+        return loginId;
     }
 
     @Override
@@ -56,8 +71,11 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
+    public User getUser() {
+        return user;
+    }
     // 사용자 추가 정보들
     public String getFullName() {
-        return user.getFirstName() + " " + user.getLastName();
+        return user.getLastName() + user.getFirstName();
     }
 }

@@ -1,4 +1,5 @@
 package com.example.albaease.auth.service;
+import com.example.albaease.auth.CustomUserDetails;
 import com.example.albaease.auth.dto.*;
 import com.example.albaease.auth.exception.*;
 import com.example.albaease.user.entity.SocialType;
@@ -7,6 +8,9 @@ import com.example.albaease.user.repository.UserRepository;
 import com.example.albaease.auth.jwt.JwtUtil;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +23,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     //회원가입 메서드
-    public void signup(SignupRequest request, HttpSession session) {
+    public void signup(SignupRequest request) {
 //        Boolean isIdChecked = (Boolean) session.getAttribute("isIdChecked");
 //        Boolean isPhoneVerified = (Boolean) session.getAttribute("isPhoneVerified");
 //
@@ -71,6 +75,18 @@ public class AuthService {
 
         // JWT 발급 -> 비밀번호가 일치하면 JWT 토큰을 발급하여 반환
         String token =  jwtUtil.generateToken(user.getUserId().toString(), user.getRole().toString());
+
+        // CustomUserDetails 객체 생성
+        CustomUserDetails customUserDetails = new CustomUserDetails(user);
+        System.out.println("로그인에서 제대로 객체생성하는지 확인" + customUserDetails);
+        // Authentication 객체 생성
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                customUserDetails, null, customUserDetails.getAuthorities());
+
+        System.out.println("로그인에서 제대로 객체생성하는지 확인2" + authentication);
+
+        // SecurityContext에 Authentication 객체 설정
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         // JWT 콘솔 출력 확인(나중에 지울거)
         System.out.println("Generated JWT: " + token);
         return token;

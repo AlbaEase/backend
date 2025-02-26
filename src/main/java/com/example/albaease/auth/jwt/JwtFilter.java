@@ -25,9 +25,12 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
         //http 헤더에서 jwt 추출
         String token = getTokenFromRequest(request);
+        logger.info("doFilterInternal  Extracted token: " + token);
 
         if (token != null && !jwtUtil.isTokenExpired(token)) {
             String userId = jwtUtil.extractUserId(token);;
+            System.out.println("doFilterInternal  Extracted userId: " + userId);
+            logger.info("doFilterInternal  Extracted userId: " + userId);
             // 사용자 정보 로드 (CustomUserDetailsService 사용)
             CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserById(Long.valueOf(userId));
 

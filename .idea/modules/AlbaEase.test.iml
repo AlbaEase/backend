@@ -13,11 +13,8 @@
     <content url="file://$MODULE_DIR$/../../src/test">
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/java" isTestSource="true" />
     </content>
-<<<<<<< HEAD
     <orderEntry type="jdk" jdkName="temurin-17" jdkType="JavaSDK" />
-=======
     <orderEntry type="inheritedJdk" />
->>>>>>> bf01a49c9585ad7273f030fbe43553c263befe1b
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="AlbaEase.main" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-websocket:3.2.2" level="project" />
