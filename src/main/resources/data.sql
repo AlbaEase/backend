@@ -1,12 +1,12 @@
   -- Users 데이터 생성
-  INSERT INTO User (name, phone_number, password, role, business_number, created_at, social_type, kakao_id) VALUES
-    ('김가윤', '01011112222', 'hashedpw123', '사장님', '1234567890', NOW(), 'none', NULL),
-    ('조유성', '01022223333', 'hashedpw124', '사장님', '1234567891', NOW(), 'none', NULL),
-    ('김지희', '01033334444', 'hashedpw125', '알바생', NULL, NOW(), 'none', NULL),
-    ('김시현', '01044445555', 'hashedpw126', '알바생', NULL, NOW(), 'none', NULL),
-    ('이서영', '01055556666', 'hashedpw127', '알바생', NULL, NOW(), 'none', NULL),
-    ('조정현', '01066667777', 'hashedpw128', '알바생', NULL, NOW(), 'none', NULL),
-    ('이은우', '01077778888', 'hashedpw129', '알바생', NULL, NOW(), 'none', NULL);
+  INSERT INTO user (last_name, first_name, login_id, password, phone_number, role, business_number, created_at, social_type) VALUES
+    ('김', '가윤', 'user1', 'hashedpw123', '01011112222', '사장님', '1234567890', NOW(), 'none'),
+    ('조', '유성', 'user2', 'hashedpw124', '01022223333', '사장님', '1234567891', NOW(), 'none'),
+    ('김', '지희', 'user3', 'hashedpw125', '01033334444', '알바생', NULL, NOW(), 'none'),
+    ('김', '시현', 'user4', 'hashedpw126', '01044445555', '알바생', NULL, NOW(), 'none'),
+    ('이', '서영', 'user5', 'hashedpw127', '01055556666', '알바생', NULL, NOW(), 'none'),
+    ('조', '정현', 'user6', 'hashedpw128', '01066667777', '알바생', NULL, NOW(), 'none'),
+    ('이', '은우', 'user7', 'hashedpw129', '01077778888', '알바생', NULL, NOW(), 'none');
 
   -- Stores 데이터 생성
  INSERT INTO Store (store_code, name, location, require_approval, created_at) VALUES
