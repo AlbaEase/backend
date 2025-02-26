@@ -48,7 +48,7 @@ public class StoreService {
                 .ownerName(request.getOwnerName())
                 .contactNumber(request.getContactNumber())
                 .storeCode(storeCode)  // 생성한 랜덤 코드 설정
-                .isVerified(isValidBusinessNumber)
+                .require_approval(isValidBusinessNumber)
                 .build();
 
         Store savedStore = storeRepository.save(store);
@@ -70,7 +70,7 @@ public class StoreService {
                 .location(savedStore.getLocation())
                 .ownerName(savedStore.getOwnerName())
                 .contactNumber(savedStore.getContactNumber())
-                .isVerified(savedStore.getIsVerified())
+                .isVerified(savedStore.getRequire_approval())
                 .createdAt(savedStore.getCreatedAt())
                 .build();
     }
@@ -95,7 +95,7 @@ public class StoreService {
                 .location(store.getLocation())
                 .ownerName(store.getOwnerName())
                 .contactNumber(store.getContactNumber())
-                .isVerified(store.getIsVerified())
+                .isVerified(store.getRequire_approval())
                 .createdAt(store.getCreatedAt())
                 .build();
     }
@@ -127,7 +127,7 @@ public class StoreService {
                 .location(updatedStore.getLocation())
                 .ownerName(updatedStore.getOwnerName())
                 .contactNumber(updatedStore.getContactNumber())
-                .isVerified(updatedStore.getIsVerified())
+                .isVerified(updatedStore.getRequire_approval())
                 .createdAt(updatedStore.getCreatedAt())
                 .build();
     }

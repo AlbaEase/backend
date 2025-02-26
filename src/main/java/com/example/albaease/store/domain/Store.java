@@ -38,8 +38,8 @@ public class Store {
     @Column(name = "store_code", unique = true)  // storeCode 추가
     private String storeCode;  // 랜덤 매장 코드 필드 추가
 
-    @Column(name = "is_verified")
-    private Boolean isVerified;
+    @Column(name = "require_approval")
+    private Boolean require_approval;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -55,6 +55,7 @@ public class Store {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.isVerified = false; // 기본값은 미검증
+        this.require_approval = false; // 기본값은 미검증
     }
+
 }
