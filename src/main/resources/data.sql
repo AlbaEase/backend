@@ -1,12 +1,13 @@
   -- Users 데이터 생성
+-- Users 데이터 생성 (BCrypt로 해시된 비밀번호)
   INSERT INTO user (last_name, first_name, login_id, password, phone_number, role, business_number, created_at, social_type) VALUES
-    ('김', '가윤', 'user1', 'hashedpw123', '01011112222', '사장님', '1234567890', NOW(), 'none'),
-    ('조', '유성', 'user2', 'hashedpw124', '01022223333', '사장님', '1234567891', NOW(), 'none'),
-    ('김', '지희', 'user3', 'hashedpw125', '01033334444', '알바생', NULL, NOW(), 'none'),
-    ('김', '시현', 'user4', 'hashedpw126', '01044445555', '알바생', NULL, NOW(), 'none'),
-    ('이', '서영', 'user5', 'hashedpw127', '01055556666', '알바생', NULL, NOW(), 'none'),
-    ('조', '정현', 'user6', 'hashedpw128', '01066667777', '알바생', NULL, NOW(), 'none'),
-    ('이', '은우', 'user7', 'hashedpw129', '01077778888', '알바생', NULL, NOW(), 'none');
+   ('김', '가윤', 'user1', '$2a$10$dL4az.borMw9.kRwGBlxvOUJx3vwIPH/z62FmHLJsLpjGdVrZjPeq', '01011112222', 'OWNER', '1234567890', NOW(), 'NONE'),
+   ('조', '유성', 'user2', '$2a$10$yMLBwMTuS8GrE/HEZiMY/.r7B1Xr2/EUOVjFzFUgLUmUetzY94Q2a', '01022223333', 'OWNER', '1234567891', NOW(), 'NONE'),
+   ('김', '지희', 'user3', '$2a$10$nqgJ.T7EphrUFQqJfmjlqeLIFZ6KvO2VeSW4myUqZKHbXRSU6Qv46', '01033334444', 'WORKER', NULL, NOW(), 'NONE'),
+   ('김', '시현', 'user4', '$2a$10$CibQUAm.wzQMvZK0YuKXsO7NGm8q.Z.Eqv4Ol8i5A3OkdRZxu7iQC', '01044445555', 'WORKER', NULL, NOW(), 'NONE'),
+   ('이', '서영', 'user5', '$2a$10$bM8DmhDFc8XRRr9PZmKjyOHZQniX8pVyQx0GhFo0zDjZO0nEcJIXG', '01055556666', 'WORKER', NULL, NOW(), 'NONE'),
+   ('조', '정현', 'user6', '$2a$10$QJ9Uu6Zq3OwCFQB7Wyh.bOX0jMUSWMJWnQYkZZiZkNPjPMWAuq.rO', '01066667777', 'WORKER', NULL, NOW(), 'NONE'),
+   ('이', '은우', 'user7', '$2a$10$Sk5LFbTIh6M1uKzrndYzOecZaOtMdgT2Ona7qz3Q3Bn5hbDX1JSLC', '01077778888', 'WORKER', NULL, NOW(), 'NONE');
 
   -- Stores 데이터 생성
  INSERT INTO Store (store_code, name, location, require_approval, created_at) VALUES
