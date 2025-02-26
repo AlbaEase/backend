@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class StoreResponseDto {
-    private Long id;
+    private String storeCode;
     private String businessNumber;
     private String name;
     private String location;

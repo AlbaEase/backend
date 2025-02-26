@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Random;
+
 @Service
 @RequiredArgsConstructor
 public class StoreService {
@@ -35,6 +37,9 @@ public class StoreService {
         User user = userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
+        // 랜덤 매장 코드 생성
+        String storeCode = generateRandomStoreCode();
+
         // 매장 생성
         Store store = Store.builder()
                 .businessNumber(request.getBusinessNumber())
@@ -42,6 +47,7 @@ public class StoreService {
                 .location(request.getLocation())
                 .ownerName(request.getOwnerName())
                 .contactNumber(request.getContactNumber())
+                .storeCode(storeCode)  // 생성한 랜덤 코드 설정
                 .isVerified(isValidBusinessNumber)
                 .build();
 
@@ -58,7 +64,7 @@ public class StoreService {
 
         // DTO로 변환 후 반환
         return StoreResponseDto.builder()
-                .id(savedStore.getId())
+                .storeCode(savedStore.getStoreCode())
                 .businessNumber(savedStore.getBusinessNumber())
                 .name(savedStore.getName())
                 .location(savedStore.getLocation())
@@ -83,7 +89,7 @@ public class StoreService {
         Store store = relationship.getStore();
 
         return StoreResponseDto.builder()
-                .id(store.getId())
+                .storeCode(store.getStoreCode())
                 .businessNumber(store.getBusinessNumber())
                 .name(store.getName())
                 .location(store.getLocation())
@@ -115,7 +121,7 @@ public class StoreService {
         Store updatedStore = storeRepository.save(store);
 
         return StoreResponseDto.builder()
-                .id(updatedStore.getId())
+                .storeCode(updatedStore.getStoreCode())
                 .businessNumber(updatedStore.getBusinessNumber())
                 .name(updatedStore.getName())
                 .location(updatedStore.getLocation())
@@ -140,4 +146,18 @@ public class StoreService {
         // 매장 삭제
         storeRepository.deleteById(storeId);
     }
+
+    //랜덤 매장 코드 생성
+
+    private String generateRandomStoreCode() {
+        Random random = new Random();
+        char letter1 = (char) ('A' + random.nextInt(26));
+        int number1 = random.nextInt(100);
+        char letter2 = (char) ('A' + random.nextInt(26));
+        char letter3 = (char) ('A' + random.nextInt(26));
+        int number2 = random.nextInt(10);
+
+        return String.format("%c%02d%c%c%d", letter1, number1, letter2, letter3, number2);
+    }
 }
+
