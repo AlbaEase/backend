@@ -4,6 +4,8 @@ import com.example.albaease.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -25,6 +27,6 @@ public class UserStoreRelationship {
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    @Column(name = "role")
-    private String role; // ADMIN, MANAGER, STAFF 등
+    @Column(name = "work_start_date", nullable = false)
+    private LocalDateTime workStartDate;
 }
