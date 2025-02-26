@@ -10,20 +10,29 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-test-query: SELECT 1
+      maximum-pool-size: 10
+      minimum-idle: 5
 
   jpa:
     database: mysql
-    defer-datasource-initialization: true  # SQL 초기화 지연, 테스트용
-    database-platform: org.hibernate.dialect.MySQLDialect
-    sql:
-      init:
-        mode: always  # 항상 data.sql 실행, 테스트용
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: update   # 배포 시 validate 유지
+      ddl-auto: update    # Hibernate가 스키마를 자동 관리
+    defer-datasource-initialization: true
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+        use_sql_comments: true
+
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql  # 원래대로 복원
+      encoding: UTF-8
+      separator: ;
 
   redis:
     host: redis
@@ -43,6 +52,7 @@ springdoc:
 logging:
   level:
     org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace
     com.example.albaease: debug
 
 jwt:
