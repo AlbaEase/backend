@@ -60,7 +60,7 @@ public class UserService {
                 userDetails.getFullName(),
                 userDetails.getRole(),
                 userDetails.getPhoneNumber(),
-                storeName
+                userDetails.getStoreName()
         );
     }
 
