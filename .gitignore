@@ -1,5 +1,8 @@
 HELP.md
 ### IntelliJ ###
+.idea/modules/AlbaEase.main.iml
+.idea/modules/AlbaEase.test.iml
+.idea/misc.xml
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
