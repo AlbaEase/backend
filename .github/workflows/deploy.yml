@@ -35,7 +35,7 @@ jobs:
           script: |
             cd ~/backend
             mv build/libs/*.jar app.jar
-            docker-compose down
+            docker-compose down -v  # -v 옵션 추가하여 볼륨 삭제 추가
             docker rm -f mysql-container || true
             docker rm -f springapp || true
             docker system prune -f  # 이전 이미지와 캐시정리
