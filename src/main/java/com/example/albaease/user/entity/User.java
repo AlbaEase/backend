@@ -1,8 +1,8 @@
 package com.example.albaease.user.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 @Getter
@@ -57,9 +57,9 @@ public class User {
         this.createdAt = LocalDateTime.now();  // 현재 시간을 생성 시간으로 설정
     }
     //비밀번호 변경
-    public void changePassword(String newPassword, PasswordEncoder passwordEncoder) {
+    /*public void changePassword(String newPassword, PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(newPassword);
-    }
+    }*/
 
     public User(String lastName, String firstName,String loginId, String password, String phoneNumber, SocialType socialType,Role role,  String businessNumber) {
         this.lastName = lastName;

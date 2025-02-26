@@ -20,6 +20,7 @@ public class Store {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "store_id")
     private int storeId;
 
     @Column(unique = true, nullable = false)

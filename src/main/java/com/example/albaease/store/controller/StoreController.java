@@ -6,6 +6,7 @@ import com.example.albaease.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.albaease.store.dto.StoreRegisterRequest;  // StoreRegisterRequest import
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,10 +35,22 @@ public class StoreController {
                 .collect(Collectors.toList());
     }
     // ID로 상점 조회
-    @GetMapping("/{id}")
-    public StoreResponseDto getStoreById(@PathVariable int id) {
-        return new StoreResponseDto(storeService.getStoreById(id));
+    @GetMapping("/user/{userId}")
+    public StoreResponseDto getStoreByUserId(@PathVariable int userId) {
+        return new StoreResponseDto(storeService.getStoreById(userId));
     }
+    //특정 사용자가 사장으로 등록된 모든 매장 조회
+    @GetMapping("/owner/{userId}")
+    public List<StoreResponseDto> getStoresByOwner(@PathVariable Long userId) {
+        return storeService.getStoresByOwner(userId);
+    }
+
+    // 특정 사용자가 알바생으로 등록된 모든 매장 조회
+    @GetMapping("/parttimer/{userId}")
+    public List<StoreResponseDto> getStoresByPartTimer(@PathVariable Long userId) {
+        return storeService.getStoresByPartTimer(userId);
+    }
+
     // 매장 정보 수정 (PUT 요청 추가)
     @PutMapping("/{id}")
     public StoreResponseDto updateStore(@PathVariable int id, @RequestBody StoreRequestDto requestDto) {
@@ -49,4 +62,12 @@ public class StoreController {
     public void deleteStore(@PathVariable int id) {
         storeService.deleteStore(id);
     }
+
+    //알바생이 스토어 코드로 등록
+    @PostMapping("/register")
+    public ResponseEntity<String> registerPartTimer(@RequestBody StoreRegisterRequest request) {
+        storeService.registerPartTimer(request.getUserId(), request.getStoreCode());
+        return ResponseEntity.ok("등록 성공");
+    }
+
 }
