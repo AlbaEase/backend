@@ -25,10 +25,6 @@ public class StoreService {
 
     @Transactional
     public StoreResponseDto createStore(StoreRequestDto request, String loginId) {
-        // 사업자등록번호 중복 체크
-        if (storeRepository.existsByBusinessNumber(request.getBusinessNumber())) {
-            throw new RuntimeException("이미 등록된 사업자등록번호입니다.");
-        }
 
         // 사업자등록번호 검증
         boolean isValidBusinessNumber = businessNumberValidator.validateBusinessNumber(request.getBusinessNumber());
@@ -42,13 +38,10 @@ public class StoreService {
 
         // 매장 생성
         Store store = Store.builder()
-                .businessNumber(request.getBusinessNumber())
                 .name(request.getName())
                 .location(request.getLocation())
-                .ownerName(request.getOwnerName())
-                .contactNumber(request.getContactNumber())
-                .storeCode(storeCode)  // 생성한 랜덤 코드 설정
                 .require_approval(isValidBusinessNumber)
+                .storeCode(storeCode)
                 .build();
 
         Store savedStore = storeRepository.save(store);
@@ -57,7 +50,6 @@ public class StoreService {
         UserStoreRelationship relationship = UserStoreRelationship.builder()
                 .user(user)
                 .store(savedStore)
-                .role("ADMIN") // 매장 생성자는 관리자 역할
                 .build();
 
         userStoreRelationshipRepository.save(relationship);
@@ -65,11 +57,8 @@ public class StoreService {
         // DTO로 변환 후 반환
         return StoreResponseDto.builder()
                 .storeCode(savedStore.getStoreCode())
-                .businessNumber(savedStore.getBusinessNumber())
                 .name(savedStore.getName())
                 .location(savedStore.getLocation())
-                .ownerName(savedStore.getOwnerName())
-                .contactNumber(savedStore.getContactNumber())
                 .isVerified(savedStore.getRequire_approval())
                 .createdAt(savedStore.getCreatedAt())
                 .build();
@@ -81,20 +70,17 @@ public class StoreService {
         User user = userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        // 사용자의 매장 조회
+        // 사용자의 매장 조회 (여기서 권한 체크는 앞단에서 해야 할 수 있음)
         UserStoreRelationship relationship = userStoreRelationshipRepository
-                .findByUser_UserIdAndRole(user.getUserId(), "ADMIN")
+                .findByUser_UserId(user.getUserId())
                 .orElseThrow(() -> new RuntimeException("관리 중인 매장이 없습니다."));
 
         Store store = relationship.getStore();
 
         return StoreResponseDto.builder()
                 .storeCode(store.getStoreCode())
-                .businessNumber(store.getBusinessNumber())
                 .name(store.getName())
                 .location(store.getLocation())
-                .ownerName(store.getOwnerName())
-                .contactNumber(store.getContactNumber())
                 .isVerified(store.getRequire_approval())
                 .createdAt(store.getCreatedAt())
                 .build();
@@ -106,9 +92,9 @@ public class StoreService {
         User user = userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        // 매장 수정 권한 확인
+        // 매장 수정 권한 확인 (이 로직은 사용자의 권한에 따라 달라질 수 있음)
         UserStoreRelationship relationship = userStoreRelationshipRepository
-                .findByUser_UserIdAndStore_IdAndRole(user.getUserId(), storeId, "ADMIN")
+                .findByUser_UserIdAndStore_Id(user.getUserId(), storeId)
                 .orElseThrow(() -> new RuntimeException("수정 권한이 없습니다."));
 
         Store store = relationship.getStore();
@@ -116,17 +102,13 @@ public class StoreService {
         // 매장 정보 업데이트
         store.setName(request.getName());
         store.setLocation(request.getLocation());
-        store.setContactNumber(request.getContactNumber());
 
         Store updatedStore = storeRepository.save(store);
 
         return StoreResponseDto.builder()
                 .storeCode(updatedStore.getStoreCode())
-                .businessNumber(updatedStore.getBusinessNumber())
                 .name(updatedStore.getName())
                 .location(updatedStore.getLocation())
-                .ownerName(updatedStore.getOwnerName())
-                .contactNumber(updatedStore.getContactNumber())
                 .isVerified(updatedStore.getRequire_approval())
                 .createdAt(updatedStore.getCreatedAt())
                 .build();
@@ -138,17 +120,16 @@ public class StoreService {
         User user = userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        // 매장 삭제 권한 확인
+        // 매장 삭제 권한 확인 (이 로직은 사용자의 권한에 따라 달라질 수 있음)
         UserStoreRelationship relationship = userStoreRelationshipRepository
-                .findByUser_UserIdAndStore_IdAndRole(user.getUserId(), storeId, "ADMIN")
+                .findByUser_UserIdAndStore_Id(user.getUserId(), storeId)
                 .orElseThrow(() -> new RuntimeException("삭제 권한이 없습니다."));
 
         // 매장 삭제
         storeRepository.deleteById(storeId);
     }
 
-    //랜덤 매장 코드 생성
-
+    // 랜덤 매장 코드 생성
     private String generateRandomStoreCode() {
         Random random = new Random();
         char letter1 = (char) ('A' + random.nextInt(26));
@@ -160,4 +141,3 @@ public class StoreService {
         return String.format("%c%02d%c%c%d", letter1, number1, letter2, letter3, number2);
     }
 }
-

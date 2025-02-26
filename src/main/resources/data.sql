@@ -1,31 +1,32 @@
--- Users 데이터 생성 (BCrypt로 해시된 비밀번호)
-INSERT INTO user (last_name, first_name, login_id, password, phone_number, role, business_number, created_at, social_type) VALUES
-    ('김', '가윤', 'user1', '$2a$10$RVGFAH8vuVukDJ82IyQKu.K06pynf/hKSRN93qRbT7C4lqLyXfX1K', '01011112222', 'OWNER', '1234567890', NOW(), 'NONE'),
-    ('조', '유성', 'user2', '$2a$10$RVGFAH8vuVukDJ82IyQKu.K06pynf/hKSRN93qRbT7C4lqLyXfX1K', '01022223333', 'OWNER', '1234567891', NOW(), 'NONE'),
-    ('김', '지희', 'user3', '$2a$10$RVGFAH8vuVukDJ82IyQKu.K06pynf/hKSRN93qRbT7C4lqLyXfX1K', '01033334444', 'WORKER', NULL, NOW(), 'NONE'),
-    ('김', '시현', 'user4', '$2a$10$RVGFAH8vuVukDJ82IyQKu.K06pynf/hKSRN93qRbT7C4lqLyXfX1K', '01044445555', 'WORKER', NULL, NOW(), 'NONE'),
-    ('이', '서영', 'user5', '$2a$10$RVGFAH8vuVukDJ82IyQKu.K06pynf/hKSRN93qRbT7C4lqLyXfX1K', '01055556666', 'WORKER', NULL, NOW(), 'NONE'),
-    ('조', '정현', 'user6', '$2a$10$RVGFAH8vuVukDJ82IyQKu.K06pynf/hKSRN93qRbT7C4lqLyXfX1K', '01066667777', 'WORKER', NULL, NOW(), 'NONE'),
-    ('이', '은우', 'user7', '$2a$10$RVGFAH8vuVukDJ82IyQKu.K06pynf/hKSRN93qRbT7C4lqLyXfX1K', '01077778888', 'WORKER', NULL, NOW(), 'NONE');
-  -- Stores 데이터 생성
- INSERT INTO Store (store_code, name, location, require_approval, created_at) VALUES
-   ('STORE001', '알바이즈 카페', '서울시 강남구 역삼동', true, NOW()),
-   ('STORE002', '이지알바 편의점', '서울시 서초구 서초동', false, NOW());
+-- 스토어 더미 데이터
+INSERT INTO store (name, location, store_code, require_approval, business_number, created_at) VALUES
+('맥도날드 강남점', '서울 강남구', 'STORE001', false, '123-45-67890', NOW()),
+('스타벅스 홍대점', '서울 마포구', 'STORE002', false, '234-56-78901', NOW());
 
- -- User_Store_Relationship 데이터 생성
- INSERT INTO User_Store_Relationship (user_id, store_id, role, work_start_date) VALUES
-   (1, 1, '사장님', NOW()),  -- 김가윤-카페
-   (2, 2, '사장님', NOW()),  -- 조유성-편의점
-   (3, 1, '알바생', NOW()),  -- 김지희-카페
-   (4, 1, '알바생', NOW()),  -- 김시현-카페
-   (5, 1, '알바생', NOW()),  -- 이서영-카페
-   (6, 2, '알바생', NOW()),  -- 조정현-편의점
-   (7, 2, '알바생', NOW());  -- 이은우-편의점
+-- 사용자 더미 데이터 (비밀번호: 영어+숫자 조합, 8글자 이상)
+INSERT INTO user (last_name, first_name, login_id, password, phone_number, role, store_id, business_number, created_at, social_type) VALUES
+('김', '가윤', 'boss1', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', '010-1111-1111', 'OWNER', 1, '123-45-67890', NOW(), 'NONE'),
+('조', '유성', 'boss2', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', '010-2222-2222', 'OWNER', 2, '234-56-78901', NOW(), 'NONE'),
+('김', '시현', 'staff1', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', '010-3333-3333', 'STAFF', 1, NULL, NOW(), 'NONE'),
+('김', '지희', 'staff2', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', '010-4444-4444', 'STAFF', 1, NULL, NOW(), 'NONE'),
+('이', '서영', 'staff3', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', '010-5555-5555', 'STAFF', 1, NULL, NOW(), 'NONE'),
+('조', '정현', 'staff4', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', '010-6666-6666', 'STAFF', 2, NULL, NOW(), 'NONE'),
+('이', '은우', 'staff5', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', '010-7777-7777', 'STAFF', 2, NULL, NOW(), 'NONE');
 
- -- Schedule 데이터 생성
- INSERT INTO Schedule (user_id, store_id, work_date, start_time, end_time, break_time, repeat_days, repeat_end_date) VALUES
-   (3, 1, '2025-02-24', '09:00:00', '15:00:00', '12:00:00', '월,수,금', '2025-03-24'),
-   (4, 1, '2025-02-24', '14:00:00', '21:00:00', '17:00:00', '화,목,토', '2025-03-24'),
-   (5, 1, '2025-02-24', '10:00:00', '17:00:00', '13:00:00', '수,금,일', '2025-03-24'),
-   (6, 2, '2025-02-24', '06:00:00', '14:00:00', '10:00:00', '월,수,금', '2025-03-24'),
-   (7, 2, '2025-02-24', '14:00:00', '22:00:00', '18:00:00', '화,목,토', '2025-03-24');
+-- 유저-스토어 관계 더미 데이터
+INSERT INTO user_store_relationship (user_id, store_id, work_start_date) VALUES
+(1, 1, NOW()),
+(2, 2, NOW()),
+(3, 1, NOW()),
+(4, 1, NOW()),
+(5, 1, NOW()),
+(6, 2, NOW()),
+(7, 2, NOW());
+
+-- 스케줄 더미 데이터
+INSERT INTO schedule (store_id, user_id, work_date, start_time, end_time, break_time, repeat_days, repeat_end_date) VALUES
+(1, 3, '2024-02-27', '09:00:00', '18:00:00', '12:00:00', 'MON,WED,FRI', '2024-12-31'),
+(1, 4, '2024-02-27', '10:00:00', '19:00:00', '13:00:00', 'TUE,THU,SAT', '2024-12-31'),
+(1, 5, '2024-02-27', '11:00:00', '20:00:00', '14:00:00', 'MON,WED,FRI', '2024-12-31'),
+(2, 6, '2024-02-27', '09:00:00', '18:00:00', '12:00:00', 'TUE,THU,SAT', '2024-12-31'),
+(2, 7, '2024-02-27', '10:00:00', '19:00:00', '13:00:00', 'MON,WED,FRI', '2024-12-31');
