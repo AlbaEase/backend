@@ -32,11 +32,19 @@ INSERT IGNORE INTO user_store_relationship (user_id, store_id, work_start_date) 
 INSERT IGNORE INTO schedule (
     store_id, user_id, work_date, start_time, end_time,
     break_time, repeat_days, repeat_end_date
-) VALUES
-    (1, 3, '2024-02-27', '09:00:00', '18:00:00', '12:00:00', 'MON,WED,FRI', '2024-12-31'),
-    (1, 4, '2024-02-27', '10:00:00', '19:00:00', '13:00:00', 'TUE,THU,SAT', '2024-12-31'),
-    (1, 5, '2024-02-27', '11:00:00', '20:00:00', '14:00:00', 'MON,WED,FRI', '2024-12-31'),
-    (2, 6, '2024-02-27', '09:00:00', '18:00:00', '12:00:00', 'TUE,THU,SAT', '2024-12-31'),
-    (2, 7, '2024-02-27', '10:00:00', '19:00:00', '13:00:00', 'MON,WED,FRI', '2024-12-31');
+) SELECT 1, 3, '2024-02-27', '09:00:00', '18:00:00', '12:00:00', 'MON,WED,FRI', '2024-12-31'
+WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 1 AND user_id = 3 AND work_date = '2024-02-27')
+UNION
+SELECT 1, 4, '2024-02-27', '10:00:00', '19:00:00', '13:00:00', 'TUE,THU,SAT', '2024-12-31'
+WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 1 AND user_id = 4 AND work_date = '2024-02-27')
+UNION
+SELECT 1, 5, '2024-02-27', '11:00:00', '20:00:00', '14:00:00', 'MON,WED,FRI', '2024-12-31'
+WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 1 AND user_id = 5 AND work_date = '2024-02-27')
+UNION
+SELECT 2, 6, '2024-02-27', '09:00:00', '18:00:00', '12:00:00', 'TUE,THU,SAT', '2024-12-31'
+WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 2 AND user_id = 6 AND work_date = '2024-02-27')
+UNION
+SELECT 2, 7, '2024-02-27', '10:00:00', '19:00:00', '13:00:00', 'MON,WED,FRI', '2024-12-31'
+WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 2 AND user_id = 7 AND work_date = '2024-02-27');
 
 SET FOREIGN_KEY_CHECKS=1;
