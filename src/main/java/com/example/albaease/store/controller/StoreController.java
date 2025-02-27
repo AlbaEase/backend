@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/store")
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class StoreController {
 
     // 매장 정보 조회 (운영 or 근무 전체 매장 조회)
     @GetMapping("/me")
-    public ResponseEntity<StoreResponseDto> getMyStore(
+    public  ResponseEntity<List<StoreResponseDto>> getMyStore(
             Authentication authentication
     ) {
         String username = authentication.getName();

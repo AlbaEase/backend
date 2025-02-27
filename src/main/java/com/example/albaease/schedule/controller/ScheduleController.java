@@ -39,14 +39,15 @@ public class ScheduleController {
         return ResponseEntity.ok(schedules);
     }
 
-    // 특정 알바생의 스토어별 스케줄 조회. 스토어 아이디 부분 수정 필요
-    //@GetMapping("/store/{storeId}/user/{userId}")
-    //public ResponseEntity<List<ScheduleResponse>> getSchedulesByStoreIdAndUserId(
-    //        @PathVariable Long storeId,
-    //        @PathVariable Long userId) {
-    //    List<ScheduleResponse> schedules = scheduleService.getSchedulesByStoreIdAndUserId(storeId, userId);
-    //    return ResponseEntity.ok(schedules);
-    //}
+    // 특정 알바생의 스토어별 스케줄 조회.
+    @GetMapping("/store/{storeId}/user/{userId}")
+    public ResponseEntity<List<ScheduleResponse>> getSchedulesByStoreAndUser(
+            @PathVariable Long storeId,
+            @PathVariable Long userId) {
+
+        List<ScheduleResponse> schedules = scheduleService.getSchedulesByStoreAndUser(storeId, userId);
+        return ResponseEntity.ok(schedules);
+    }
 
     // 스케줄 ID로 조회
     @GetMapping("/{scheduleId}")
@@ -56,10 +57,13 @@ public class ScheduleController {
     }
 
     // 스케줄 등록
-    @PostMapping("/create") // 여러 명의 사용자에게 한 번에 스케줄 등록하게 수정. store 테이블 생기면 api 수정할 예정
-    public ResponseEntity<List<ScheduleResponse>> createSchedulesForMultipleUsers(@RequestBody ScheduleRequest scheduleRequest) {
-        List<ScheduleResponse> scheduleResponses = scheduleService.createSchedulesForMultipleUsers(scheduleRequest);
-        return ResponseEntity.ok(scheduleResponses);
+    @PostMapping("/store/{storeId}")
+    public ResponseEntity<List<ScheduleResponse>> createSchedules(
+            @PathVariable Long storeId,
+            @RequestBody ScheduleRequest request) {
+
+        List<ScheduleResponse> createdSchedules = scheduleService.createSchedules(storeId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdSchedules);
     }
 
     // 스케줄 수정

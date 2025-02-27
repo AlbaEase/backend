@@ -9,7 +9,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class StoreResponseDto {
+<<<<<<< HEAD
     private Long id; // 엔티티의 id 추가
+=======
+    private Long storeId;
+>>>>>>> 8b48bf6b6681eaede7440413d4ecd8899f340996
     private String storeCode;
     private String businessNumber;
     private String name;

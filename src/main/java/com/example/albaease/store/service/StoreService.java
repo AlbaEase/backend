@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,7 @@ public class StoreService {
 
     @Transactional
     public StoreResponseDto createStore(StoreRequestDto request, String loginId) {
+
         // 사업자등록번호 검증
         boolean isValidBusinessNumber = businessNumberValidator.validateBusinessNumber(request.getBusinessNumber());
 
@@ -41,7 +44,6 @@ public class StoreService {
                 .location(request.getLocation())
                 .require_approval(isValidBusinessNumber)
                 .storeCode(storeCode)
-                .businessNumber(request.getBusinessNumber())
                 .build();
 
         Store savedStore = storeRepository.save(store);
@@ -56,38 +58,43 @@ public class StoreService {
 
         // DTO로 변환 후 반환
         return StoreResponseDto.builder()
-                .id(savedStore.getId())
                 .storeCode(savedStore.getStoreCode())
-                .businessNumber(savedStore.getBusinessNumber())
                 .name(savedStore.getName())
                 .location(savedStore.getLocation())
-                .requireApproval(savedStore.getRequire_approval())
+                .isVerified(savedStore.getRequire_approval())
                 .createdAt(savedStore.getCreatedAt())
                 .build();
     }
 
     @Transactional(readOnly = true)
-    public StoreResponseDto getMyStore(String loginId) {
+    public List<StoreResponseDto> getMyStore(String loginId) {
         // 현재 로그인한 사용자 조회
         User user = userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        // 사용자의 매장 조회 (여기서 권한 체크는 앞단에서 해야 할 수 있음)
-        UserStoreRelationship relationship = userStoreRelationshipRepository
-                .findByUser_UserId(user.getUserId())
-                .orElseThrow(() -> new RuntimeException("관리 중인 매장이 없습니다."));
+        // 사용자의 매장 목록 조회
+        List<UserStoreRelationship> relationships = userStoreRelationshipRepository
+                .findByUser_UserId(user.getUserId());
 
-        Store store = relationship.getStore();
+        if (relationships.isEmpty()) {
+            throw new RuntimeException("관리 중인 매장이 없습니다.");
+        }
 
-        return StoreResponseDto.builder()
-                .id(store.getId())
-                .storeCode(store.getStoreCode())
-                .businessNumber(store.getBusinessNumber())
-                .name(store.getName())
-                .location(store.getLocation())
-                .requireApproval(store.getRequire_approval())
-                .createdAt(store.getCreatedAt())
-                .build();
+
+        // StoreResponseDto 리스트로 변환
+        return relationships.stream()
+                .map(relationship -> {
+                    Store store = relationship.getStore();
+                    return StoreResponseDto.builder()
+                            .storeId(store.getId())
+                            .storeCode(store.getStoreCode())
+                            .name(store.getName())
+                            .location(store.getLocation())
+                            .isVerified(store.getRequire_approval())
+                            .createdAt(store.getCreatedAt())
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -110,12 +117,10 @@ public class StoreService {
         Store updatedStore = storeRepository.save(store);
 
         return StoreResponseDto.builder()
-                .id(updatedStore.getId())
                 .storeCode(updatedStore.getStoreCode())
-                .businessNumber(updatedStore.getBusinessNumber())
                 .name(updatedStore.getName())
                 .location(updatedStore.getLocation())
-                .requireApproval(updatedStore.getRequire_approval())
+                .isVerified(updatedStore.getRequire_approval())
                 .createdAt(updatedStore.getCreatedAt())
                 .build();
     }

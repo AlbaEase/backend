@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.albaease.store.domain.Store;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,19 +31,17 @@ public class ScheduleService {
 
     // 특정 스토어(storeId)의 전체 스케줄 조회
     public List<ScheduleResponse> getSchedulesByStoreId(Long storeId) {
-        return scheduleRepository.findByStore_Id(storeId)
-                .stream()
+        List<Schedule> schedules = scheduleRepository.findByStore_Id(storeId);
+
+        return schedules.stream()
                 .map(ScheduleResponse::fromEntity)
                 .collect(Collectors.toList());
     }
 
     //특정 스토어 내 특정 사용자의 스케줄 조회
-    public List<ScheduleResponse> getSchedulesByStoreIdAndUserId(Long storeId, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-
-        return scheduleRepository.findByStore_IdAndUser(storeId, user)
-                .stream()
+    public List<ScheduleResponse> getSchedulesByStoreAndUser(Long storeId, Long userId) {
+        List<Schedule> schedules = scheduleRepository.findByStore_IdAndUser_UserId(storeId, userId);
+        return schedules.stream()
                 .map(ScheduleResponse::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -56,14 +55,31 @@ public class ScheduleService {
 
     // 스케줄 생성
     @Transactional
-    public List<ScheduleResponse> createSchedulesForMultipleUsers(ScheduleRequest scheduleRequest) {
-        // 여러 명의 사용자의 스케줄을 생성
-        List<Schedule> schedules = scheduleRequest.toEntities(userRepository, storeRepository);
+    public List<ScheduleResponse> createSchedules(Long storeId, ScheduleRequest request) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new RuntimeException("Store not found with id: " + storeId));
 
-        // 스케줄을 저장
+        List<User> users = userRepository.findAllById(request.getUserIds());
+        if (users.isEmpty()) {
+            throw new RuntimeException("No valid users found.");
+        }
+
+        List<Schedule> schedules = new ArrayList<>();
+        for (User user : users) {
+            Schedule schedule = new Schedule();
+            schedule.setStore(store);
+            schedule.setUser(user);
+            schedule.setWorkDate(request.getWorkDate());
+            schedule.setStartTime(request.getStartTime());
+            schedule.setEndTime(request.getEndTime());
+            schedule.setBreakTime(request.getBreakTime());
+            schedules.add(schedule);
+        }
+
+        // 스케줄 저장
         scheduleRepository.saveAll(schedules);
 
-        // 응답 생성
+        // 저장된 데이터를 ScheduleResponse로 변환 후 반환
         return schedules.stream()
                 .map(ScheduleResponse::fromEntity)
                 .collect(Collectors.toList());
