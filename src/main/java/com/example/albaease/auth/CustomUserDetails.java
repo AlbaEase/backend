@@ -29,7 +29,7 @@ public class CustomUserDetails implements UserDetails {
         this.fullName =   user.getLastName() + user.getFirstName();
         this.role = user.getRole().name();
         this.phoneNumber = user.getPhoneNumber();
-        this.storeName = (user.getStore() != null) ? user.getStore().getName() : null; // storeName 초기화
+        this.storeName = user.getStoreName(); // storeName 초기화
     }
 
     @Override
@@ -39,6 +39,7 @@ public class CustomUserDetails implements UserDetails {
 
 
 }
+
     @Override
     public String getPassword() {
         return user.getPassword();
@@ -83,7 +84,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
     // storeName 반환
-    public String getName() {
+    public String getStoreName() {
         return storeName;
     }
 }

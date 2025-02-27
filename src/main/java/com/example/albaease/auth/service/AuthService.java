@@ -56,7 +56,7 @@ public class AuthService {
                 request.getPhoneNumber(),
                 socialType,
                 request.getRole(),
-//                null,  // store는 일단 null
+                null,  // store는 일단 null
                 null   // businessNumber도 null
         );
         // 사용자 정보를 DB에 저장

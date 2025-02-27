@@ -38,7 +38,7 @@ public class User implements Serializable {
     @Column(name = "role", nullable = false)
     private Role role;  // 역할 (사장님/알바생)
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "store_id")  // 소속된 매장의 ID (외래 키)
     private Store store;
 
@@ -65,7 +65,10 @@ public class User implements Serializable {
         this.password = passwordEncoder.encode(newPassword);
     }
 
-    public User(String lastName, String firstName,String loginId, String password, String phoneNumber, SocialType socialType, Role role,  String businessNumber) {
+    public String getStoreName() {
+        return store != null ? store.getName() : "임시 매장 이름"; // 🔹 storeName 가져오는 메서드 추가
+    }
+    public User(String lastName, String firstName,String loginId, String password, String phoneNumber, SocialType socialType, Role role,  Store store,String businessNumber) {
         this.lastName = lastName;
         this.firstName = firstName;
         this.loginId = loginId;
