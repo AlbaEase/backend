@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,25 +67,33 @@ public class StoreService {
     }
 
     @Transactional(readOnly = true)
-    public StoreResponseDto getMyStore(String loginId) {
+    public List<StoreResponseDto> getMyStore(String loginId) {
         // 현재 로그인한 사용자 조회
         User user = userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        // 사용자의 매장 조회 (여기서 권한 체크는 앞단에서 해야 할 수 있음)
-        UserStoreRelationship relationship = userStoreRelationshipRepository
-                .findByUser_UserId(user.getUserId())
-                .orElseThrow(() -> new RuntimeException("관리 중인 매장이 없습니다."));
+        // 사용자의 매장 목록 조회
+        List<UserStoreRelationship> relationships = userStoreRelationshipRepository
+                .findByUser_UserId(user.getUserId());
 
-        Store store = relationship.getStore();
+        if (relationships.isEmpty()) {
+            throw new RuntimeException("관리 중인 매장이 없습니다.");
+        }
 
-        return StoreResponseDto.builder()
-                .storeCode(store.getStoreCode())
-                .name(store.getName())
-                .location(store.getLocation())
-                .isVerified(store.getRequire_approval())
-                .createdAt(store.getCreatedAt())
-                .build();
+
+        // StoreResponseDto 리스트로 변환
+        return relationships.stream()
+                .map(relationship -> {
+                    Store store = relationship.getStore();
+                    return StoreResponseDto.builder()
+                            .storeCode(store.getStoreCode())
+                            .name(store.getName())
+                            .location(store.getLocation())
+                            .isVerified(store.getRequire_approval())
+                            .createdAt(store.getCreatedAt())
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional
