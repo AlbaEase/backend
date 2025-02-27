@@ -86,6 +86,7 @@ public class StoreService {
                 .map(relationship -> {
                     Store store = relationship.getStore();
                     return StoreResponseDto.builder()
+                            .storeId(store.getId())
                             .storeCode(store.getStoreCode())
                             .name(store.getName())
                             .location(store.getLocation())

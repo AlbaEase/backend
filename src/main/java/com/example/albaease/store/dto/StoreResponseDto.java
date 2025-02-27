@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class StoreResponseDto {
+    private Long storeId;
     private String storeCode;
     private String businessNumber;
     private String name;
