@@ -61,7 +61,6 @@ public class StoreService {
                 .storeCode(savedStore.getStoreCode())
                 .name(savedStore.getName())
                 .location(savedStore.getLocation())
-                .isVerified(savedStore.getRequire_approval())
                 .createdAt(savedStore.getCreatedAt())
                 .build();
     }
@@ -90,7 +89,6 @@ public class StoreService {
                             .storeCode(store.getStoreCode())
                             .name(store.getName())
                             .location(store.getLocation())
-                            .isVerified(store.getRequire_approval())
                             .createdAt(store.getCreatedAt())
                             .build();
                 })
@@ -120,7 +118,6 @@ public class StoreService {
                 .storeCode(updatedStore.getStoreCode())
                 .name(updatedStore.getName())
                 .location(updatedStore.getLocation())
-                .isVerified(updatedStore.getRequire_approval())
                 .createdAt(updatedStore.getCreatedAt())
                 .build();
     }
