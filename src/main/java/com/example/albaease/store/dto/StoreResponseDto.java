@@ -9,13 +9,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class StoreResponseDto {
+
+    private Long id; // 엔티티의 id 추가
     private Long storeId;
     private String storeCode;
     private String businessNumber;
     private String name;
     private String location;
-    private String ownerName;
-    private String contactNumber;
-    private Boolean isVerified;
+
+    // 엔티티의 승인 여부 필드 추가
+    private Boolean requireApproval;
+
     private LocalDateTime createdAt;
+
 }
