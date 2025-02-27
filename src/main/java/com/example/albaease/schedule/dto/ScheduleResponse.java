@@ -13,6 +13,7 @@ import java.util.List;
 public class ScheduleResponse {
     private Long scheduleId;
     private Long userId;
+    private String fullName;
     private Long storeId;
     private LocalDate workDate;
     private LocalTime startTime;
@@ -24,7 +25,9 @@ public class ScheduleResponse {
     public static ScheduleResponse fromEntity(Schedule schedule) {
         ScheduleResponse response = new ScheduleResponse();
         response.setScheduleId(schedule.getScheduleId());
-        response.setUserId(schedule.getUser().getUserId()); // 변경된 부분
+        response.setUserId(schedule.getUser().getUserId());
+        String fullName = schedule.getUser().getLastName() + " " + schedule.getUser().getFirstName();
+        response.setFullName(fullName.trim());
         response.setStoreId(schedule.getStoreId());
         response.setWorkDate(schedule.getWorkDate());
         response.setStartTime(schedule.getStartTime());
