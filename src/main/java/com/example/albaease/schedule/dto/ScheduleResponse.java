@@ -26,7 +26,7 @@ public class ScheduleResponse {
         ScheduleResponse response = new ScheduleResponse();
         response.setScheduleId(schedule.getScheduleId());
         response.setUserId(schedule.getUser().getUserId());
-        String fullName = schedule.getUser().getLastName() + " " + schedule.getUser().getFirstName();
+        String fullName = schedule.getUser().getLastName() + schedule.getUser().getFirstName();
         response.setFullName(fullName.trim());
         response.setStoreId(schedule.getStoreId());
         response.setWorkDate(schedule.getWorkDate());
