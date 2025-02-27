@@ -25,7 +25,6 @@ public class StoreService {
 
     @Transactional
     public StoreResponseDto createStore(StoreRequestDto request, String loginId) {
-
         // 사업자등록번호 검증
         boolean isValidBusinessNumber = businessNumberValidator.validateBusinessNumber(request.getBusinessNumber());
 
@@ -42,6 +41,7 @@ public class StoreService {
                 .location(request.getLocation())
                 .require_approval(isValidBusinessNumber)
                 .storeCode(storeCode)
+                .businessNumber(request.getBusinessNumber())
                 .build();
 
         Store savedStore = storeRepository.save(store);
@@ -56,10 +56,12 @@ public class StoreService {
 
         // DTO로 변환 후 반환
         return StoreResponseDto.builder()
+                .id(savedStore.getId())
                 .storeCode(savedStore.getStoreCode())
+                .businessNumber(savedStore.getBusinessNumber())
                 .name(savedStore.getName())
                 .location(savedStore.getLocation())
-                .isVerified(savedStore.getRequire_approval())
+                .requireApproval(savedStore.getRequire_approval())
                 .createdAt(savedStore.getCreatedAt())
                 .build();
     }
@@ -78,10 +80,12 @@ public class StoreService {
         Store store = relationship.getStore();
 
         return StoreResponseDto.builder()
+                .id(store.getId())
                 .storeCode(store.getStoreCode())
+                .businessNumber(store.getBusinessNumber())
                 .name(store.getName())
                 .location(store.getLocation())
-                .isVerified(store.getRequire_approval())
+                .requireApproval(store.getRequire_approval())
                 .createdAt(store.getCreatedAt())
                 .build();
     }
@@ -106,10 +110,12 @@ public class StoreService {
         Store updatedStore = storeRepository.save(store);
 
         return StoreResponseDto.builder()
+                .id(updatedStore.getId())
                 .storeCode(updatedStore.getStoreCode())
+                .businessNumber(updatedStore.getBusinessNumber())
                 .name(updatedStore.getName())
                 .location(updatedStore.getLocation())
-                .isVerified(updatedStore.getRequire_approval())
+                .requireApproval(updatedStore.getRequire_approval())
                 .createdAt(updatedStore.getCreatedAt())
                 .build();
     }
