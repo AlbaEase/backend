@@ -40,7 +40,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 리액트 앱과 스웨거 UI 도메인을 명시적으로 허용
-        configuration.setAllowedOrigins(Arrays.asList("http://3.39.237.218:5173", "http://3.39.237.218:8080"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173","http://3.39.237.218:5173", "http://3.39.237.218:8080"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);  // 세션 쿠키 공유를 위해 true로 설정
