@@ -41,12 +41,11 @@ public class ShiftService {
         Schedule schedule = scheduleRepository.findById(request.getScheduleId())
                 .orElseThrow(() -> new EntityNotFoundException("스케줄을 찾을 수 없습니다."));
 
-
         // 대타 요청 생성
         Shift shift = Shift.builder()
                 .fromUser(fromUser)
                 .toUser(toUser)
-               // .schedule(schedule)
+                .schedule(schedule)
                 .requestType(request.getRequestType())
                 .build();
 
@@ -88,8 +87,6 @@ public class ShiftService {
 
         return ShiftResponse.from(shift);
     }
-
-
 
     private void sendShiftNotification(Long userId, Long scheduleId, String message) {
         notificationService.createNotification(NotificationRequest.builder()
