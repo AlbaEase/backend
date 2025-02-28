@@ -110,7 +110,7 @@ public class StoreService {
         UserStoreRelation userStoreRelation = new UserStoreRelation();
         userStoreRelation.setUser(user);
         userStoreRelation.setStore(store);
-        userStoreRelation.setRole(Role.PART_TIMER);
+        userStoreRelation.setRole(Role.PARTTIMER);
         userStoreRelation.setWorkStartDate(LocalDateTime.now());
 
         userStoreRelationRepository.save(userStoreRelation);

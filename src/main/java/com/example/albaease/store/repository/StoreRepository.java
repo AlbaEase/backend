@@ -16,7 +16,7 @@ public interface StoreRepository extends JpaRepository<Store, Integer> {
     @Query("SELECT s FROM Store s JOIN UserStoreRelation usr ON s = usr.store WHERE usr.user.userId = :userId AND usr.role = :role")
     List<Store> findByPartTimerId(@Param("userId") Long userId);
 
-    @Query("SELECT s FROM Store s JOIN UserStoreRelation usr ON s = usr.store WHERE usr.user.userId = :userId AND usr.role = com.example.albaease.user.entity.Role.OWNER")
+    @Query("SELECT s FROM Store s JOIN UserStoreRelation usr ON s = usr.store WHERE usr.user.userId = :userId AND usr.role = 'OWNER'")
     List<Store> findByOwnerId(@Param("userId") Long userId);
 
 }
