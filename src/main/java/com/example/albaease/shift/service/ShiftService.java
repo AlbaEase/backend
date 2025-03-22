@@ -16,7 +16,6 @@ import com.example.albaease.shift.dto.ShiftResponse;
 import com.example.albaease.shift.repository.ShiftRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import com.example.albaease.schedule.domain.Schedule;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,13 +46,18 @@ public class ShiftService {
                 .toUser(toUser)
                 .schedule(schedule)
                 .requestType(request.getRequestType())
+                .requestDate(request.getRequestDate()) // 대타 요청 대상 날짜 추가
                 .build();
 
         Shift savedShift = shiftRepository.save(shift);
 
         // 알림 생성
-        sendShiftNotification(toUser.getUserId(), schedule.getScheduleId(),
-         "새로운 대타 요청이 도착했습니다.");
+        String message = "새로운 대타 요청이 도착했습니다.";
+        if (request.getRequestDate() != null) {
+            message += " 날짜: " + request.getRequestDate().toString();
+        }
+
+        sendShiftNotification(toUser.getUserId(), schedule.getScheduleId(), message);
 
         return ShiftResponse.from(savedShift);
     }
@@ -75,6 +79,10 @@ public class ShiftService {
             case REJECTED -> "대타 요청이 거절되었습니다.";
             default -> "대타 요청 상태가 변경되었습니다.";
         };
+
+        if (shift.getRequestDate() != null) {
+            statusMessage += " 날짜: " + shift.getRequestDate().toString();
+        }
 
         sendShiftNotification(shift.getFromUser().getUserId(),
                 shift.getSchedule().getScheduleId(), statusMessage);
@@ -102,11 +110,17 @@ public class ShiftService {
         // 대타 요청 저장
         ShiftResponse shiftResponse = createShiftRequest(request);
 
+        // 메시지 생성
+        String message = "대타 요청이 도착했습니다.";
+        if (request.getRequestDate() != null) {
+            message += " 날짜: " + request.getRequestDate().toString();
+        }
+
         // 알림 생성 요청
         NotificationRequest notificationRequest = NotificationRequest.builder()
                 .userId(request.getToUserId())
                 .type(NotificationType.SPECIFIC_USER)
-                .message("대타 요청이 도착했습니다.")
+                .message(message)
                 .scheduleId(request.getScheduleId())
                 .fromUserId(request.getFromUserId())
                 .toUserId(request.getToUserId())

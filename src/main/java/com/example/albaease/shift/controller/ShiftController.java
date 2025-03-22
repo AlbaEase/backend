@@ -7,12 +7,14 @@ import com.example.albaease.shift.dto.ShiftResponse;
 import com.example.albaease.shift.service.ShiftService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDate;
 
 @Slf4j
 @RestController
@@ -27,6 +29,9 @@ public class ShiftController {
             Principal principal) {
         String userId = principal.getName();
         request.setFromUserId(Long.parseLong(userId));
+
+        // requestDate는 request 객체에서 이미 포함되어 있음
+
         return ResponseEntity.ok(shiftService.createShiftRequest(request));
     }
 

@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import com.example.albaease.schedule.domain.Schedule;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,9 +28,9 @@ public class Shift {
     @JoinColumn(name = "to_user_id")
     private User toUser;
 
-   @ManyToOne(fetch = FetchType.LAZY)
-   @JoinColumn(name = "schedule_id")
-   private Schedule schedule;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id")
+    private Schedule schedule;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approved_by")
@@ -41,16 +42,20 @@ public class Shift {
     @Enumerated(EnumType.STRING)
     private ShiftStatus status = ShiftStatus.PENDING;
 
+    // 대타 요청 대상 날짜
+    private LocalDate requestDate;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder
     public Shift(User fromUser, User toUser, Schedule schedule,
-                 ShiftRequestType requestType) {
+                 ShiftRequestType requestType, LocalDate requestDate) {
         this.fromUser = fromUser;
         this.toUser = toUser;
         this.schedule = schedule;
         this.requestType = requestType;
+        this.requestDate = requestDate;
         this.status = ShiftStatus.PENDING;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
