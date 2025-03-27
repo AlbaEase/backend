@@ -34,9 +34,23 @@ spring:
       encoding: UTF-8
       separator: ;
 
-  redis:
-    host: redis
-    port: 6379
+  #Email 인증
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_USERNAME}
+    password: ${GMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+#          required: true
 
 server:
   port: 8080
@@ -64,6 +78,8 @@ coolsms:
     key: ${COOLSMS_API_KEY}
     secret: ${COOLSMS_API_SECRET}
     number: ${COOLSMS_SENDER_NUMBER}
+
+
 
 websocket:
   allowed-origins: "*"
