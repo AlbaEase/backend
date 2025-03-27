@@ -22,6 +22,11 @@ public class ScheduleResponse {
     private List<String> repeatDays;
     private LocalDate repeatEndDate;
 
+    // 대타 관련 필드 추가
+    private boolean isShiftChanged;  // 대타 변경 여부
+    private Long originalUserId;     // 원래 스케줄의 사용자 ID (대타인 경우)
+    private String originalUserName; // 원래 스케줄의 사용자 이름 (대타인 경우)
+
     public static ScheduleResponse fromEntity(Schedule schedule) {
         ScheduleResponse response = new ScheduleResponse();
         response.setScheduleId(schedule.getScheduleId());
@@ -35,6 +40,7 @@ public class ScheduleResponse {
         response.setBreakTime(schedule.getBreakTime());
         response.setRepeatDays(schedule.getRepeatDaysList());
         response.setRepeatEndDate(schedule.getRepeatEndDate());
+        response.setShiftChanged(false); // 기본적으로 대타가 아님
         return response;
     }
 }

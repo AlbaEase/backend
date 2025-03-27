@@ -11,7 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/schedule")
@@ -103,5 +105,25 @@ public class ScheduleController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         }
+    }
+
+    // 월간 스케줄 조회 API 추가 (대타 요청 반영)
+    @GetMapping("/store/{storeId}/monthly")
+    public ResponseEntity<Map<String, List<ScheduleResponse>>> getMonthlySchedule(
+            @PathVariable Long storeId,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month) {
+
+        // 년도나 월이 지정되지 않은 경우 현재 년월 사용
+        if (year == null || month == null) {
+            LocalDate now = LocalDate.now();
+            year = now.getYear();
+            month = now.getMonthValue();
+        }
+
+        Map<String, List<ScheduleResponse>> schedules =
+                scheduleService.getMonthlyScheduleWithShifts(storeId, year, month);
+
+        return ResponseEntity.ok(schedules);
     }
 }
