@@ -23,10 +23,9 @@ public class UserController {
         // 서비스에서 사용자 정보 가져오기
         UserResponse userResponse = userService.getCurrentUser(userDetails);
         // userResponse가 제대로 값이 들어있는지 확인
-        System.out.println("userResponse: " + userResponse.getLoginId());
+        System.out.println("userResponse: " + userResponse.getEmail());
         System.out.println("userResponse: " + userResponse.getFullName());
         System.out.println("userResponse: " + userResponse.getRole());
-        System.out.println("userResponse: " + userResponse.getPhoneNumber());
         System.out.println("userResponse: " + userResponse.getStoreName());
 
          // 성공적으로 사용자 정보를 가져왔으면 반환

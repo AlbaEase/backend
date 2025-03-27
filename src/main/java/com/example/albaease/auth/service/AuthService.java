@@ -8,11 +8,16 @@ import com.example.albaease.user.repository.UserRepository;
 import com.example.albaease.auth.jwt.JwtUtil;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.ReactiveRedisOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 
 @Service
@@ -21,24 +26,23 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final StringRedisTemplate redisTemplate;
 
     //회원가입 메서드
     public void signup(SignupRequest request) {
-//        Boolean isIdChecked = (Boolean) session.getAttribute("isIdChecked");
-//        Boolean isPhoneVerified = (Boolean) session.getAttribute("isPhoneVerified");
-//
-//        //세션에서 전화번호 인증했는지 확인
-//        if (isPhoneVerified == null || !(Boolean) session.getAttribute("isPhoneVerified")) {
-//            System.out.println("isPhoneVerified확인" + isPhoneVerified);
-//            throw new PhoneVerificationRequiredException("전화번호 인증을 먼저 진행해주세요.");
-//        }
-//
-//        // 세션에서 아이디 중복검사 했는지 확인
-//        if (isIdChecked == null || !isIdChecked) {
-//            System.out.println("isIdChecked확인" + isIdChecked);
-//            throw new IdDuplicationCheckRequiredException("아이디 중복 검사를 먼저 진행해주세요.");
-//        }
-
+        String email = request.getEmail();
+        System.out.println(email);
+        //이메일 중복검사 체크
+        String idChecked = redisTemplate.opsForValue().get(email + ":idChecked");
+        System.out.println("idCheckedidCheckedidChecked" + idChecked);
+        if (idChecked == null) {
+            throw new IdDuplicationCheckRequiredException("이메일 중복검사를 먼저 진행해주세요");
+        }
+        //이메일 인증 체크
+        String isVerified = redisTemplate.opsForValue().get(email + ":isVerified");
+        if (isVerified == null) {
+            throw new IllegalStateException("이메일 인증을 먼저 진행해주세요");
+        }
         // 비밀번호 확인 추가 (비밀번호와 비밀번호 확인 필드가 있다고 가정)
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
@@ -51,9 +55,8 @@ public class AuthService {
         User user = new User(
                 request.getLastName(),
                 request.getFirstName(),
-                request.getId(),
+                request.getEmail(),
                 passwordEncoder.encode(request.getPassword()),  // BCrypt 암호화
-                request.getPhoneNumber(),
                 socialType,
                 request.getRole(),
                 null,  // store는 일단 null
@@ -61,11 +64,13 @@ public class AuthService {
         );
         // 사용자 정보를 DB에 저장
         userRepository.save(user);
+        redisTemplate.delete(email + ":idChecked");
+        redisTemplate.delete(email + ":isVerified");
     }
     //로그인 메서드
     public String login(LoginRequest request) {
         //로그인아이디로 사용자 조회
-        User user = userRepository.findByLoginId(request.getId())
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("유저를 찾을 수 없습니다."));
 
         // 비밀번호 검증 -> 입력받은 비번이랑 저장된 비번이랑 같은지 비교
@@ -92,12 +97,15 @@ public class AuthService {
         return token;
     }
 
-    //로그인 아이디 중복 검사
+    //이메일 중복 검사
     public void checkIdDuplicate(IdCheckRequest request) {
+        String email = request.getEmail();
         // ID 중복 검사
-        if (userRepository.existsByLoginId(request.getId())) {
-            throw new IDAlreadyExistsException("이미 존재하는 ID입니다.");
+        if (userRepository.existsByEmail(email)) {
+            throw new IDAlreadyExistsException("이미 존재하는 이메일입니다.");
         }
+        // 이메일 중복 검사를 완료상태 저장(회원가입시 체크)
+        redisTemplate.opsForValue().set(email + ":idChecked", "true", 20, TimeUnit.MINUTES);
     }
     //현재 비밀번호 확인
     public void verifyCurrentPassword(VerifyPasswordRequest request, String token , HttpSession session) {

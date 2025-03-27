@@ -15,7 +15,6 @@ import java.util.List;
 public class CustomUserDetails implements UserDetails {
     private final User user;
     private Long userId;
-    private final String phoneNumber;
     private final String loginId;
 //    private final String password;
     private final String fullName;
@@ -24,11 +23,10 @@ public class CustomUserDetails implements UserDetails {
 
     public CustomUserDetails(User user) {
         this.user = user;
-        this.loginId = user.getLoginId();
+        this.loginId = user.getEmail();
 //        this.password = user.getPassword();
         this.fullName =   user.getLastName() + user.getFirstName();
         this.role = user.getRole().name();
-        this.phoneNumber = user.getPhoneNumber();
         this.storeName = user.getStoreName(); // storeName 초기화
     }
 

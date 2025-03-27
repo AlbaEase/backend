@@ -19,7 +19,7 @@ import java.util.Collections;
 public class AuthController {
     private final AuthService authService;
     //스웨거 어노테이션
-    @Operation(summary = "회원가입", description = "사용자가 회원가입을 요청합니다.(가입전에 아이디 중복검사, 전화번호 인증 진행해야함)")
+    @Operation(summary = "회원가입", description = "사용자가 회원가입을 요청합니다.(가입전에 아이디 중복검사, 이메일 인증 진행해야함)")
     @ApiResponse(responseCode = "200", description = "회원가입 성공")
 
     @PostMapping("/signup")
@@ -41,11 +41,11 @@ public class AuthController {
     }
 
     //아이디 중복체크
-    @Operation(summary = "아이디 중복 체크",description = "회원가입 전 아이디 중복 체크를 진행합니다.")
+    @Operation(summary = "이메일 중복 체크",description = "회원가입 전 이메일 중복 체크를 진행합니다.")
     @PostMapping("/check-id")
     public ResponseEntity<String> checkId(@RequestBody IdCheckRequest request) {
         authService.checkIdDuplicate(request);
-        return ResponseEntity.ok("사용 가능한 ID입니다.");
+        return ResponseEntity.ok("사용 가능한 이메일입니다.");
 
     }
 

@@ -59,7 +59,6 @@ public class UserService {
                 userDetails.getLoginId(),
                 userDetails.getFullName(),
                 userDetails.getRole(),
-                userDetails.getPhoneNumber(),
                 userDetails.getStoreName()
         );
     }

@@ -32,7 +32,7 @@ public class StoreService {
         boolean isValidBusinessNumber = businessNumberValidator.validateBusinessNumber(request.getBusinessNumber());
 
         // 사용자 조회
-        User user = userRepository.findByLoginId(loginId)
+        User user = userRepository.findByEmail(loginId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         // 랜덤 매장 코드 생성
@@ -68,7 +68,7 @@ public class StoreService {
     @Transactional(readOnly = true)
     public List<StoreResponseDto> getMyStore(String loginId) {
         // 현재 로그인한 사용자 조회
-        User user = userRepository.findByLoginId(loginId)
+        User user = userRepository.findByEmail(loginId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         // 사용자의 매장 목록 조회
@@ -98,7 +98,7 @@ public class StoreService {
     @Transactional
     public StoreResponseDto updateStore(Long storeId, StoreUpdateRequestDto request, String loginId) {
         // 사용자 조회
-        User user = userRepository.findByLoginId(loginId)
+        User user = userRepository.findByEmail(loginId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         // 매장 수정 권한 확인 (이 로직은 사용자의 권한에 따라 달라질 수 있음)
@@ -125,7 +125,7 @@ public class StoreService {
     @Transactional
     public void deleteStore(Long storeId, String loginId) {
         // 사용자 조회
-        User user = userRepository.findByLoginId(loginId)
+        User user = userRepository.findByEmail(loginId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         // 매장 삭제 권한 확인 (이 로직은 사용자의 권한에 따라 달라질 수 있음)

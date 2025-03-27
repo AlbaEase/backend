@@ -11,8 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginRequest {
-    @Schema(description = "아이디 입력", example = "qwer1234")
-    private String id;
+    @Schema(description = "아이디 입력", example = "qwer1234@naver.com")
+    private String email;
     @Schema(description = "비밀번호 입력", example = "qwer1234")
     private String password;
 }

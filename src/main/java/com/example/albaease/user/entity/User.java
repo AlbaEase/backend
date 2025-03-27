@@ -25,14 +25,11 @@ public class User implements Serializable {
     @Column(name = "first_name", nullable = false)
     private String firstName;  // 이름
 
-    @Column(name = "login_id", nullable = false, unique = true)
-    private String loginId;  // 로그인시 사용하는 id
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;  // 로그인시 사용하는 id
 
     @Column(name = "password", nullable = false)
     private String password;  // 비밀번호 (암호화)
-
-    @Column(name = "phone_number")
-    private String phoneNumber;  // 전화번호
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
@@ -68,12 +65,11 @@ public class User implements Serializable {
     public String getStoreName() {
         return store != null ? store.getName() : "임시 매장 이름"; // 🔹 storeName 가져오는 메서드 추가
     }
-    public User(String lastName, String firstName,String loginId, String password, String phoneNumber, SocialType socialType, Role role,  Store store,String businessNumber) {
+    public User(String lastName, String firstName,String email, String password, SocialType socialType, Role role,  Store store,String businessNumber) {
         this.lastName = lastName;
         this.firstName = firstName;
-        this.loginId = loginId;
+        this.email = email;
         this.password = password;
-        this.phoneNumber = phoneNumber;
         this.socialType = socialType;
         this.role = role;
         this.store = store;

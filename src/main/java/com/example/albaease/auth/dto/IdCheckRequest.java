@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IdCheckRequest {
-    @Schema(description = "현재 아이디 입력", example = "qwer1234")
-    private String id;
+    @Schema(description = "현재 이메일 입력", example = "qwer1234@naver.com")
+    private String email;
 }
