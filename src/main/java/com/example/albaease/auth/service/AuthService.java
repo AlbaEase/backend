@@ -31,10 +31,8 @@ public class AuthService {
     //회원가입 메서드
     public void signup(SignupRequest request) {
         String email = request.getEmail();
-        System.out.println(email);
         //이메일 중복검사 체크
         String idChecked = redisTemplate.opsForValue().get(email + ":idChecked");
-        System.out.println("idCheckedidCheckedidChecked" + idChecked);
         if (idChecked == null) {
             throw new IdDuplicationCheckRequiredException("이메일 중복검사를 먼저 진행해주세요");
         }
@@ -142,6 +140,17 @@ public class AuthService {
         }
         user.changePassword(request.getNewPassword(), passwordEncoder);
         userRepository.save(user); //변경된 비밀번호 저장
+    }
+
+    //로그아웃
+    public void logout(String token) {
+        Long expiration = jwtUtil.extractExpirationDate(token).getTime();
+        if (expiration == null) {
+            throw new IllegalStateException("토큰 정보를 가져올 수 없습니다.");
+        }
+
+        // Redis에 블랙리스트 저장 (key: blacklist:토큰, value: "true", TTL: expiration)
+        redisTemplate.opsForValue().set("blacklist:" + token, "true", expiration, TimeUnit.MILLISECONDS);
     }
 }
 

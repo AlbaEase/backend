@@ -55,7 +55,7 @@ public class JwtUtil {
         return extractExpirationDate(token).before(new Date());
     }
     //jwt 토큰에서 만료시간 추출함
-    private Date extractExpirationDate(String token) {
+    public Date extractExpirationDate(String token) {
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
