@@ -61,6 +61,10 @@ public class User implements Serializable {
     public void changePassword(String newPassword, PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(newPassword);
     }
+    // 이메일 변경
+    public void changeEmail(String newEmail) {
+        this.email = newEmail;
+    }
 
     public String getStoreName() {
         return store != null ? store.getName() : "임시 매장 이름"; // 🔹 storeName 가져오는 메서드 추가

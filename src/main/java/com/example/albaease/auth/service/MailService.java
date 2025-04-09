@@ -1,8 +1,9 @@
 package com.example.albaease.auth.service;
 
-import com.example.albaease.auth.exception.InvalidVerificationCodeException;
+import com.example.albaease.auth.exception.MailSendFailureException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import com.example.albaease.auth.exception.AuthException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -38,7 +39,7 @@ public class MailService {
 
             javaMailSender.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send email", e);
+            throw new MailSendFailureException("이메일 전송에 실패했습니다.");
         }
     }
 
@@ -46,11 +47,11 @@ public class MailService {
     public void verifyCode(String email, String code) {
         String storedCode = redisTemplate.opsForValue().get(email + ":verificationCode");
         if (storedCode == null) {
-            throw new InvalidVerificationCodeException("인증번호가 만료되었거나 존재하지 않습니다.");
+            throw new AuthException("인증번호가 만료되었거나 존재하지 않습니다.");
         }
 
         if (!storedCode.equals(code)) {
-            throw new InvalidVerificationCodeException("인증번호가 일치하지 않습니다.");
+            throw new AuthException("인증번호가 일치하지 않습니다.");
         }
         //인증번호 검증 완료 상태 저장(회원가입시 체크)
         redisTemplate.opsForValue().set(email + ":isVerified", "true", 20, TimeUnit.MINUTES);
