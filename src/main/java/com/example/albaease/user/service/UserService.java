@@ -1,44 +1,87 @@
 package com.example.albaease.user.service;
 
-import com.example.albaease.auth.CustomUserDetails;
-import com.example.albaease.auth.CustomUserDetailsService;
-
-import com.example.albaease.user.dto.UserResponse;
+import com.example.albaease.auth.dto.MailRequest;
+import com.example.albaease.auth.dto.VerifyMailRequest;
+import com.example.albaease.user.dto.PasswordChangeRequest;
+import com.example.albaease.auth.exception.AuthException;
+import com.example.albaease.auth.exception.ValidationException;
+import com.example.albaease.auth.jwt.JwtUtil;
+import com.example.albaease.auth.service.MailService;
+import com.example.albaease.user.dto.NameChangeRequest;
 import com.example.albaease.user.entity.User;
 import com.example.albaease.user.repository.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
+    private final StringRedisTemplate redisTemplate;
+    private final MailService mailService;
+    private final PasswordEncoder passwordEncoder;
 
-    private final CustomUserDetailsService customUserDetailsService;
+//    public UserService(UserRepository userRepository,  CustomUserDetailsService customUserDetailsService) {
+//        this.userRepository = userRepository;
+//        this.customUserDetailsService = customUserDetailsService;
+//    }
 
-    public UserService(UserRepository userRepository,  CustomUserDetailsService customUserDetailsService) {
-        this.userRepository = userRepository;
-        this.customUserDetailsService = customUserDetailsService;
+    /////이메일 변경
+
+    // 변경할 이메일 요청 및 인증 코드 발송
+    public void requestEmailChange(String token, MailRequest request) {
+        Long userId = Long.valueOf(jwtUtil.extractUserId(token));
+        String verified = redisTemplate.opsForValue().get("passwordChecked:" + userId);
+        if (!"true".equals(verified)) throw new ValidationException("먼저 비밀번호를 확인해주세요.");
+        if (userRepository.existsByEmail(request.getMailAddress())) throw new ValidationException("이미 사용 중인 이메일입니다.");
+
+        mailService.sendVerificationCode(request.getMailAddress());
     }
 
+    // 인증 코드 검증 및 이메일 변경 완료
+    public void verifyNewEmailAndChange(String token, VerifyMailRequest request) {
+        Long userId = Long.valueOf(jwtUtil.extractUserId(token));
+        String storedCode = redisTemplate.opsForValue().get(request.getMailAddress() + ":verificationCode");
+        if (storedCode == null || !storedCode.equals(request.getVerificationCode())) {
+            throw new AuthException("인증번호가 올바르지 않습니다.");
+        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new AuthException("유저를 찾을 수 없습니다."));
+        user.changeEmail(request.getMailAddress());
+        userRepository.save(user);
+        redisTemplate.delete(request.getMailAddress() + ":verificationCode");
+    }
 
-    //유저정보 메서드
-    public UserResponse getCurrentUser(CustomUserDetails userDetails) {
-        String storeName = "임시 매장 이름";
+    //비밀번호 변경
+    public void changePassword(String token, PasswordChangeRequest request){
+        Long userId = Long.valueOf(jwtUtil.extractUserId(token));
+        String isPasswordChecked = redisTemplate.opsForValue().get("passwordChecked:" + userId);
+        if (!"true".equals(isPasswordChecked)) throw new ValidationException("비밀번호 확인이 필요합니다.");
 
-//        System.out.println("유저정보 출력 " + userDetails.getLoginId());
-//        System.out.println("유저정보 출력 " + userDetails.getFullName());
-//        System.out.println("유저정보 출력 " + userDetails.getRole());
-//        System.out.println("유저정보 출력 " + userDetails.getPhoneNumber());
-//        System.out.println("유저정보 출력 " + storeName);
+        if (!request.getNewPassword().equals(request.getConfirmNewPassword())) throw new ValidationException("비밀번호가 일치하지 않습니다.");
 
-        return new UserResponse(
-                userDetails.getLoginId(),
-                userDetails.getFullName(),
-                userDetails.getRole(),
-                userDetails.getStoreName()
-        );
+        User user = userRepository.findById(userId).orElseThrow(() -> new AuthException("유저를 찾을 수 없습니다."));
+        user.changePassword(request.getNewPassword(), passwordEncoder);
+        userRepository.save(user);
+    }
+    //이름 변경
+    public void changeName(String token, NameChangeRequest request){
+        Long userId = Long.valueOf(jwtUtil.extractUserId(token));
+        String isPasswordChecked = redisTemplate.opsForValue().get("passwordChecked:" + userId);
+        if (!"true".equals(isPasswordChecked)) throw new ValidationException("비밀번호 확인이 필요합니다.");
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new AuthException("유저를 찾을 수 없습니다."));
+        user.changeName(request.getNewFirstName(), request.getNewLastName());
+        userRepository.save(user);
+    }
+
+    public void completeEdit(String token) {
+        Long userId = Long.valueOf(jwtUtil.extractUserId(token));
+        redisTemplate.delete("passwordChecked:" + userId);
     }
 
 

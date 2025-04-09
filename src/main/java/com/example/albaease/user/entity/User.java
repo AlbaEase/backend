@@ -57,14 +57,6 @@ public class User implements Serializable {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();  // 현재 시간을 생성 시간으로 설정
     }
-    //비밀번호 변경
-    public void changePassword(String newPassword, PasswordEncoder passwordEncoder) {
-        this.password = passwordEncoder.encode(newPassword);
-    }
-    // 이메일 변경
-    public void changeEmail(String newEmail) {
-        this.email = newEmail;
-    }
 
     public String getStoreName() {
         return store != null ? store.getName() : "임시 매장 이름"; // 🔹 storeName 가져오는 메서드 추가
@@ -79,4 +71,20 @@ public class User implements Serializable {
         this.store = store;
         this.businessNumber = businessNumber;
     }
+    // 이메일 변경
+    public void changeEmail(String newEmail) {
+        this.email = newEmail;
+    }
+
+    // 이름 변경
+    public void changeName(String newFirstName, String newLastName) {
+        this.firstName = newFirstName;
+        this.lastName = newLastName;
+    }
+
+    // 비밀번호 변경
+    public void changePassword(String newPassword, PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(newPassword);
+    }
+
 }

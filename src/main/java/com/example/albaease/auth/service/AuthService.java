@@ -1,6 +1,7 @@
 package com.example.albaease.auth.service;
 import com.example.albaease.auth.CustomUserDetails;
 import com.example.albaease.auth.dto.*;
+import com.example.albaease.user.dto.PasswordChangeRequest;
 import com.example.albaease.user.entity.SocialType;
 import com.example.albaease.user.entity.User;
 import com.example.albaease.user.repository.UserRepository;
@@ -116,74 +117,9 @@ public class AuthService {
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new ValidationException("비밀번호가 일치하지 않습니다.");
         }
-
-        // Redis에 저장: 비밀번호 변경용 (ex: "passwordChecked:{userId}" 키 사용)
+        // 정보수정 클릭시 비밀번호 확인 기록 저장
         redisTemplate.opsForValue().set("passwordChecked:" + userId, "true", 10, TimeUnit.MINUTES);
-        // Redis에 저장: 이메일 변경용
-        // ✅ 이메일 변경용 Redis 저장 추가 (같은 메서드 활용)
-        redisTemplate.opsForValue().set("emailChangePasswordChecked:" + userId, "true", 10, TimeUnit.MINUTES);
-    }
 
-    //비밀번호 변경
-    public void changePassword(PasswordChangeRequest request, String token) {
-        Long userId = Long.valueOf(jwtUtil.extractUserId(token));
-
-        // 레디스에서 비밀번호 확인 했는지 확인
-        String isPasswordChecked = redisTemplate.opsForValue().get("passwordChecked:" + userId);
-        if (!"true".equals(isPasswordChecked)) {
-            throw new ValidationException("비밀번호 체크를 먼저 진행해주세요.");
-        }
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AuthException("유저를 찾을 수 없습니다."));
-
-        if(!request.getNewPassword().equals(request.getConfirmNewPassword())){
-            throw new ValidationException("비밀번호가 일치하지 않습니다.");
-        }
-        user.changePassword(request.getNewPassword(), passwordEncoder);
-        userRepository.save(user); //변경된 비밀번호 저장
-    }
-
-    /////이메일 변경
-
-    // 변경할 이메일 요청 및 인증 코드 발송
-    public void requestEmailChange(String token, MailRequest request) {
-        long userId = Long.parseLong(jwtUtil.extractUserId(token));
-
-        // 현재 이메일 확인 플래그가 있는지 확인
-        String verified = redisTemplate.opsForValue().get("emailChangePasswordChecked:" + userId);
-        if (!"true".equals(verified)) {
-            throw new ValidationException("먼저 현재 비밀번호를 해주세요.");
-        }
-
-        // 이메일 중복 체크
-        if (userRepository.existsByEmail(request.getMailAddress())) {
-            throw new ValidationException("이미 사용 중인 이메일입니다.");
-        }
-
-        // MailService를 활용하여 새로운 이메일로 인증 코드 발송
-        mailService.sendVerificationCode(request.getMailAddress());
-    }
-
-    // 인증 코드 검증 및 이메일 변경 완료
-    public void verifyNewEmailAndChange(String token, VerifyMailRequest request) {
-        Long userId = Long.valueOf(jwtUtil.extractUserId(token));
-
-        // MailService 에서 저장한 인증번호 검증
-        String storedCode = redisTemplate.opsForValue().get(request.getMailAddress() + ":verificationCode");
-        if (storedCode == null || !storedCode.equals(request.getVerificationCode())) {
-            throw new AuthException("인증번호가 올바르지 않습니다.");
-        }
-
-        // 이메일 변경 진행
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AuthException("유저를 찾을 수 없습니다."));
-        user.changeEmail(request.getMailAddress());
-        userRepository.save(user);
-
-        // Redis 정리
-        redisTemplate.delete("emailVerified:" + userId);
-        redisTemplate.delete(request.getMailAddress() + ":verificationCode");
     }
 
 

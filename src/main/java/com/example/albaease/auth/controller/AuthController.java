@@ -72,48 +72,6 @@ public class AuthController {
         authService.verifyCurrentPassword(request, token);
         return ResponseEntity.ok("비밀번호 확인 완료");
     }
-    
-    //비밀번호 변경
-    @Operation(summary = "비밀번호 변경", description = "비밀번호 변경을 진행합니다.(변경 전에 현재 비밀번호 확인 진행해야함)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공"),
-            @ApiResponse(responseCode = "400", description = "비밀번호 체크 안 함 또는 비밀번호 불일치"),
-            @ApiResponse(responseCode = "401", description = "인증 실패")
-    })
-    @PostMapping("/change-password")
-    public ResponseEntity<String> changePassword(@RequestBody PasswordChangeRequest request, @RequestHeader(value = "Authorization", required = false) String token){
-        authService.changePassword(request, token);
-        return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
-
-    }
-
-    // 변경할 이메일 인증 번호 요청
-    @Operation(summary = "변경할 이메일 인증번호 요청", description = "이메일 변경을 위해 인증번호를 요청합니다.(요청 전에 현재 비밀번호 확인 진행해야함)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "인증 코드 발송 성공"),
-            @ApiResponse(responseCode = "400", description = "현재 비밀번호 확인 안 됨 또는 이미 사용 중인 이메일"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
-    })
-    @PostMapping("/request-change-email")
-    public ResponseEntity<String> requestChangeEmail(@RequestBody MailRequest request,
-                                                     @RequestHeader(value = "Authorization", required = false) String token) {
-        authService.requestEmailChange(token, request);
-        return ResponseEntity.ok("변경할 이메일로 인증 코드가 발송되었습니다.");
-    }
-
-    // 인증 코드 검증 및 이메일 변경 완료
-    @Operation(summary = "변경할 이메일 인증번호 입력", description = "이메일 변경을 위해 인증번호를 입력합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "이메일 변경 성공"),
-            @ApiResponse(responseCode = "400", description = "인증번호 불일치 또는 이메일 오류"),
-            @ApiResponse(responseCode = "401", description = "인증 실패")
-    })
-    @PostMapping("/verify-new-email")
-    public ResponseEntity<String> verifyNewEmail(@RequestBody VerifyMailRequest request,
-                                                 @RequestHeader(value = "Authorization", required = false) String token) {
-        authService.verifyNewEmailAndChange(token, request);
-        return ResponseEntity.ok("이메일이 성공적으로 변경되었습니다.");
-    }
 
     //로그아웃
 

@@ -1,4 +1,4 @@
-package com.example.albaease.auth.dto;
+package com.example.albaease.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
