@@ -19,6 +19,7 @@ public class JwtUtil {
 
     // JWT 토큰 생성
     public String generateToken(String userId, String role) {
+
         String token = Jwts.builder()
                 .setSubject(userId)  // 토큰에 저장할 사용자 정보
                 .claim("role", role)  // 사용자 역할

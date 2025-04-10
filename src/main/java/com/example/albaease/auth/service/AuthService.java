@@ -66,7 +66,7 @@ public class AuthService {
         redisTemplate.delete(email + ":isVerified");
     }
     //로그인 메서드
-    public String login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
         //로그인아이디로 사용자 조회
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AuthException("유저를 찾을 수 없습니다."));
@@ -92,7 +92,8 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         // JWT 콘솔 출력 확인(나중에 지울거)
         System.out.println("Generated JWT: " + token);
-        return token;
+        // 로그인 응답 반환
+        return new LoginResponse(token, user.getRole().toString());
     }
 
     //이메일 중복 검사

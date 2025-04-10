@@ -42,10 +42,10 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "인증 실패 - 이메일 또는 비밀번호 불일치")
     })
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request)  {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request)  {
 
-        String token = authService.login(request);
-        return ResponseEntity.ok(token);
+        LoginResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 
     //아이디 중복체크
