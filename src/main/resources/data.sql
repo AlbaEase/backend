@@ -20,26 +20,23 @@ INSERT IGNORE INTO user (
       ('김', '지희', 'staff2@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER', 1, NULL, NOW(), 'NONE'),
       ('이', '서영', 'staff3@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER', 1, NULL, NOW(), 'NONE'),
       ('조', '정현', 'staff4@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER', 2, NULL, NOW(), 'NONE'),
-      ('이', '은우', 'staff5@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER', 2, NULL, NOW(), 'NONE'),
-      ('박', '민준', 'staff6@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER', 3, NULL, NOW(), 'NONE'),
-      ('최', '윤서', 'staff7@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER', 4, NULL, NOW(), 'NONE'),
-      ('정', '준호', 'staff8@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER', 5, NULL, NOW(), 'NONE');
+      ('이', '은우', 'staff5@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER', 2, NULL, NOW(), 'NONE');
 
 -- 유저-스토어 관계 더미 데이터
 INSERT IGNORE INTO user_store_relationship (user_id, store_id, work_start_date) VALUES
-     (1, 1, NOW()),
-     (1, 3, NOW()),
-     (1, 4, NOW()),
-     (1, 5, NOW()),
-     (2, 2, NOW()),
-     (3, 1, NOW()),
-     (4, 1, NOW()),
-     (5, 1, NOW()),
-     (6, 2, NOW()),
-     (7, 2, NOW()),
-     (8, 3, NOW()),
-     (9, 4, NOW()),
-     (10, 5, NOW());
+  (1, 1, NOW()),
+  (1, 3, NOW()),
+  (1, 4, NOW()),
+  (1, 5, NOW()),
+  (2, 2, NOW()),
+  (3, 1, NOW()),
+  (4, 1, NOW()),
+  (5, 1, NOW()),
+  (6, 2, NOW()),
+  (7, 2, NOW()),
+  (3, 3, NOW()),
+  (5, 4, NOW()),
+  (6, 5, NOW());
 
 -- 스케줄 더미 데이터 (맥도날드 강남점)
 INSERT IGNORE INTO schedule (
@@ -54,8 +51,8 @@ UNION
 SELECT 1, 5, '2024-02-27', '11:00:00', '20:00:00', '14:00:00', 'MON,WED,FRI', '2024-12-31'
 WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 1 AND user_id = 5 AND work_date = '2024-02-27')
 UNION
-SELECT 1, 11, '2024-02-28', '08:00:00', '17:00:00', '12:00:00', 'WED,FRI,SUN', '2024-12-31'
-WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 1 AND user_id = 11 AND work_date = '2024-02-28');
+SELECT 1, 7, '2024-02-28', '08:00:00', '17:00:00', '12:00:00', 'WED,FRI,SUN', '2024-12-31'  -- 원래 11번 유저 참조하던 스케줄
+WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 1 AND user_id = 7 AND work_date = '2024-02-28');
 
 -- 스타벅스 홍대점 (store_id 2)
 INSERT IGNORE INTO schedule (
@@ -77,8 +74,8 @@ UNION
 SELECT 3, 4, '2024-03-01', '11:00:00', '20:00:00', '15:00:00', 'TUE,THU,SAT', '2024-12-31'
 WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 3 AND user_id = 4 AND work_date = '2024-03-01')
 UNION
-SELECT 3, 8, '2024-03-02', '13:00:00', '22:00:00', '17:00:00', 'WED,FRI,SUN', '2024-12-31'
-WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 3 AND user_id = 8 AND work_date = '2024-03-02');
+SELECT 3, 5, '2024-03-02', '13:00:00', '22:00:00', '17:00:00', 'WED,FRI,SUN', '2024-12-31'  -- 원래 8번 유저 참조하던 스케줄
+WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 3 AND user_id = 5 AND work_date = '2024-03-02');
 
 -- KFC 부평점 (store_id 4)
 INSERT IGNORE INTO schedule (
@@ -90,8 +87,8 @@ UNION
 SELECT 4, 7, '2024-03-01', '12:00:00', '21:00:00', '16:00:00', 'THU,FRI,SAT', '2024-12-31'
 WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 4 AND user_id = 7 AND work_date = '2024-03-01')
 UNION
-SELECT 4, 9, '2024-03-02', '10:00:00', '19:00:00', '14:00:00', 'TUE,SAT,SUN', '2024-12-31'
-WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 4 AND user_id = 9 AND work_date = '2024-03-02');
+SELECT 4, 3, '2024-03-02', '10:00:00', '19:00:00', '14:00:00', 'TUE,SAT,SUN', '2024-12-31'  -- 원래 9번 유저 참조하던 스케줄
+WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 4 AND user_id = 3 AND work_date = '2024-03-02');
 
 -- 버거킹 구월점 (store_id 5)
 INSERT IGNORE INTO schedule (
@@ -103,8 +100,8 @@ UNION
 SELECT 5, 5, '2024-03-02', '15:00:00', '23:00:00', '19:00:00', 'TUE,THU,SAT', '2024-12-31'
 WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 5 AND user_id = 5 AND work_date = '2024-03-02')
 UNION
-SELECT 5, 10, '2024-03-03', '11:00:00', '20:00:00', '15:00:00', 'WED,FRI,SUN', '2024-12-31'
-WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 5 AND user_id = 10 AND work_date = '2024-03-03');
+SELECT 5, 2, '2024-03-03', '11:00:00', '20:00:00', '15:00:00', 'WED,FRI,SUN', '2024-12-31'  -- 원래 10번 유저 참조하던 스케줄
+WHERE NOT EXISTS (SELECT 1 FROM schedule WHERE store_id = 5 AND user_id = 2 AND work_date = '2024-03-03');
 
 -- 외래키 제약 다시 설정
 SET FOREIGN_KEY_CHECKS=1;
