@@ -39,8 +39,7 @@ INSERT IGNORE INTO user_store_relationship (user_id, store_id, work_start_date) 
      (7, 2, NOW()),
      (8, 3, NOW()),
      (9, 4, NOW()),
-     (10, 5, NOW()),
-     (11, 1, NOW());
+     (10, 5, NOW());
 
 -- 스케줄 더미 데이터 (맥도날드 강남점)
 INSERT IGNORE INTO schedule (
