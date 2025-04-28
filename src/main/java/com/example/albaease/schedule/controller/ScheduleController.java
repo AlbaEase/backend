@@ -94,6 +94,7 @@ public class ScheduleController {
         }
     }
 
+
     // 템플릿으로 스케줄 추가
     @PostMapping("/from-template/{templateId}")
     public ResponseEntity<String> createScheduleFromTemplate(
