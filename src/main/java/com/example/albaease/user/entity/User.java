@@ -1,12 +1,15 @@
 package com.example.albaease.user.entity;
 
 import com.example.albaease.store.domain.Store;
+import com.example.albaease.store.domain.UserStoreRelationship;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 @Entity
@@ -35,9 +38,11 @@ public class User implements Serializable {
     @Column(name = "role", nullable = false)
     private Role role;  // 역할 (사장님/알바생)
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "store_id")  // 소속된 매장의 ID (외래 키)
-    private Store store;
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "store_id")  // 소속된 매장의 ID (외래 키)
+//    private Store store;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserStoreRelationship> userStoreRelationships;
 
     @Column(name = "business_number")
     private String businessNumber;  // 사업자 등록 번호 (사장님 가입 시 필요, NULL 허용)
@@ -58,9 +63,10 @@ public class User implements Serializable {
         this.createdAt = LocalDateTime.now();  // 현재 시간을 생성 시간으로 설정
     }
 
-    public String getStoreName() {
-        return store != null ? store.getName() : "임시 매장 이름"; // 🔹 storeName 가져오는 메서드 추가
-    }
+//    public String getStoreName() {
+//        return store != null ? store.getName() : "임시 매장 이름"; // 🔹 storeName 가져오는 메서드 추가
+//    }
+
     public User(String lastName, String firstName,String email, String password, SocialType socialType, Role role,  Store store,String businessNumber) {
         this.lastName = lastName;
         this.firstName = firstName;
@@ -68,7 +74,6 @@ public class User implements Serializable {
         this.password = password;
         this.socialType = socialType;
         this.role = role;
-        this.store = store;
         this.businessNumber = businessNumber;
     }
     // 이메일 변경

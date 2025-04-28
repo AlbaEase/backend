@@ -78,7 +78,8 @@ public class AuthService {
 
         // JWT 발급 -> 비밀번호가 일치하면 JWT 토큰을 발급하여 반환
         String token =  jwtUtil.generateToken(user.getUserId().toString(), user.getRole().toString());
-
+        // 풀네임 받아옴
+        String fullName = user.getLastName() + user.getFirstName();
         // CustomUserDetails 객체 생성
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
         System.out.println("로그인에서 제대로 객체생성하는지 확인" + customUserDetails);
@@ -93,7 +94,7 @@ public class AuthService {
         // JWT 콘솔 출력 확인(나중에 지울거)
         System.out.println("Generated JWT: " + token);
         // 로그인 응답 반환
-        return new LoginResponse(token, user.getRole().toString());
+        return new LoginResponse(token, user.getRole().toString(), fullName);
     }
 
     //이메일 중복 검사

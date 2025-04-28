@@ -25,19 +25,24 @@ public class UserController {
     }
 
     // 개인정보 확인
-//    @GetMapping("/me")
-//    public ResponseEntity<UserResponse> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
-//        // 서비스에서 사용자 정보 가져오기
-//        UserResponse userResponse = userService.getCurrentUser(userDetails);
+    @Operation(summary = "내 정보 조회", description = "로그인한 사용자의 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "정보 조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        // 서비스에서 사용자 정보 가져오기
+        UserResponse userResponse = userService.getCurrentUser(userDetails);
 //        // userResponse가 제대로 값이 들어있는지 확인
 //        System.out.println("userResponse: " + userResponse.getEmail());
 //        System.out.println("userResponse: " + userResponse.getFullName());
 //        System.out.println("userResponse: " + userResponse.getRole());
 //        System.out.println("userResponse: " + userResponse.getStoreName());
-//
-//         // 성공적으로 사용자 정보를 가져왔으면 반환
-//        return ResponseEntity.ok(userResponse);
-//    }
+
+         // 성공적으로 사용자 정보를 가져왔으면 반환
+        return ResponseEntity.ok(userResponse);
+    }
     @Operation(summary = "이메일 변경 - 인증 코드 발송")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "인증 코드 발송 성공"),

@@ -1,30 +1,30 @@
 package com.example.albaease.user.dto;
 
+import com.example.albaease.auth.CustomUserDetails;
 import com.example.albaease.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class UserResponse {
-    private String email;
-//    private String password;
-    private String fullName;
-    private String role;
-    private String storeName;  // 근무 매장 이름 추가
+import java.util.List;
+import java.util.stream.Collectors;
 
-    public UserResponse(String email,String fullName, String role, String storeName) {// store 합친 후 수정
-        this.email = email;
-//        this.password = password;
-        this.fullName = fullName;
-        this.role = role;
-        this.storeName = storeName;
+@Getter
+public class UserResponse {
+
+    private final Long userId;
+    private final String fullName;
+    private final String email;
+    private final String role;
+    private List<String> storeNames;
+
+    // 생성자에서 User 엔티티를 받아와서 필요한 정보만 추출
+    public UserResponse(User user, List<String> storeNames) {
+        this.userId = user.getUserId();
+        this.fullName = user.getLastName() + user.getFirstName();
+        this.email = user.getEmail();
+        this.role = user.getRole().name();
+        this.storeNames = storeNames;
     }
-//    // fromEntity 메서드 추가
-//    public static UserResponse fromEntity(User user, String storeName) {
-//        return new UserResponse(user, storeName);
-//    }
 }

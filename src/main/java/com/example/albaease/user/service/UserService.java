@@ -1,5 +1,6 @@
 package com.example.albaease.user.service;
 
+import com.example.albaease.auth.CustomUserDetails;
 import com.example.albaease.auth.dto.MailRequest;
 import com.example.albaease.auth.dto.VerifyMailRequest;
 import com.example.albaease.user.dto.PasswordChangeRequest;
@@ -8,6 +9,7 @@ import com.example.albaease.auth.exception.ValidationException;
 import com.example.albaease.auth.jwt.JwtUtil;
 import com.example.albaease.auth.service.MailService;
 import com.example.albaease.user.dto.NameChangeRequest;
+import com.example.albaease.user.dto.UserResponse;
 import com.example.albaease.user.entity.User;
 import com.example.albaease.user.repository.UserRepository;
 
@@ -15,6 +17,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,10 +31,18 @@ public class UserService {
     private final MailService mailService;
     private final PasswordEncoder passwordEncoder;
 
-//    public UserService(UserRepository userRepository,  CustomUserDetailsService customUserDetailsService) {
-//        this.userRepository = userRepository;
-//        this.customUserDetailsService = customUserDetailsService;
-//    }
+    //유저정보 불러오기
+    public UserResponse getCurrentUser(CustomUserDetails userDetails) {
+        User user = userRepository.findById(userDetails.getUserId())
+                .orElseThrow(() -> new AuthException("유저를 찾을 수 없습니다."));
+
+        List<String> storeNames = user.getUserStoreRelationships().stream()
+                .map(relationship -> relationship.getStore().getName())
+                .collect(Collectors.toList());
+
+        return new UserResponse(user, storeNames);
+    }
+
 
     /////이메일 변경
 

@@ -9,80 +9,79 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 
 public class CustomUserDetails implements UserDetails {
     private final User user;
-    private Long userId;
-    private final String loginId;
-//    private final String password;
-    private final String fullName;
-    private final String role;
-    private final String storeName;
 
+    // 생성자
     public CustomUserDetails(User user) {
         this.user = user;
-        this.loginId = user.getEmail();
-//        this.password = user.getPassword();
-        this.fullName =   user.getLastName() + user.getFirstName();
-        this.role = user.getRole().name();
-        this.storeName = user.getStoreName(); // storeName 초기화
     }
 
+    // 권한 반환
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // roles 리스트에서 권한을 SimpleGrantedAuthority로 변환하여 반환
-        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())); // "ROLE_" 접두사를 붙여서 권한 생성
+        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+    }
 
-
-}
-
+    // 비밀번호 반환
     @Override
     public String getPassword() {
         return user.getPassword();
     }
 
-    public Long getUserId() { // userId 반환하는 메서드 추가
-        return user.getUserId();
-    }
-
+    // username = loginId = email
     @Override
     public String getUsername() {
-        return loginId;
+        return user.getEmail();
     }
 
+    // 계정 만료 여부
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    // 계정 잠김 여부
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    // 자격 증명(비밀번호) 만료 여부
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    // 사용자 활성화 여부
     @Override
     public boolean isEnabled() {
         return true;
     }
 
-    public User getUser() {
-        return user;
+    // 유저 ID (DB 기본키)
+    public Long getUserId() {
+        return user.getUserId();
     }
-    // 사용자 추가 정보들
-    public String getFullName() {
 
+    // 사용자 풀네임 반환
+    public String getFullName() {
         return user.getLastName() + user.getFirstName();
     }
 
-    // storeName 반환
-    public String getStoreName() {
-        return storeName;
+    // 유저 Role 반환 (String 으로)
+    public String getRole() {
+        return user.getRole().name();
     }
+
+    //  매장 이름 반환
+    public List<String> getStoreNames() {
+            return user.getUserStoreRelationships().stream()
+                    .map(relationship -> relationship.getStore().getName())
+                    .collect(Collectors.toList());
+        }
 }
