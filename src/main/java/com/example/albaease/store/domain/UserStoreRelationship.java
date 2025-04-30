@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "user_store_relationship")
+@Table(name = "user_store_relationship",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "store_id"}))
 public class UserStoreRelationship {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

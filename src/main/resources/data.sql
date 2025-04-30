@@ -12,15 +12,15 @@ INSERT IGNORE INTO store (name, location, store_code, require_approval, business
 -- 사용자 더미 데이터 (이메일 형식으로 변경, 전화번호 필드 제거)
 INSERT IGNORE INTO user (
     last_name, first_name, email, password,
-    role, store_id, business_number, created_at, social_type
+    role, business_number, created_at, social_type
 ) VALUES
-      ('김', '가윤', 'boss1@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'OWNER', 1, '123-45-67890', NOW(), 'NONE'),
-      ('조', '유성', 'boss2@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'OWNER', 2, '234-56-78901', NOW(), 'NONE'),
-      ('김', '시현', 'staff1@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER', 1, NULL, NOW(), 'NONE'),
-      ('김', '지희', 'staff2@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER', 1, NULL, NOW(), 'NONE'),
-      ('이', '서영', 'staff3@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER', 1, NULL, NOW(), 'NONE'),
-      ('조', '정현', 'staff4@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER', 2, NULL, NOW(), 'NONE'),
-      ('이', '은우', 'staff5@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER', 2, NULL, NOW(), 'NONE');
+      ('김', '가윤', 'boss1@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'OWNER',  '123-45-67890', NOW(), 'NONE'),
+      ('조', '유성', 'boss2@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'OWNER',  '234-56-78901', NOW(), 'NONE'),
+      ('김', '시현', 'staff1@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER',  NULL, NOW(), 'NONE'),
+      ('김', '지희', 'staff2@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER',  NULL, NOW(), 'NONE'),
+      ('이', '서영', 'staff3@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER',  NULL, NOW(), 'NONE'),
+      ('조', '정현', 'staff4@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER',  NULL, NOW(), 'NONE'),
+      ('이', '은우', 'staff5@albaease.com', '$2a$10$vL7Y7c6oAdqJR5DCLJSgOO0/770kFGAq/vN2rhZAO5rzSZrvYGEou', 'WORKER',  NULL, NOW(), 'NONE');
 
 -- 유저-스토어 관계 더미 데이터
 INSERT IGNORE INTO user_store_relationship (user_id, store_id, work_start_date) VALUES
