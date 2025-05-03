@@ -23,7 +23,7 @@ public class MailController {
     @Operation(summary = "이메일 인증요청")
     @PostMapping("/send-mail")
     public ResponseEntity<String> sendSms(@RequestBody MailRequest request) {
-        String mailAddress = request.getMailAddress();
+        String mailAddress = request.getEmail();
         mailService.sendVerificationCode(mailAddress);
         return ResponseEntity.ok("인증번호가 전송되었습니다.");
     }
@@ -31,7 +31,7 @@ public class MailController {
     @Operation(summary = "인증 번호확인")
     @PostMapping("/verify-mail")
     public ResponseEntity<String> verifySms(@RequestBody VerifyMailRequest request) throws AuthException {
-        String mailAddress = request.getMailAddress();
+        String mailAddress = request.getEmail();
         String verificationCode = request.getVerificationCode();
 
         mailService.verifyCode(mailAddress, verificationCode);

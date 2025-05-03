@@ -51,22 +51,22 @@ public class UserService {
         Long userId = Long.valueOf(jwtUtil.extractUserId(token));
         String verified = redisTemplate.opsForValue().get("passwordChecked:" + userId);
         if (!"true".equals(verified)) throw new ValidationException("먼저 비밀번호를 확인해주세요.");
-        if (userRepository.existsByEmail(request.getMailAddress())) throw new ValidationException("이미 사용 중인 이메일입니다.");
+        if (userRepository.existsByEmail(request.getEmail())) throw new ValidationException("이미 사용 중인 이메일입니다.");
 
-        mailService.sendVerificationCode(request.getMailAddress());
+        mailService.sendVerificationCode(request.getEmail());
     }
 
     // 인증 코드 검증 및 이메일 변경 완료
     public void verifyNewEmailAndChange(String token, VerifyMailRequest request) {
         Long userId = Long.valueOf(jwtUtil.extractUserId(token));
-        String storedCode = redisTemplate.opsForValue().get(request.getMailAddress() + ":verificationCode");
+        String storedCode = redisTemplate.opsForValue().get(request.getEmail() + ":verificationCode");
         if (storedCode == null || !storedCode.equals(request.getVerificationCode())) {
             throw new AuthException("인증번호가 올바르지 않습니다.");
         }
         User user = userRepository.findById(userId).orElseThrow(() -> new AuthException("유저를 찾을 수 없습니다."));
-        user.changeEmail(request.getMailAddress());
+        user.changeEmail(request.getEmail());
         userRepository.save(user);
-        redisTemplate.delete(request.getMailAddress() + ":verificationCode");
+        redisTemplate.delete(request.getEmail() + ":verificationCode");
     }
 
     //비밀번호 변경
