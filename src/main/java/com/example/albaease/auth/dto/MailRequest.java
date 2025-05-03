@@ -8,5 +8,5 @@ import lombok.Setter;
 @Setter
 public class MailRequest {
     @Schema(example = "user@naver.com")
-    private String mailAddress;
+    private String email;
 }

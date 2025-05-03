@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class VerifyMailRequest {
     @Schema(example = "user@naver.com")
-    private String mailAddress;
+    private String email;
 
     @Schema(example = "123456")
     private String verificationCode;
