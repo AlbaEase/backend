@@ -46,11 +46,19 @@ spring:
           auth: true
           starttls:
             enable: true
+
+  # Redis 설정
   data:
     redis:
-      host: redis
+      host: localhost
       port: 6379
-#          required: true
+      timeout: 5000
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1
 
 server:
   port: 8080
@@ -68,6 +76,9 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql: trace
     com.example.albaease: debug
+    org.springframework.data.redis: DEBUG
+    org.springframework.data.redis.core: DEBUG
+    org.springframework.data.redis.connection: DEBUG
 
 jwt:
   secret: ${JWT_SECRET}
@@ -78,8 +89,6 @@ coolsms:
     key: ${COOLSMS_API_KEY}
     secret: ${COOLSMS_API_SECRET}
     number: ${COOLSMS_SENDER_NUMBER}
-
-
 
 websocket:
   allowed-origins: "*"

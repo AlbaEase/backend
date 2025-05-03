@@ -19,7 +19,6 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.Arrays;
 
 @EnableRedisHttpSession
@@ -66,7 +65,9 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
-                                "/webjars/**"
+                                "/webjars/**",
+                                "/store/validate-business-number",
+                                "/ws/**" // ★ WebSocket 엔드포인트 허용 추가
                         ).permitAll()
                         .requestMatchers("/user/me").authenticated() // '/user/me'는 인증 필요
                         .anyRequest().authenticated()
@@ -82,4 +83,3 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
-
