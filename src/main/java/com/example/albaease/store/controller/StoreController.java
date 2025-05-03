@@ -4,6 +4,7 @@ import com.example.albaease.store.dto.StoreRequestDto;
 import com.example.albaease.store.dto.StoreResponseDto;
 import com.example.albaease.store.dto.StoreUpdateRequestDto;
 import com.example.albaease.store.service.StoreService;
+import com.example.albaease.store.service.BusinessNumberValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StoreController {
     private final StoreService storeService;
+    private final BusinessNumberValidator businessNumberValidator;
 
     // 매장 등록 (사장님)
     @PostMapping
@@ -57,5 +59,17 @@ public class StoreController {
         String username = authentication.getName();
         storeService.deleteStore(storeId, username);
         return ResponseEntity.noContent().build();
+    }
+
+    // 사업자등록번호 검증 요청 DTO
+    public static class BusinessNumberRequest {
+        public String businessNumber;
+    }
+
+    // 사업자등록번호 유효성 검증
+    @PostMapping("/validate-business-number")
+    public ResponseEntity<Boolean> validateBusinessNumber(@RequestBody BusinessNumberRequest request) {
+        boolean isValid = businessNumberValidator.validateBusinessNumber(request.businessNumber);
+        return ResponseEntity.ok(isValid);
     }
 }
