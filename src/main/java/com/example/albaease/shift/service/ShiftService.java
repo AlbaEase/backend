@@ -51,13 +51,23 @@ public class ShiftService {
 
         Shift savedShift = shiftRepository.save(shift);
 
-        // 알림 생성
+        // 알림 생성 및 WebSocket 실시간 알림 전송
         String message = "새로운 대타 요청이 도착했습니다.";
         if (request.getRequestDate() != null) {
             message += " 날짜: " + request.getRequestDate().toString();
         }
 
-        sendShiftNotification(toUser.getUserId(), schedule.getScheduleId(), message);
+        NotificationRequest notificationRequest = NotificationRequest.builder()
+                .userId(toUser.getUserId())
+                .type(NotificationType.SPECIFIC_USER)
+                .message(message)
+                .scheduleId(schedule.getScheduleId())
+                .fromUserId(fromUser.getUserId())
+                .toUserId(toUser.getUserId())
+                .build();
+
+        NotificationResponse notificationResponse = notificationService.createShiftNotification(notificationRequest, ShiftResponse.from(savedShift));
+        webSocketHandler.sendNotification(notificationResponse);
 
         return ShiftResponse.from(savedShift);
     }
