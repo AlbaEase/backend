@@ -29,15 +29,29 @@ public class Store {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String businessNumber;
+
+    @Column
+    private String ownerName;
+
+    @Column
+    private String startDate;
+
+
     private String location;
     private Boolean requiresApproval;
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public Store(String storeCode, String name, String location, Boolean requiresApproval) {
-        this.storeCode = storeCode;  // 랜덤코드는 서비스에서 생성
+    public Store(String storeCode, String name, String location, Boolean requiresApproval,
+                 String businessNumber, String ownerName, String startDate) {
+        this.storeCode = storeCode;
         this.name = name;
         this.location = location;
         this.requiresApproval = requiresApproval;
+        this.businessNumber = businessNumber;
+        this.ownerName = ownerName;
+        this.startDate = startDate;
     }
 
     // 매장 정보 업데이트
@@ -46,5 +60,8 @@ public class Store {
         this.name = requestDto.getName();
         this.location = requestDto.getLocation();
         this.requiresApproval = requestDto.getRequiresApproval();
+        this.businessNumber = requestDto.getBusinessNumber();
+        this.ownerName = requestDto.getOwnerName();
+        this.startDate = requestDto.getStartDate();
     }
 }

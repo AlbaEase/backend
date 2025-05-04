@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class StoreService {
 
     private final StoreRepository storeRepository;
-    private final BusinessNumberValidator businessNumberValidator; // 수정: BusinessNumberValidator 주입
+    private final BusinessVerificationService businessNumberValidator; // 수정: BusinessNumberValidator 주입
     private final UserRepository userRepository;
     private final UserStoreRelationRepository userStoreRelationRepository;
      //매장 생성 (랜덤 코드 생성 + 사업자번호 검증)
@@ -42,7 +42,10 @@ public class StoreService {
                 storeCode,
                 requestDto.getName(),
                 requestDto.getLocation(),
-                requestDto.getRequiresApproval()
+                requestDto.getRequiresApproval(),
+                requestDto.getBusinessNumber(),
+                requestDto.getOwnerName(),
+                requestDto.getStartDate()
         );
         return storeRepository.save(store);
     }
