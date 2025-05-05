@@ -3,6 +3,7 @@ package com.example.albaease.auth.jwt;
 import com.example.albaease.auth.CustomUserDetails;
 import com.example.albaease.auth.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -19,14 +20,19 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;  // 사용자 정보 서비스
-
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
         //http 헤더에서 jwt 추출
         String token = getTokenFromRequest(request);
         logger.info("doFilterInternal  Extracted token: " + token);
-
+        // 블랙리스트 확인
+        if (token != null && redisTemplate.hasKey("blacklist:" + token)) {
+            logger.warn("토큰이 블랙리스트에 포함되어 있음. 요청 차단.");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);  // 401
+            return;
+        }
         if (token != null && !jwtUtil.isTokenExpired(token)) {
             String userId = jwtUtil.extractUserId(token);;
             System.out.println("doFilterInternal  Extracted userId: " + userId);
