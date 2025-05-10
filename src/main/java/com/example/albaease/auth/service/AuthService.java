@@ -75,11 +75,11 @@ public class AuthService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new AuthException("비밀번호가 일치하지 않습니다.");
         }
-
-        // JWT 발급 -> 비밀번호가 일치하면 JWT 토큰을 발급하여 반환
-        String token =  jwtUtil.generateToken(user.getUserId().toString(), user.getRole().toString());
         // 풀네임 받아옴
         String fullName = user.getLastName() + user.getFirstName();
+        // JWT 발급 -> 비밀번호가 일치하면 JWT 토큰을 발급하여 반환
+        String token =  jwtUtil.generateToken(user.getUserId().toString(), user.getRole().toString(), fullName);
+
         // CustomUserDetails 객체 생성
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
         System.out.println("로그인에서 제대로 객체생성하는지 확인" + customUserDetails);

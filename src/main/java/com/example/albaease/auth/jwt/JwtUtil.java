@@ -18,12 +18,13 @@ public class JwtUtil {
 
 
     // JWT 토큰 생성
-    public String generateToken(String userId, String role) {
+    public String generateToken(String userId, String role, String fullName) {
 
         String token = Jwts.builder()
                 .setSubject(userId)  // 토큰에 저장할 사용자 정보
                 .claim("role", role)  // 사용자 역할
                 .setIssuedAt(new Date())  // 토큰 발급 시간
+                .claim("fullName", fullName)
                 .setExpiration(new Date(System.currentTimeMillis() + validityInMilliseconds))  // 만료 시간 (1시간)
                 .signWith(SignatureAlgorithm.HS256, secretKey)  // 서명
                 .compact();
