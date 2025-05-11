@@ -33,8 +33,6 @@ public class ScheduleService {
     private final UserRepository userRepository;
     private final ShiftRepository shiftRepository;
 
-    // 기존 메소드들은 그대로 유지
-
     // 특정 스토어(storeId)의 전체 스케줄 조회
     public List<ScheduleResponse> getSchedulesByStoreId(Long storeId) {
         List<Schedule> schedules = scheduleRepository.findByStore_Id(storeId);
@@ -98,7 +96,6 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new RuntimeException("Schedule not found"));
 
-        // store와 user 객체 기반으로 검증
         if (!schedule.getStore().getId().equals(storeId) ||
                 !schedule.getUser().getUserId().equals(userId)) {
             throw new RuntimeException("Store ID or User ID mismatch");
@@ -110,13 +107,17 @@ public class ScheduleService {
     // 템플릿을 기반으로 스케줄 생성
     @Transactional
     public void createScheduleFromTemplate(Long templateId, TemplateScheduleRequest scheduleRequest) {
+        // Template 조회
         Template template = templateService.getTemplateById(templateId);
-        if (template == null) throw new RuntimeException("Template not found");
+        if (template == null) {
+            throw new RuntimeException("Template not found with id: " + templateId);
+        }
 
         Long storeId = scheduleRequest.getStoreId();
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new RuntimeException("Store not found"));
+                .orElseThrow(() -> new RuntimeException("Store not found with ID: " + storeId));
 
+        // 지정된 사용자들로 스케줄 생성
         List<Schedule> schedules = scheduleRequest.getUserIds().stream()
                 .map(userId -> {
                     User user = userRepository.findById(userId)
@@ -129,6 +130,8 @@ public class ScheduleService {
                     schedule.setStartTime(template.getStartTime());
                     schedule.setEndTime(template.getEndTime());
                     schedule.setBreakTime(template.getBreakTime());
+                    schedule.setRepeatDaysFromList(scheduleRequest.getRepeatDays());
+                    schedule.setRepeatEndDate(scheduleRequest.getRepeatEndDate());
 
                     return schedule;
                 })
@@ -136,6 +139,9 @@ public class ScheduleService {
 
         scheduleRepository.saveAll(schedules);
     }
+
+
+
 
     // 스케줄 수정
     @Transactional

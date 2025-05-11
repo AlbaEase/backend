@@ -19,7 +19,7 @@ public class TemplateResponse {
 
     public TemplateResponse(Template template) {
         this.templateId = template.getTemplateId();
-        this.storeId = template.getStoreId();
+        this.storeId = template.getStore().getId();
         this.templateName = template.getTemplateName();
         this.startTime = template.getStartTime();
         this.endTime = template.getEndTime();

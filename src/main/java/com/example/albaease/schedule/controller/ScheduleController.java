@@ -70,9 +70,6 @@ public class ScheduleController {
     }
 
     // 스케줄 수정
-// ScheduleController.java
-
-    // 스케줄 수정
     @PutMapping("/store/{storeId}/user/{userId}/{scheduleId}")
     public ResponseEntity<ScheduleResponse> updateSchedule(
             @PathVariable Long storeId,
@@ -119,12 +116,21 @@ public class ScheduleController {
             @PathVariable Long templateId,
             @RequestBody TemplateScheduleRequest scheduleRequest) {
         try {
+            // 매장 있는지 확인
+            if (scheduleRequest.getStoreId() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Error: Store ID is required in the request.");
+            }
+
             scheduleService.createScheduleFromTemplate(templateId, scheduleRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body("Schedules created from template successfully.");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create schedules from template. Error: " + e.getMessage());
         }
     }
+
+
 
     // 월간 스케줄 조회 API 추가 (대타 요청 반영)
     @GetMapping("/store/{storeId}/monthly")

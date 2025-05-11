@@ -1,26 +1,29 @@
 package com.example.albaease.schedule.domain;
 
+import com.example.albaease.store.domain.Store;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Set;
 
 @Entity
+@Table(name = "template")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
 public class Template {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long templateId; // 템플릿 ID
 
-    // api테스트용, 병합 후 삭제 해야함
-    private Long storeId; // 임시 스토어 아이디
+    // Store 테이블과의 관계 설정 (ManyToOne)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store; // 외래키로 Store 연결
 
     @Column(nullable = false)
     private String templateName; // 템플릿 이름

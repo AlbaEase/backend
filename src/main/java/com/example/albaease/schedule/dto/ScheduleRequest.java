@@ -45,7 +45,7 @@ public class ScheduleRequest {
     @Schema(type = "string", example = "2025-05-31")
     private LocalDate repeatEndDate;
 
-    // 여러 사용자에 대한 스케줄을 생성하는 로직
+    // 여러 사용자에 대한 스케줄을 생성
     public List<Schedule> toEntities(UserRepository userRepository, StoreRepository storeRepository) {
         List<Schedule> schedules = new ArrayList<>();
 
