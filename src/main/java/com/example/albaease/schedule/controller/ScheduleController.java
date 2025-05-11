@@ -8,6 +8,7 @@ import com.example.albaease.schedule.service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,16 +70,33 @@ public class ScheduleController {
     }
 
     // 스케줄 수정
+// ScheduleController.java
+
+    // 스케줄 수정
     @PutMapping("/store/{storeId}/user/{userId}/{scheduleId}")
     public ResponseEntity<ScheduleResponse> updateSchedule(
             @PathVariable Long storeId,
             @PathVariable Long userId,
             @PathVariable Long scheduleId,
-            @RequestBody ScheduleRequest scheduleRequest) {
+            @RequestBody ScheduleRequest scheduleRequest,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        ScheduleResponse updatedSchedule = scheduleService.updateSchedule(storeId, userId, scheduleId, scheduleRequest);
-        return ResponseEntity.ok(updatedSchedule);
+        try {
+            ScheduleResponse updatedSchedule = scheduleService.updateSchedule(storeId, userId, scheduleId, scheduleRequest, userDetails);
+            return ResponseEntity.ok(updatedSchedule);
+        } catch (AccessDeniedException e) {
+            // 권한 없는 사용자의 경우
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        } catch (IllegalArgumentException e) {
+            // 잘못된 요청 데이터
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (RuntimeException e) {
+            // 기타 서버 에러 (예외 메시지 노출)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
+
+
 
     // 스케줄 삭제
     @DeleteMapping("/store/{storeId}/user/{userId}/{scheduleId}")

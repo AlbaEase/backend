@@ -1,5 +1,6 @@
 package com.example.albaease.schedule.service;
 
+import com.example.albaease.auth.CustomUserDetails;
 import com.example.albaease.schedule.domain.Schedule;
 import com.example.albaease.schedule.domain.Template;
 import com.example.albaease.schedule.dto.ScheduleRequest;
@@ -137,27 +138,34 @@ public class ScheduleService {
     }
 
     // 스케줄 수정
-    public ScheduleResponse updateSchedule(Long storeId, Long userId, Long scheduleId, ScheduleRequest scheduleRequest) {
+    @Transactional
+    public ScheduleResponse updateSchedule(Long storeId, Long userId, Long scheduleId, ScheduleRequest scheduleRequest, CustomUserDetails userDetails) {
+        // 스케줄 조회
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new RuntimeException("Schedule not found"));
 
-        // store와 user 객체 기반으로 검증
-        if (!schedule.getStore().getId().equals(storeId) ||
-                !schedule.getUser().getUserId().equals(userId)) {
-            throw new RuntimeException("Store ID or User ID mismatch");
+        // 권한 확인 - OWNER (관리자) 권한 확인
+        if (!userDetails.getRole().equals("OWNER")) {
+            throw new RuntimeException("403 Forbidden: Only OWNER can update schedules.");
         }
 
-        // 스케줄 정보 업데이트
+        // 기존 스케줄 정보 변경 (userIds와 storeId는 무시)
+        schedule.setWorkDate(scheduleRequest.getWorkDate());
         schedule.setStartTime(scheduleRequest.getStartTime());
         schedule.setEndTime(scheduleRequest.getEndTime());
         schedule.setBreakTime(scheduleRequest.getBreakTime());
-        schedule.setWorkDate(scheduleRequest.getWorkDate());
         schedule.setRepeatDaysFromList(scheduleRequest.getRepeatDays());
         schedule.setRepeatEndDate(scheduleRequest.getRepeatEndDate());
 
+        // 변경된 스케줄 저장
         Schedule updatedSchedule = scheduleRepository.save(schedule);
+
+        // 수정된 스케줄 반환
         return ScheduleResponse.fromEntity(updatedSchedule);
     }
+
+
+
 
     @Transactional(readOnly = true)
     public List<ScheduleResponse> getSchedulesByUserId(Long userId) {
