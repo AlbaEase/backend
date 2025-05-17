@@ -42,7 +42,7 @@ public class SecurityConfig {
 
         // 리액트 앱과 스웨거 UI 도메인을 명시적으로 허용
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173","http://3.39.237.218:5173", "http://3.39.237.218:8080", "http://3.39.237.218"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);  // 세션 쿠키 공유를 위해 true로 설정
         configuration.setMaxAge(3600L);
