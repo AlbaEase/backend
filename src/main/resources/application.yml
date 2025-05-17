@@ -84,11 +84,6 @@ jwt:
   secret: ${JWT_SECRET}
   expiration-time: 3600000 # 1시간 (milliseconds)
 
-coolsms:
-  api:
-    key: ${COOLSMS_API_KEY}
-    secret: ${COOLSMS_API_SECRET}
-    number: ${COOLSMS_SENDER_NUMBER}
 
 websocket:
   allowed-origins: "*"

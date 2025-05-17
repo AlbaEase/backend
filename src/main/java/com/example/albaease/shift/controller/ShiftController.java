@@ -6,6 +6,10 @@ import com.example.albaease.shift.dto.ShiftRequest;
 import com.example.albaease.shift.dto.ShiftResponse;
 import com.example.albaease.shift.service.ShiftService;
 import com.example.albaease.user.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +22,18 @@ import java.security.Principal;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "대타 요청 API", description = "대타 요청 생성 및 상태 관리 기능을 제공하는 API")
 public class ShiftController {
     private final ShiftService shiftService;
     private final UserRepository userRepository;
 
     // 대타 요청 생성
+    @Operation(summary = "대타 요청 생성", description = "근무 일정에 대한 대타 요청을 생성합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "대타 요청 생성 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "404", description = "사용자 또는 스케줄을 찾을 수 없음")
+    })
     @PostMapping("/shift-requests/store/{storeId}")
     public ResponseEntity<ShiftResponse> createShiftRequest(
             @RequestBody ShiftRequest request,
@@ -74,6 +85,11 @@ public class ShiftController {
     }
 
     // 대타 요청 상태 업데이트
+    @Operation(summary = "대타 요청 상태 업데이트", description = "대타 요청의 상태를 승인 또는 거절로 변경합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "상태 업데이트 성공"),
+            @ApiResponse(responseCode = "404", description = "대타 요청을 찾을 수 없음")
+    })
     @PatchMapping("/shift-requests/{shiftId}/status")
     public ResponseEntity<ShiftResponse> updateStatus(
             @PathVariable Long shiftId,
@@ -99,6 +115,10 @@ public class ShiftController {
     }
 
     // WebSocket을 통해 알림 전송
+    @Operation(summary = "WebSocket 대타 요청 알림", description = "WebSocket을 통해 대타 요청 알림을 실시간으로 전송합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "알림 전송 성공")
+    })
     @MessageMapping("/shift-requests")
     @SendToUser("/queue/notifications")
     public NotificationResponse handleShiftRequest(

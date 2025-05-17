@@ -4,6 +4,10 @@ import com.example.albaease.notification.dto.NotificationRequest;
 import com.example.albaease.notification.dto.NotificationResponse;
 import com.example.albaease.notification.service.NotificationService;
 import com.example.albaease.user.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +22,17 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/notification")
 @RequiredArgsConstructor
+@Tag(name = "알림 API", description = "알림 조회, 삭제 등의 기능을 제공하는 API")
 public class NotificationController {
     private final NotificationService notificationService;
     private final UserRepository userRepository;
 
     // 알림 목록 조회
+    @Operation(summary = "알림 목록 조회", description = "사용자의 모든 알림 목록을 조회합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "알림 목록 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
+    })
     @GetMapping("/me")
     public ResponseEntity<NotificationResponse> getNotifications(
             Principal principal,
@@ -56,6 +66,11 @@ public class NotificationController {
     }
 
     // 알림 개별 삭제
+    @Operation(summary = "알림 개별 삭제", description = "특정 알림을 삭제합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "알림 삭제 성공"),
+            @ApiResponse(responseCode = "404", description = "알림을 찾을 수 없음")
+    })
     @DeleteMapping("/me/{notificationId}")
     public ResponseEntity<Void> deleteNotification(
             @PathVariable Long notificationId) {
@@ -64,6 +79,11 @@ public class NotificationController {
     }
 
     // 알림 전체 삭제
+    @Operation(summary = "알림 전체 삭제", description = "사용자의 모든 알림을 삭제합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "알림 전체 삭제 성공"),
+            @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
+    })
     @DeleteMapping("/me")
     public ResponseEntity<Void> deleteAllNotifications(
             Principal principal,
@@ -89,6 +109,10 @@ public class NotificationController {
     }
 
     // WebSocket을 통해 알림 전송
+    @Operation(summary = "WebSocket 알림 전송", description = "WebSocket을 통해 알림을 전송합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "알림 전송 성공")
+    })
     @MessageMapping("/notification")
     @SendToUser("/queue/notifications")
     public NotificationResponse handleNotification(
@@ -113,6 +137,10 @@ public class NotificationController {
     }
 
     // WebSocket 구독 요청 처리
+    @Operation(summary = "WebSocket 구독", description = "클라이언트의 WebSocket 구독 요청을 처리합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "WebSocket 구독 성공")
+    })
     @MessageMapping("/subscribe")
     public void subscribe(StompHeaderAccessor headerAccessor, Principal principal) {
         if (principal != null) {
