@@ -16,9 +16,13 @@ import com.example.albaease.shift.dto.ShiftResponse;
 import com.example.albaease.shift.repository.ShiftRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ShiftService {
@@ -84,6 +88,11 @@ public class ShiftService {
         // 상태 업데이트
         shift.updateStatus(status, approveUser);
 
+        // 대타 요청이 승인된 경우 스케줄 업데이트
+        if (status == ShiftStatus.APPROVED) {
+            updateScheduleForApprovedShift(shift);
+        }
+
         String statusMessage = switch (status) {
             case APPROVED -> "대타 요청이 승인되었습니다.";
             case REJECTED -> "대타 요청이 거절되었습니다.";
@@ -104,6 +113,56 @@ public class ShiftService {
         );
 
         return ShiftResponse.from(shift);
+    }
+
+    /**
+     * 승인된 대타 요청에 대해 스케줄 정보를 업데이트합니다.
+     * 기존 사용자의 근무 일정을 대타 사용자로 변경합니다.
+     */
+    private void updateScheduleForApprovedShift(Shift shift) {
+        Schedule schedule = shift.getSchedule();
+        LocalDate requestDate = shift.getRequestDate();
+
+        log.info("대타 요청 승인: scheduleId={}, fromUser={}, toUser={}, requestDate={}",
+                schedule.getScheduleId(), shift.getFromUser().getUserId(),
+                shift.getToUser().getUserId(), requestDate);
+
+        try {
+            // 대타 요청 특정 날짜가 있는 경우, 해당 날짜에 대한 새 스케줄을 생성
+            if (requestDate != null) {
+                // 해당 날짜에 이미 대타 사용자의 스케줄이 있는지 확인
+                boolean hasExistingSchedule = scheduleRepository.existsByUserAndWorkDate(
+                        shift.getToUser(), requestDate);
+
+                if (hasExistingSchedule) {
+                    log.warn("대타 사용자가 해당 날짜에 이미 스케줄이 있습니다: userId={}, date={}",
+                            shift.getToUser().getUserId(), requestDate);
+                    return;
+                }
+
+                // 새 스케줄 생성 (기존 스케줄 복제 후 사용자와 날짜 변경)
+                Schedule newSchedule = new Schedule();
+                newSchedule.setUser(shift.getToUser());
+                newSchedule.setStore(schedule.getStore());
+                newSchedule.setWorkDate(requestDate);
+                newSchedule.setStartTime(schedule.getStartTime());
+                newSchedule.setEndTime(schedule.getEndTime());
+                newSchedule.setBreakTime(schedule.getBreakTime());
+
+                scheduleRepository.save(newSchedule);
+                log.info("대타 요청으로 새 스케줄 생성 완료: newScheduleId={}, userId={}, date={}",
+                        newSchedule.getScheduleId(), newSchedule.getUser().getUserId(), newSchedule.getWorkDate());
+            } else {
+                // 특정 날짜가 없는 경우, 기존 스케줄의 사용자를 대타 사용자로 변경
+                schedule.setUser(shift.getToUser());
+                scheduleRepository.save(schedule);
+                log.info("대타 요청으로 기존 스케줄 사용자 변경 완료: scheduleId={}, newUserId={}",
+                        schedule.getScheduleId(), schedule.getUser().getUserId());
+            }
+        } catch (Exception e) {
+            log.error("대타 요청 스케줄 업데이트 중 오류 발생", e);
+            throw new RuntimeException("스케줄 업데이트 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 
     private void sendShiftNotification(Long userId, Long scheduleId, String message) {

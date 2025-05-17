@@ -21,4 +21,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     // 특정 스토어와 사용자의 스케줄 조회
     List<Schedule> findByStore_IdAndUser_UserId(Long storeId, Long userId);
+
+    // 특정 사용자와 날짜에 스케줄이 존재하는지 확인
+    boolean existsByUserAndWorkDate(User user, LocalDate workDate);
 }
