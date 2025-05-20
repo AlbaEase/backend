@@ -23,21 +23,25 @@ import java.util.stream.Collectors;
 public class StoreService {
 
     private final StoreRepository storeRepository;
-    private final BusinessVerificationService businessNumberValidator; // 수정: BusinessNumberValidator 주입
+    private final BusinessVerificationService businessVerificationService;
     private final UserRepository userRepository;
     private final UserStoreRelationRepository userStoreRelationRepository;
-     //매장 생성 (랜덤 코드 생성 + 사업자번호 검증)
+
+    /**
+     * 매장 생성 (사업자등록번호 진위확인 포함)
+     */
     @Transactional
     public Store createStore(StoreRequestDto requestDto) {
-        //사업자 등록번호 검증
-        /*if (!businessNumberValidator.validateBusinessNumber(requestDto.getBusinessNumber())) { // 수정: 사업자 번호 검증
+        // 사업자등록번호 유효성 확인
+        boolean isValid = businessVerificationService.isBusinessNumberValid(requestDto.getBusinessNumber());
+        if (!isValid) {
             throw new IllegalArgumentException("유효하지 않은 사업자 등록번호입니다.");
-        }*/
+        }
 
-        //랜덤 매장 코드 생성
+        // 랜덤 매장 코드 생성
         String storeCode = generateRandomStoreCode();
 
-        //Store 엔티티 생성 및 저장
+        // Store 객체 생성 및 저장
         Store store = new Store(
                 storeCode,
                 requestDto.getName(),
@@ -47,10 +51,25 @@ public class StoreService {
                 requestDto.getOwnerName(),
                 requestDto.getStartDate()
         );
-        return storeRepository.save(store);
+        storeRepository.save(store);
+
+        // 사장님과 매장 관계 생성 (OWNER)
+        User owner = userRepository.findById(requestDto.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("사업자(유저)를 찾을 수 없습니다."));
+
+
+        UserStoreRelation relation = new UserStoreRelation();
+        relation.setUser(owner);
+        relation.setStore(store);
+        relation.setRole(Role.OWNER);
+        relation.setWorkStartDate(LocalDateTime.now());
+
+        userStoreRelationRepository.save(relation);
+
+        return store;
     }
 
-    //랜덤 매장 코드 생성
+    // 매장 코드 생성 (랜덤)
     private String generateRandomStoreCode() {
         Random random = new Random();
         char letter1 = (char) ('A' + random.nextInt(26));
@@ -62,18 +81,18 @@ public class StoreService {
         return String.format("%c%02d%c%c%d", letter1, number1, letter2, letter3, number2);
     }
 
-    //모든 매장 조회
+    // 전체 매장 조회
     public List<Store> getAllStores() {
         return storeRepository.findAll();
     }
 
-    //ID로 매장 조회
+    // 매장 ID로 조회
     public Store getStoreById(int id) {
         return storeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 매장을 찾을 수 없습니다."));
     }
 
-    //매장 정보 수정
+    // 매장 수정
     @Transactional
     public Store updateStore(int id, StoreRequestDto requestDto) {
         Store store = storeRepository.findById(id)
@@ -83,7 +102,7 @@ public class StoreService {
         return storeRepository.save(store);
     }
 
-    //매장삭제
+    // 매장 삭제
     @Transactional
     public void deleteStore(int id) {
         Store store = storeRepository.findById(id)
@@ -92,52 +111,40 @@ public class StoreService {
         storeRepository.delete(store);
     }
 
-    // 알바생 매장 코드 등록 기능
+    // 알바생 매장 등록
     @Transactional
     public String registerPartTimer(Long userId, String storeCode) {
-        // 사용자 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        // 매장 조회
         Store store = storeRepository.findByStoreCode(storeCode)
                 .orElseThrow(() -> new RuntimeException("매장을 찾을 수 없습니다."));
-//
-//        // 이미 등록된 경우 중복 방지
-//        boolean alreadyRegistered = userStoreRelationRepository.existsByUserAndStore(user, store);
-//        if (alreadyRegistered) {
-//            return "이미 등록된 매장입니다.";
-//        }
 
-        // 중간 테이블에 저장
-        UserStoreRelation userStoreRelation = new UserStoreRelation();
-        userStoreRelation.setUser(user);
-        userStoreRelation.setStore(store);
-        userStoreRelation.setRole(Role.PARTTIMER);
-        userStoreRelation.setWorkStartDate(LocalDateTime.now());
+        UserStoreRelation relation = new UserStoreRelation();
+        relation.setUser(user);
+        relation.setStore(store);
+        relation.setRole(Role.PARTTIMER);
+        relation.setWorkStartDate(LocalDateTime.now());
 
-        userStoreRelationRepository.save(userStoreRelation);
+        userStoreRelationRepository.save(relation);
         return "알바생 등록이 완료되었습니다.";
     }
 
-    // 사장님의 모든 매장 조회 기능
+    // 사장님의 모든 매장 조회
     public List<StoreResponseDto> getStoresByOwner(Long userId) {
         List<Store> stores = storeRepository.findByOwnerId(userId);
         return stores.stream().map(StoreResponseDto::new).collect(Collectors.toList());
     }
 
-    // 알바생의 모든 매장 조회 기능
+    // 알바생의 모든 매장 조회
     public List<StoreResponseDto> getStoresByPartTimer(Long userId) {
         List<Store> stores = storeRepository.findByPartTimerId(userId);
         return stores.stream().map(StoreResponseDto::new).collect(Collectors.toList());
     }
 
-    // 사용자의 모든 매장 조회 기능
+    // 사용자의 모든 매장 조회
     public List<Store> getUserStores(Long userId) {
-        List<UserStoreRelation> relationships = userStoreRelationRepository.findByUserId(userId);
-        return relationships.stream().map(UserStoreRelation::getStore).collect(Collectors.toList());
+        List<UserStoreRelation> relations = userStoreRelationRepository.findByUserId(userId);
+        return relations.stream().map(UserStoreRelation::getStore).collect(Collectors.toList());
     }
-
-
-
 }

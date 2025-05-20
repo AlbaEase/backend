@@ -1,43 +1,63 @@
 package com.example.albaease.store.service;
 
+import com.example.albaease.store.dto.BusinessVerificationResponse;
 import com.example.albaease.store.dto.BusinessVerificationRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
+import java.util.List;
 
 @Service
 public class BusinessVerificationService {
 
-    private static final String API_URL_VALIDATE = "https://api.odcloud.kr/api/nts-businessman/v1/validate";
-    private static final String SERVICE_KEY = "iqYfkCCw0J0iQfvkpNj6suohKrrXLOw5g14hlN4zToWUnK0UYyy3cEiapdWBQyOenoSQOx0z9TCaZjSfkLGdDQ=="; // 실제 서비스 키로 대체
+    private static final String API_URL_VALIDATE = "https://api.odcloud.kr/api/nts-businessman/v1/status";
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Value("${api.service.key}") // application.properties에서 키를 가져옴
+    private String serviceKey;
 
+    private final RestTemplate restTemplate;
 
-    public boolean validateBusinessNumber(String businessNumber) {
-        final String API_URL = "https://api.odcloud.kr/api/nts-businessman/v1/status";
-        final String SERVICE_KEY = "YOUR_SERVICE_KEY"; // 공공 API 키 입력
+    public BusinessVerificationService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
-        final RestTemplate restTemplate = new RestTemplate();
+    /**
+     * API를 호출하여 사업자 상태 정보를 조회
+     */
+    public BusinessVerificationResponse verifyBusinessNumber(String businessNumber) {
+        BusinessVerificationRequest request = new BusinessVerificationRequest(List.of(businessNumber));
 
-        public com.example.albaease.dto.BusinessVerificationResponse verifyBusinessNumber(String businessNumber) {
-            // 요청 객체 생성
-            BusinessVerificationRequest request = new BusinessVerificationRequest(Collections.singletonList(businessNumber));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
 
-            // HTTP 요청 헤더 설정
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<BusinessVerificationRequest> requestEntity = new HttpEntity<>(request, headers);
 
-            // 요청 엔티티 생성
-            HttpEntity<BusinessVerificationRequest> requestEntity = new HttpEntity<>(request, headers);
+        ResponseEntity<BusinessVerificationResponse> responseEntity = restTemplate.exchange(
+                API_URL_VALIDATE + "?serviceKey=" + serviceKey,
+                HttpMethod.POST,
+                requestEntity,
+                BusinessVerificationResponse.class
+        );
 
-            // API 호출
-            ResponseEntity<com.example.albaease.dto.BusinessVerificationResponse> responseEntity =
-                    restTemplate.exchange(API_URL + "?serviceKey=" + SERVICE_KEY,
-                            HttpMethod.POST, requestEntity, com.example.albaease.dto.BusinessVerificationResponse.class);
+        return responseEntity.getBody();
+    }
 
-            return responseEntity.getBody();
+    /**
+     * 사업자등록번호 유효성 여부를 boolean으로 반환
+     */
+    public boolean isBusinessNumberValid(String businessNumber) {
+        BusinessVerificationResponse response = verifyBusinessNumber(businessNumber);
+
+        if (response == null || response.getData() == null || response.getData().isEmpty()) {
+            return false;
         }
+
+        BusinessVerificationResponse.BusinessData data = response.getData().get(0);
+
+        // "01"은 계속사업자 (유효), 그 외는 폐업 또는 등록되지 않은 사업자
+        return "01".equals(data.getB_stt_cd());
+    }
 }

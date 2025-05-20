@@ -15,5 +15,6 @@ public class StoreRequestDto {
     private String businessNumber;
     private final String startDate = "2000-01-01"; // 추가된 필드
     private String ownerName; // 추가된 필드
+    private Long userId;  // ✅ 사장님 유저 ID 추가
 
 }
