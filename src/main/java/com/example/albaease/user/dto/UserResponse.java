@@ -12,14 +12,15 @@ import java.util.stream.Collectors;
 
 @Getter
 public class UserResponse {
-
+    private final Long userId;
     private final String fullName;
     private final String email;
     private final String role;
-    private List<String> storeNames;
+    private final List<String> storeNames;
 
     // 생성자에서 User 엔티티를 받아와서 필요한 정보만 추출
     public UserResponse(User user, List<String> storeNames) {
+        this.userId = user.getUserId();
         this.fullName = user.getLastName() + user.getFirstName();
         this.email = user.getEmail();
         this.role = user.getRole().name();
