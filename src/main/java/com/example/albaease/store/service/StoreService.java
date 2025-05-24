@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class StoreService {
-
     private final StoreRepository storeRepository;
     private final BusinessVerificationService businessVerificationService;
     private final UserRepository userRepository;

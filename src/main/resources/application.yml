@@ -2,21 +2,64 @@ spring:
   application:
     name: albaeaseTest
 
+  main:
+    allow-bean-definition-overriding: true
+
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/store?serverTimezone=Asia/Seoul
-    username: root
-    password: Dnjschs2151!
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-test-query: SELECT 1
+      maximum-pool-size: 10
+      minimum-idle: 5
 
   jpa:
     database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: update  # 🔧 개발 중에는 update로 설정, 운영 시 validate로 변경
+      ddl-auto: update    # Hibernate가 스키마를 자동 관리
+    defer-datasource-initialization: true
     show-sql: true
     properties:
       hibernate:
         format_sql: true
     open-in-view: false
+        use_sql_comments: true
+
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql  # 원래대로 복원
+      encoding: UTF-8
+      separator: ;
+
+  #Email 인증
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_USERNAME}
+    password: ${GMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  # Redis 설정
+  data:
+    redis:
+      host: redis
+      port: 6379
+      timeout: 5000
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1
 
 server:
   port: 8080
@@ -32,8 +75,21 @@ springdoc:
 logging:
   level:
     org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace
     com.example.albaease: debug
+    org.springframework.data.redis: DEBUG
+    org.springframework.data.redis.core: DEBUG
+    org.springframework.data.redis.connection: DEBUG
 
 api:
   service:
     key: iqYfkCCw0J0iQfvkpNj6suohKrrXLOw5g14hlN4zToWUnK0UYyy3cEiapdWBQyOenoSQOx0z9TCaZjSfkLGdDQ==
+jwt:
+  secret: ${JWT_SECRET}
+  expiration-time: 3600000 # 1시간 (milliseconds)
+
+
+websocket:
+  allowed-origins: "*"
+  endpoint: /ws
+  destination-prefixes: /topic, /queue
