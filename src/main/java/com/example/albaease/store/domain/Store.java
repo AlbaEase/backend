@@ -1,57 +1,67 @@
 package com.example.albaease.store.domain;
 
-import com.example.albaease.schedule.domain.Schedule;
-import com.example.albaease.store.domain.UserStoreRelationship;
+import com.example.albaease.store.dto.StoreRequestDto;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Entity
 @Table(name = "store")
-public class Store implements Serializable {
+
+public class Store {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "store_id")
-    private Long id;
+    private int storeId;
 
-    @Column(name = "name")
+    @Column(unique = true, nullable = false)
+    private String storeCode;
+
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "location")
+    @Column(nullable = false)
+    private String businessNumber;
+
+    @Column
+    private String ownerName;
+
+    @Column
+    private String startDate;
+
+
     private String location;
+    private Boolean requiresApproval;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "store_code", unique = true)  // storeCode 추가
-    private String storeCode;  // 랜덤 매장 코드 필드 추가
-
-    @Column(name = "require_approval")
-    private Boolean require_approval;
-
-    @Column(name = "business_number", unique = true)
-    private String businessNumber; // 사업자 등록 번호
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    // User_Store_Relationship 매핑
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserStoreRelationship> userStoreRelationships;
-
-    // Schedule 매핑
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Schedule> schedules;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.require_approval = false; // 기본값은 미검증
+    public Store(String storeCode, String name, String location, Boolean requiresApproval,
+                 String businessNumber, String ownerName, String startDate) {
+        this.storeCode = storeCode;
+        this.name = name;
+        this.location = location;
+        this.requiresApproval = requiresApproval;
+        this.businessNumber = businessNumber;
+        this.ownerName = ownerName;
+        this.startDate = startDate;
     }
 
+    // 매장 정보 업데이트
+    public void update(StoreRequestDto requestDto) {
+        this.storeCode = requestDto.getStoreCode();
+        this.name = requestDto.getName();
+        this.location = requestDto.getLocation();
+        this.requiresApproval = requestDto.getRequiresApproval();
+        this.businessNumber = requestDto.getBusinessNumber();
+        this.ownerName = requestDto.getOwnerName();
+        this.startDate = requestDto.getStartDate();
+    }
 }
