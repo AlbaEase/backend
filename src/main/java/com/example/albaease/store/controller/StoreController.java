@@ -22,12 +22,22 @@ public class StoreController {
 
     // 매장 등록 (사장님)
     @PostMapping
-    public ResponseEntity<StoreResponseDto> createStore(
+    public ResponseEntity<?> createStore(
             @Valid @RequestBody StoreRequestDto request,
             Authentication authentication
     ) {
         String username = authentication.getName();
-        return ResponseEntity.ok(storeService.createStore(request, username));
+
+        try {
+            StoreResponseDto response = storeService.createStore(request, username);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            // 유효하지 않은 사업자등록번호 등 → 400 에러로 반환
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            // 그 외 예외 → 500 에러로 반환
+            return ResponseEntity.internalServerError().body("서버 오류가 발생했습니다.");
+        }
     }
 
     // 매장 정보 조회 (운영 or 근무 전체 매장 조회)

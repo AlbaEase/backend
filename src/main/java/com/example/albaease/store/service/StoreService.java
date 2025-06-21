@@ -30,6 +30,12 @@ public class StoreService {
 
         // 사업자등록번호 검증
         boolean isValidBusinessNumber = businessNumberValidator.validateBusinessNumber(request.getBusinessNumber());
+        System.out.println("✅ 사업자등록번호 유효성 검사 결과: " + isValidBusinessNumber);
+
+        // ✅ 유효하지 않으면 등록 자체를 막음
+        if (!isValidBusinessNumber) {
+            throw new IllegalArgumentException("유효하지 않은 사업자등록번호입니다.");
+        }
 
         // 사용자 조회
         User user = userRepository.findByEmail(loginId)
@@ -42,11 +48,12 @@ public class StoreService {
         Store store = Store.builder()
                 .name(request.getName())
                 .location(request.getLocation())
-                .require_approval(isValidBusinessNumber)
                 .storeCode(storeCode)
+                .businessNumber(request.getBusinessNumber())
                 .build();
 
         Store savedStore = storeRepository.save(store);
+        System.out.println("📌 저장된 Store의 require_approval: " + savedStore.getRequire_approval());
 
         // 매장과 사용자 관계 생성 (방금 로그인한 사용자를 매장 관리자로 설정)
         UserStoreRelationship relationship = UserStoreRelationship.builder()
@@ -58,9 +65,13 @@ public class StoreService {
 
         // DTO로 변환 후 반환
         return StoreResponseDto.builder()
-                .storeCode(savedStore.getStoreCode())
+                .id(savedStore.getId())                            // ✅ Store 엔티티의 id
+                .storeId(savedStore.getId())                      // ✅ 필요하다면 동일하게 사용
+                .storeCode(savedStore.getStoreCode())             // ✅ 매장 코드
+                .businessNumber(savedStore.getBusinessNumber())   // ✅ null 문제 해결
                 .name(savedStore.getName())
                 .location(savedStore.getLocation())
+                .requireApproval(savedStore.getRequire_approval())// ✅ null 문제 해결
                 .createdAt(savedStore.getCreatedAt())
                 .build();
     }

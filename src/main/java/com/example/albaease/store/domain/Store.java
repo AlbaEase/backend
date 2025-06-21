@@ -1,7 +1,6 @@
 package com.example.albaease.store.domain;
 
 import com.example.albaease.schedule.domain.Schedule;
-import com.example.albaease.store.domain.UserStoreRelationship;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -51,7 +50,10 @@ public class Store implements Serializable {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.require_approval = false; // 기본값은 미검증
+        if (this.require_approval == null) {
+            this.require_approval = false;
+        }
     }
+
 
 }
