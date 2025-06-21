@@ -25,4 +25,6 @@ dist-ssr
 
 .env
 # frontend 폴더 무시
-frontend/ 
+frontend/
+
+src/main/resources/application.yml
