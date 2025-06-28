@@ -1,10 +1,11 @@
 package com.example.albaease.store.controller;
 
+import com.example.albaease.store.dto.StoreJoinRequestDto;
 import com.example.albaease.store.dto.StoreRequestDto;
 import com.example.albaease.store.dto.StoreResponseDto;
 import com.example.albaease.store.dto.StoreUpdateRequestDto;
-import com.example.albaease.store.service.StoreService;
 import com.example.albaease.store.service.BusinessNumberValidator;
+import com.example.albaease.store.service.StoreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -82,4 +83,24 @@ public class StoreController {
         boolean isValid = businessNumberValidator.validateBusinessNumber(request.businessNumber);
         return ResponseEntity.ok(isValid);
     }
+
+    // 알바생이 매장코드로 매장에 등록
+    @PostMapping("/join")
+    public ResponseEntity<String> joinStore(
+            @RequestBody StoreJoinRequestDto request,
+            Authentication authentication
+    ) {
+        String username = authentication.getName();
+
+        try {
+            storeService.joinStore(request.getStoreCode(), username);
+            return ResponseEntity.ok("매장에 등록되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("서버 오류가 발생했습니다.");
+        }
+    }
+
+
 }

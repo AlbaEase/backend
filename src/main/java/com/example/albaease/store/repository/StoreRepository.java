@@ -4,6 +4,8 @@ import com.example.albaease.store.domain.Store;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
     // 사업자등록번호로 매장 존재 여부 확인
@@ -11,4 +13,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     // 사업자등록번호로 매장 조회
     Store findByBusinessNumber(String businessNumber);
+
+    Optional<Store> findByStoreCode(String storeCode);
+
 }

@@ -159,4 +159,33 @@ public class StoreService {
 
         return String.format("%c%02d%c%c%d", letter1, number1, letter2, letter3, number2);
     }
+
+    @Transactional
+    public void joinStore(String storeCode, String loginId) {
+        // 사용자 찾기
+        User user = userRepository.findByEmail(loginId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        // 매장 찾기
+        Store store = storeRepository.findByStoreCode(storeCode)
+                .orElseThrow(() -> new IllegalArgumentException("해당 매장 코드의 매장을 찾을 수 없습니다."));
+
+        // 이미 등록된 관계인지 확인 (중복 등록 방지)
+        boolean exists = userStoreRelationshipRepository
+                .existsByUser_UserIdAndStore_Id(user.getUserId(), store.getId());
+
+        if (exists) {
+            throw new IllegalArgumentException("이미 등록된 매장입니다.");
+        }
+
+        // 관계 저장
+        UserStoreRelationship relationship = UserStoreRelationship.builder()
+                .user(user)
+                .store(store)
+                .build();
+
+        userStoreRelationshipRepository.save(relationship);
+    }
+
+
 }
