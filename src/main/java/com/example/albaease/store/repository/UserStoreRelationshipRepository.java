@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface UserStoreRelationshipRepository extends JpaRepository<UserStoreRelationship, Long> {
     List<UserStoreRelationship> findByUser_UserId(Long userId);
     Optional<UserStoreRelationship> findByUser_UserIdAndStore_Id(Long userId, Long storeId);
+    boolean existsByUser_UserIdAndStore_Id(Long userId, Long storeId);
+
 }
