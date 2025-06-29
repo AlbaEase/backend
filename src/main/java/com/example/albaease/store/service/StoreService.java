@@ -50,6 +50,7 @@ public class StoreService {
                 .location(request.getLocation())
                 .storeCode(storeCode)
                 .businessNumber(request.getBusinessNumber())
+                .defaultHourlyWage(request.getDefaultHourlyWage()) // 시급 반영
                 .build();
 
         Store savedStore = storeRepository.save(store);

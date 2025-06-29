@@ -3,6 +3,7 @@ package com.example.albaease.payroll.service;
 import com.example.albaease.auth.CustomUserDetails;
 import com.example.albaease.payroll.dto.DailyWageDto;
 import com.example.albaease.payroll.dto.MonthlyPayrollDto;
+import com.example.albaease.payroll.dto.WageUpdateRequest;
 import com.example.albaease.schedule.domain.Schedule;
 import com.example.albaease.schedule.repository.ScheduleRepository;
 import com.example.albaease.store.domain.UserStoreRelationship;
@@ -61,10 +62,17 @@ public class PayrollService {
                     UserStoreRelationship rel = relationshipRepository
                             .findByUser_UserIdAndStore_Id(userId, s.getStore().getId())
                             .orElse(null);
-                    if (rel == null || rel.getHourlyWage() == null) return null;
+
+                    // 💡 시급 결정: 관계에 시급이 있으면 그것을, 없으면 store의 기본 시급 사용
+                    Integer hourlyWage = (rel != null && rel.getHourlyWage() != null)
+                            ? rel.getHourlyWage()
+                            : s.getStore().getDefaultHourlyWage(); // 👈 여기가 추가된 부분
+
+                    if (hourlyWage == null) return null;
+
                     // 근무 시간 계산
                     double hours = calculateWorkingHours(s);
-                    int wage = (int) (hours * rel.getHourlyWage());
+                    int wage = (int) (hours * hourlyWage);
                     return new DailyWageDto(s.getWorkDate(), hours, wage);
                 })
                 .filter(dto -> dto != null)
@@ -92,5 +100,15 @@ public class PayrollService {
         long workingMinutes = total.toMinutes() - breakMinutes;
 
         return workingMinutes / 60.0;
+    }
+    public void updateMyWage(WageUpdateRequest request) {
+        Long userId = getCurrentUserId();
+
+        UserStoreRelationship rel = relationshipRepository
+                .findByUser_UserIdAndStore_Id(userId, request.getStoreId())
+                .orElseThrow(() -> new RuntimeException("매장과의 관계 없음"));
+
+        rel.setHourlyWage(request.getHourlyWage()); // 개인 시급 저장
+        relationshipRepository.save(rel);
     }
 }

@@ -30,4 +30,7 @@ public class UserStoreRelationship {
 
     @Column(name = "work_start_date")
     private LocalDateTime workStartDate; // 근무 시작 일자
+
+    @Column(name = "hourly_wage")
+    private Integer hourlyWage;
 }
