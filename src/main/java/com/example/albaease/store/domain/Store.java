@@ -39,6 +39,9 @@ public class Store implements Serializable {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "default_hourly_wage")
+    private Integer defaultHourlyWage; // 기본 시급 필드 추가
+
     // User_Store_Relationship 매핑
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserStoreRelationship> userStoreRelationships;

@@ -24,4 +24,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     // 특정 사용자와 날짜에 스케줄이 존재하는지 확인
     boolean existsByUserAndWorkDate(User user, LocalDate workDate);
+
+
+    List<Schedule> findByUser_UserIdAndWorkDateBetween(Long userId, LocalDate start, LocalDate end);
+
+    List<Schedule> findByStore_IdAndUser_UserIdAndWorkDateBetween(Long storeId, Long userId, LocalDate start, LocalDate end);
 }

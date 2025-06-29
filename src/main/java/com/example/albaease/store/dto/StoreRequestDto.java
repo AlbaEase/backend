@@ -24,4 +24,6 @@ public class StoreRequestDto {
 
     // 승인 여부 필드 추가 (기본값 false)
     private Boolean requireApproval = false;
+    // 기본 시급 필드 추가
+    private Integer defaultHourlyWage;
 }
