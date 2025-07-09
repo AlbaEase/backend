@@ -19,7 +19,7 @@ public class StoreResponseDto {
 
     // 엔티티의 승인 여부 필드 추가
     private Boolean requireApproval;
-
+    private Integer defaultHourlyWage; // 시급 추가
     private LocalDateTime createdAt;
 
 }

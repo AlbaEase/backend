@@ -101,6 +101,8 @@ public class StoreService {
                             .storeCode(store.getStoreCode())
                             .name(store.getName())
                             .location(store.getLocation())
+                            .requireApproval(store.getRequire_approval())
+                            .defaultHourlyWage(store.getDefaultHourlyWage())//
                             .createdAt(store.getCreatedAt())
                             .build();
                 })
