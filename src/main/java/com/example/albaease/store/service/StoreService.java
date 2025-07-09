@@ -99,6 +99,7 @@ public class StoreService {
                     return StoreResponseDto.builder()
                             .storeId(store.getId())
                             .storeCode(store.getStoreCode())
+                            .businessNumber(store.getBusinessNumber())
                             .name(store.getName())
                             .location(store.getLocation())
                             .requireApproval(store.getRequire_approval())
