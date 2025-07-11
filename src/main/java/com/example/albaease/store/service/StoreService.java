@@ -3,10 +3,12 @@ package com.example.albaease.store.service;
 import com.example.albaease.store.dto.StoreResponseDto;
 import com.example.albaease.store.domain.Store;
 import com.example.albaease.store.domain.UserStoreRelationship;
+import com.example.albaease.store.dto.UserSimpleResponseDto;
 import com.example.albaease.store.repository.StoreRepository;
 import com.example.albaease.store.repository.UserStoreRelationshipRepository;
 import com.example.albaease.store.dto.StoreRequestDto;
 import com.example.albaease.store.dto.StoreUpdateRequestDto;
+import com.example.albaease.user.entity.Role;
 import com.example.albaease.user.entity.User;
 import com.example.albaease.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -191,5 +193,54 @@ public class StoreService {
         userStoreRelationshipRepository.save(relationship);
     }
 
+    // 해당 매장 알바생 삭제(관계 삭제)
+    @Transactional
+    public void removeWorker(Long storeId, Long targetUserId, String requesterLoginId) {
+        // 요청자 정보 조회
+        User requester = userRepository.findByEmail(requesterLoginId)
+                .orElseThrow(() -> new RuntimeException("요청한 사용자를 찾을 수 없습니다."));
 
+        // 요청자가 해당 storeId의 OWNER인지 확인 (store + user 쌍으로 관계가 있어야 함)
+      userStoreRelationshipRepository.findByUser_UserIdAndStore_Id(requester.getUserId(), storeId)
+                .orElseThrow(() -> new RuntimeException("매장에 대한 권한이 없습니다."));
+
+        if (requester.getRole() != Role.OWNER) {
+            throw new RuntimeException("알바생을 삭제할 권한이 없습니다.");
+        }
+
+
+        UserStoreRelationship relationship = userStoreRelationshipRepository
+                .findByUser_UserIdAndStore_Id(targetUserId, storeId)
+                .orElseThrow(() -> new RuntimeException("알바생 관계를 찾을 수 없습니다."));
+
+        userStoreRelationshipRepository.delete(relationship);
+    }
+
+    //해당 매장 알바생 조회
+    @Transactional(readOnly = true)
+    public List<UserSimpleResponseDto> getWorkersByStore(Long storeId, String requesterLoginId) {
+        // 요청자 정보 조회
+        User requester = userRepository.findByEmail(requesterLoginId)
+                .orElseThrow(() -> new RuntimeException("요청한 사용자를 찾을 수 없습니다."));
+
+        // 요청자가 해당 storeId의 사장인지 검증
+        userStoreRelationshipRepository.findByUser_UserIdAndStore_Id(requester.getUserId(), storeId)
+                .orElseThrow(() -> new RuntimeException("해당 매장에 대한 접근 권한이 없습니다."));
+
+        if (requester.getRole() != Role.OWNER) {
+            throw new RuntimeException("사장님만 알바생 목록을 조회할 수 있습니다.");
+        }
+
+        // 해당 매장의 모든 알바생 관계 가져오기
+        List<UserStoreRelationship> relationships = userStoreRelationshipRepository.findByStore_Id(storeId);
+
+        return relationships.stream()
+                .filter(rel -> rel.getUser().getRole() == Role.WORKER)
+                .map(rel -> {
+                    User user = rel.getUser();
+                    String fullName = user.getLastName() + user.getFirstName();
+                    return new UserSimpleResponseDto(user.getUserId(), fullName);
+                })
+                .collect(Collectors.toList());
+    }
 }

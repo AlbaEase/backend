@@ -1,9 +1,6 @@
 package com.example.albaease.store.controller;
 
-import com.example.albaease.store.dto.StoreJoinRequestDto;
-import com.example.albaease.store.dto.StoreRequestDto;
-import com.example.albaease.store.dto.StoreResponseDto;
-import com.example.albaease.store.dto.StoreUpdateRequestDto;
+import com.example.albaease.store.dto.*;
 import com.example.albaease.store.service.BusinessNumberValidator;
 import com.example.albaease.store.service.StoreService;
 import jakarta.validation.Valid;
@@ -102,5 +99,22 @@ public class StoreController {
         }
     }
 
+    // 해당 매장의 알바생 리스트 조회
+    @GetMapping("/{storeId}/workers")
+    public ResponseEntity<List<UserSimpleResponseDto>> getWorkersByStore(
+            @PathVariable Long storeId,
+            Authentication authentication) {
+
+        String loginId = authentication.getName();
+        List<UserSimpleResponseDto> workers = storeService.getWorkersByStore(storeId, loginId);
+        return ResponseEntity.ok(workers);
+    }
+
+    // 해당 매장에서 알바생 삭제
+    @DeleteMapping("/{storeId}/worker/{userId}")
+    public void removePartTimer(@PathVariable Long storeId, @PathVariable Long userId, Authentication authentication) {
+        String loginId = authentication.getName();
+        storeService.removeWorker(storeId, userId, loginId);
+    }
 
 }

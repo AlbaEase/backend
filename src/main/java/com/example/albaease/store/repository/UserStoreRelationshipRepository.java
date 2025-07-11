@@ -12,5 +12,5 @@ public interface UserStoreRelationshipRepository extends JpaRepository<UserStore
     List<UserStoreRelationship> findByUser_UserId(Long userId);
     Optional<UserStoreRelationship> findByUser_UserIdAndStore_Id(Long userId, Long storeId);
     boolean existsByUser_UserIdAndStore_Id(Long userId, Long storeId);
-
+    List<UserStoreRelationship> findByStore_Id(Long storeId);
 }
