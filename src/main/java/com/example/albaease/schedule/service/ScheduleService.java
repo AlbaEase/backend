@@ -5,6 +5,7 @@ import com.example.albaease.schedule.domain.Schedule;
 import com.example.albaease.schedule.domain.Template;
 import com.example.albaease.schedule.dto.ScheduleRequest;
 import com.example.albaease.schedule.dto.ScheduleResponse;
+import com.example.albaease.schedule.dto.ScheduleResponseUserInfo;
 import com.example.albaease.schedule.dto.TemplateScheduleRequest;
 import com.example.albaease.schedule.repository.ScheduleRepository;
 import com.example.albaease.shift.domain.entity.Shift;
@@ -77,8 +78,8 @@ public class ScheduleService {
             schedule.setStartTime(request.getStartTime());
             schedule.setEndTime(request.getEndTime());
             schedule.setBreakTime(request.getBreakTime());
-            schedule.setRepeatDaysFromList(request.getRepeatDays());
-            schedule.setRepeatEndDate(request.getRepeatEndDate());
+            //schedule.setRepeatDaysFromList(request.getRepeatDays());
+            //schedule.setRepeatEndDate(request.getRepeatEndDate());
             schedules.add(schedule);
         }
 
@@ -254,13 +255,16 @@ public class ScheduleService {
 
                         // 스케줄 ID와 사용자 ID가 일치하는 스케줄 찾기 (from_user가 일치해야 함)
                         if (scheduleResponse.getScheduleId().equals(shift.getSchedule().getScheduleId()) &&
-                                scheduleResponse.getUserId().equals(shift.getFromUser().getUserId())) {
+                                scheduleResponse.getUser() != null &&
+                                scheduleResponse.getUser().getUserId().equals(shift.getFromUser().getUserId())) {
 
                             // 대타 정보로 수정된 스케줄 생성
                             ScheduleResponse updatedSchedule = new ScheduleResponse();
                             updatedSchedule.setScheduleId(scheduleResponse.getScheduleId());
-                            updatedSchedule.setUserId(shift.getToUser().getUserId());
-                            updatedSchedule.setFullName(shift.getToUser().getLastName() + shift.getToUser().getFirstName());
+                            ScheduleResponseUserInfo toUser = new ScheduleResponseUserInfo();
+                            toUser.setUserId(shift.getToUser().getUserId());
+                            toUser.setFullName(shift.getToUser().getLastName() + shift.getToUser().getFirstName());
+                            updatedSchedule.setUser(toUser);
                             updatedSchedule.setStoreId(scheduleResponse.getStoreId());
                             updatedSchedule.setWorkDate(scheduleResponse.getWorkDate());
                             updatedSchedule.setStartTime(scheduleResponse.getStartTime());
@@ -269,8 +273,10 @@ public class ScheduleService {
 
                             // 대타 변경 여부 표시
                             updatedSchedule.setShiftChanged(true);
-                            updatedSchedule.setOriginalUserId(shift.getFromUser().getUserId());
-                            updatedSchedule.setOriginalUserName(shift.getFromUser().getLastName() + shift.getFromUser().getFirstName());
+                            ScheduleResponseUserInfo fromUser = new ScheduleResponseUserInfo();
+                            fromUser.setUserId(shift.getFromUser().getUserId());
+                            fromUser.setFullName(shift.getFromUser().getLastName() + shift.getFromUser().getFirstName());
+                            updatedSchedule.setOriginalUser(fromUser);
 
                             // 기존 스케줄 대체
                             daySchedules.set(i, updatedSchedule);
