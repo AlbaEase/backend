@@ -2,10 +2,13 @@ package com.example.albaease.schedule.repository;
 
 import com.example.albaease.schedule.domain.Schedule;
 import com.example.albaease.user.entity.User;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -29,4 +32,24 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findByUser_UserIdAndWorkDateBetween(Long userId, LocalDate start, LocalDate end);
 
     List<Schedule> findByStore_IdAndUser_UserIdAndWorkDateBetween(Long storeId, Long userId, LocalDate start, LocalDate end);
+
+    @Query("SELECT DISTINCT s.user.userId FROM Schedule s " +
+            "WHERE s.store.id = :storeId " +
+            "AND (" +
+            // 1. 단일 날짜 충돌
+            " (s.workDate = :requestDate AND s.startTime < :endTime AND s.endTime > :startTime) " +
+            // 2. 반복 요일 충돌
+            " OR (" +
+            "     s.workDate IS NULL AND s.repeatDays IS NOT NULL AND s.repeatEndDate >= :requestDate " +
+            "     AND FUNCTION('FIND_IN_SET', :dayOfWeekStr, s.repeatDays) > 0 " +
+            "     AND s.startTime < :endTime AND s.endTime > :startTime" +
+            "     )" +
+            ")")
+    List<Long> findBusyUserIdsIncludingRepeats(@Param("storeId") Long storeId,
+                                               @Param("requestDate") LocalDate requestDate,
+                                               @Param("startTime") LocalTime startTime,
+                                               @Param("endTime") LocalTime endTime,
+                                               @Param("dayOfWeekStr") String dayOfWeekStr);
+
+
 }

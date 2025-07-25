@@ -16,6 +16,7 @@ public class ShiftResponse {
     private Long id;
     private Long fromUserId;
     private Long toUserId;
+    private Long storeId;
     private Long scheduleId;
     private Long approvedBy;
     private ShiftRequestType requestType;

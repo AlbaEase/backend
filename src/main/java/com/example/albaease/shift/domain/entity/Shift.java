@@ -2,6 +2,7 @@ package com.example.albaease.shift.domain.entity;
 
 import com.example.albaease.shift.domain.enums.ShiftRequestType;
 import com.example.albaease.shift.domain.enums.ShiftStatus;
+import com.example.albaease.store.domain.Store;
 import com.example.albaease.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -19,6 +20,10 @@ public class Shift {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long request_id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_user_id")
@@ -50,16 +55,19 @@ public class Shift {
 
     @Builder
     public Shift(User fromUser, User toUser, Schedule schedule,
-                 ShiftRequestType requestType, LocalDate requestDate) {
+                 ShiftRequestType requestType, LocalDate requestDate,
+                 Store store) {
         this.fromUser = fromUser;
         this.toUser = toUser;
         this.schedule = schedule;
         this.requestType = requestType;
         this.requestDate = requestDate;
+        this.store = store;
         this.status = ShiftStatus.PENDING;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
+
 
     public void updateStatus(ShiftStatus status, User approvedBy) {
         this.status = status;

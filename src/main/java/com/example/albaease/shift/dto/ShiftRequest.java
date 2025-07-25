@@ -13,11 +13,16 @@ public class ShiftRequest {
     private Long fromUserId;
     private Long toUserId;
     private Long scheduleId;
+    private Long storeId;
     private ShiftRequestType requestType;
     private LocalDate requestDate; // 대타 요청 대상 날짜 추가
 
     public void setFromUserId(Long fromUserId) {
         this.fromUserId = fromUserId;
+    }
+
+    public void setStoreId(Long storeId) {
+        this.storeId = storeId;
     }
 
     public void setRequestDate(LocalDate requestDate) {

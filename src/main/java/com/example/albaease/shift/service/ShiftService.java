@@ -4,6 +4,7 @@ import com.example.albaease.notification.dto.NotificationResponse;
 import com.example.albaease.notification.handler.WebSocketHandler;
 import com.example.albaease.schedule.domain.Schedule;
 import com.example.albaease.schedule.repository.ScheduleRepository;
+import com.example.albaease.shift.dto.AvailableSubstituteRequest;
 import com.example.albaease.user.entity.User;
 import com.example.albaease.user.repository.UserRepository;
 import com.example.albaease.notification.domain.enums.NotificationType;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -31,6 +34,42 @@ public class ShiftService {
     private final UserRepository userRepository;
     private final ScheduleRepository scheduleRepository;
     private final WebSocketHandler webSocketHandler;
+
+
+    // 대타가 가능한 사용자 목록 찾아주는 api
+    public List<User> findAvailableSubstitutes(AvailableSubstituteRequest request) {
+
+        // 1. 요청 스케줄 조회
+        Schedule targetSchedule = scheduleRepository.findById(request.getScheduleId())
+                .orElseThrow(() -> new EntityNotFoundException("스케줄을 찾을 수 없습니다."));
+
+        LocalDate requestDate = request.getRequestDate();
+        Long storeId = request.getStoreId();
+        Long fromUserId = request.getFromUserId();
+
+        // 2. 매장 내 전체 사용자 조회 (자신 제외)
+        List<User> storeUsers = userRepository.findAllByStore_Id(storeId).stream()
+                .filter(user -> !user.getUserId().equals(fromUserId))
+                .collect(Collectors.toList());
+
+        // 3. 해당 날짜의 요일을 문자열로 변환 (1=월 ~ 7=일)
+        String dayOfWeekStr = String.valueOf(requestDate.getDayOfWeek().getValue());
+
+        // 3. 해당 날짜에 이미 스케줄이 있는 사용자 ID 조회 (단일 + 반복 포함)
+        List<Long> busyUserIds = scheduleRepository.findBusyUserIdsIncludingRepeats(
+                storeId,
+                requestDate,
+                targetSchedule.getStartTime(),
+                targetSchedule.getEndTime(),
+                dayOfWeekStr
+        );
+
+
+        // 4. 근무 불가능한 사람 제외
+        return storeUsers.stream()
+                .filter(user -> !busyUserIds.contains(user.getUserId()))
+                .collect(Collectors.toList());
+    }
 
     @Transactional
     public ShiftResponse createShiftRequest(ShiftRequest request) {

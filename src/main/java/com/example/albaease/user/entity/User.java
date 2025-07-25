@@ -38,9 +38,10 @@ public class User implements Serializable {
     @Column(name = "role", nullable = false)
     private Role role;  // 역할 (사장님/알바생)
 
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "store_id")  // 소속된 매장의 ID (외래 키)
-//    private Store store;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")  // 소속된 매장의 ID (외래 키)
+    private Store store;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserStoreRelationship> userStoreRelationships;
 

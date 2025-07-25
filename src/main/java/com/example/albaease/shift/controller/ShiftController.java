@@ -2,9 +2,12 @@ package com.example.albaease.shift.controller;
 
 import com.example.albaease.notification.dto.NotificationResponse;
 import com.example.albaease.shift.domain.enums.ShiftStatus;
+import com.example.albaease.shift.dto.AvailableSubstituteRequest;
 import com.example.albaease.shift.dto.ShiftRequest;
 import com.example.albaease.shift.dto.ShiftResponse;
+import com.example.albaease.shift.dto.UserSummaryResponse;
 import com.example.albaease.shift.service.ShiftService;
+import com.example.albaease.user.entity.User;
 import com.example.albaease.user.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,6 +21,8 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -26,6 +31,29 @@ import java.security.Principal;
 public class ShiftController {
     private final ShiftService shiftService;
     private final UserRepository userRepository;
+
+    // 대타 요청 가능한 사람 필터링하는 api
+    @Operation(
+            summary = "대타 가능한 사용자 조회",
+            description = "지정된 날짜와 시간의 근무 일정을 기준으로, 해당 매장(storeId) 내에서 해당 시간에 다른 스케줄이 없는 사용자 목록을 조회합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "대타 가능한 사용자 목록 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 형식"),
+            @ApiResponse(responseCode = "404", description = "사용자 또는 스케줄을 찾을 수 없음")
+    })
+    @PostMapping("/shift-requests/available-users")
+    public ResponseEntity<List<UserSummaryResponse>> getAvailableSubstitutes(
+            @RequestBody AvailableSubstituteRequest request) {
+
+        List<User> availableUsers = shiftService.findAvailableSubstitutes(request);
+
+        List<UserSummaryResponse> response = availableUsers.stream()
+                .map(UserSummaryResponse::from)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
 
     // 대타 요청 생성
     @Operation(summary = "대타 요청 생성", description = "근무 일정에 대한 대타 요청을 생성합니다")
